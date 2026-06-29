@@ -25,6 +25,10 @@ const statusClasses = {
 };
 
 const formatCurrency = (value) => `€${Number(value || 0).toFixed(2)}`;
+const formatPaymentMethod = (method) =>
+  method === 'demo_online' ? 'Demo Online Payment' : 'Cash on Delivery';
+const formatPaymentStatus = (status) =>
+  status ? status.charAt(0).toUpperCase() + status.slice(1) : 'Unpaid';
 
 function AdminOrderCard({ order }) {
   const [isExpanded, setIsExpanded] = useState(false);
@@ -54,7 +58,7 @@ function AdminOrderCard({ order }) {
             {order.status}
           </span>
           <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-700">
-            {order.paymentStatus}
+            {formatPaymentStatus(order.paymentStatus)}
           </span>
         </div>
       </div>
@@ -74,8 +78,8 @@ function AdminOrderCard({ order }) {
         </div>
         <div>
           <p className="font-semibold text-slate-900">Payment</p>
-          <p>{order.paymentMethod}</p>
-          <p>{order.paymentStatus}</p>
+          <p>{formatPaymentMethod(order.paymentMethod)}</p>
+          <p>{formatPaymentStatus(order.paymentStatus)}</p>
         </div>
         <div>
           <p className="font-semibold text-slate-900">Items</p>

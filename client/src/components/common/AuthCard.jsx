@@ -218,12 +218,14 @@ function AuthCard({ initialMode = 'signin', initialRole = 'customer' }) {
 
       <div className="mt-5">
         {canUseGoogle ? (
-          <GoogleLogin
-            onError={() => setError('Google authentication failed')}
-            onSuccess={handleGoogleSuccess}
-            text={isSignIn ? 'signin_with' : 'signup_with'}
-            width="100%"
-          />
+          <div className="flex w-full justify-center">
+            <GoogleLogin
+              onError={() => setError('Google authentication failed')}
+              onSuccess={handleGoogleSuccess}
+              text={isSignIn ? 'signin_with' : 'signup_with'}
+              width={320}
+            />
+          </div>
         ) : (
           <p className="rounded-md bg-slate-100 px-3 py-2 text-sm text-slate-600">
             Restaurant owners and riders must sign up with email and password.

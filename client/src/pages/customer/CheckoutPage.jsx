@@ -5,6 +5,8 @@ import { useAuth } from '../../hooks/useAuth';
 import { createOrder } from '../../services/orderService';
 
 const formatCurrency = (value) => `€${Number(value || 0).toFixed(2)}`;
+const wait = (milliseconds) =>
+  new Promise((resolve) => setTimeout(resolve, milliseconds));
 
 const getEffectivePrice = (item) => {
   if (item.discountPrice !== null && item.discountPrice !== undefined) {
@@ -34,7 +36,16 @@ function CheckoutPage() {
     country: 'Germany',
   });
   const [orderNote, setOrderNote] = useState('');
+  const [paymentMethod, setPaymentMethod] = useState('cash_on_delivery');
+  const [demoCard, setDemoCard] = useState({
+    cardholderName: '',
+    cardNumber: '',
+    expiryDate: '',
+    cvc: '',
+  });
   const [error, setError] = useState('');
+  const [paymentMessage, setPaymentMessage] = useState('');
+  const [isProcessingPayment, setIsProcessingPayment] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleAddressChange = (event) => {
@@ -44,9 +55,40 @@ function CheckoutPage() {
     });
   };
 
+  const handleDemoCardChange = (event) => {
+    setDemoCard({
+      ...demoCard,
+      [event.target.name]: event.target.value,
+    });
+  };
+
+  const validateDemoCard = () => {
+    const cardDigits = demoCard.cardNumber.replace(/\D/g, '');
+    const cvcDigits = demoCard.cvc.replace(/\D/g, '');
+
+    if (!demoCard.cardholderName.trim()) {
+      return 'Cardholder name is required';
+    }
+
+    if (cardDigits.length < 12) {
+      return 'Card number must contain at least 12 digits';
+    }
+
+    if (!demoCard.expiryDate.trim()) {
+      return 'Expiry date is required';
+    }
+
+    if (cvcDigits.length < 3) {
+      return 'CVC must contain at least 3 digits';
+    }
+
+    return '';
+  };
+
   const handleSubmit = async (event) => {
     event.preventDefault();
     setError('');
+    setPaymentMessage('');
 
     if (!isAuthenticated) {
       setError('Please login to place your order.');
@@ -59,8 +101,26 @@ function CheckoutPage() {
       return;
     }
 
+    if (paymentMethod === 'demo_online') {
+      const validationMessage = validateDemoCard();
+
+      if (validationMessage) {
+        setError(validationMessage);
+        return;
+      }
+    }
+
     try {
       setIsSubmitting(true);
+
+      if (paymentMethod === 'demo_online') {
+        setIsProcessingPayment(true);
+        await wait(1000);
+        setIsProcessingPayment(false);
+        setPaymentMessage('Demo payment successful');
+        await wait(600);
+      }
+
       await createOrder({
         restaurantId: restaurant._id,
         items: cartItems.map((item) => ({
@@ -69,13 +129,21 @@ function CheckoutPage() {
         })),
         deliveryAddress,
         orderNote,
+        paymentMethod,
       });
 
       clearCart();
-      navigate('/orders/success');
+      navigate('/orders/success', {
+        state: {
+          paymentMethod,
+          paymentStatus: paymentMethod === 'demo_online' ? 'paid' : 'unpaid',
+        },
+      });
     } catch (error) {
+      setPaymentMessage('');
       setError(error.message);
     } finally {
+      setIsProcessingPayment(false);
       setIsSubmitting(false);
     }
   };
@@ -177,12 +245,123 @@ function CheckoutPage() {
             />
           </label>
 
+          <fieldset className="mt-6">
+            <legend className="text-sm font-semibold text-slate-700">
+              Payment method
+            </legend>
+            <div className="mt-2 grid gap-3 sm:grid-cols-2">
+              <label className="flex cursor-pointer items-start gap-3 rounded-lg border border-slate-200 p-4">
+                <input
+                  checked={paymentMethod === 'cash_on_delivery'}
+                  className="mt-1 accent-orange-600"
+                  name="paymentMethod"
+                  onChange={() => setPaymentMethod('cash_on_delivery')}
+                  type="radio"
+                />
+                <span>
+                  <span className="block font-semibold">Cash on Delivery</span>
+                  <span className="text-sm text-slate-600">
+                    Pay when your order arrives.
+                  </span>
+                </span>
+              </label>
+
+              <label className="flex cursor-pointer items-start gap-3 rounded-lg border border-slate-200 p-4">
+                <input
+                  checked={paymentMethod === 'demo_online'}
+                  className="mt-1 accent-orange-600"
+                  name="paymentMethod"
+                  onChange={() => setPaymentMethod('demo_online')}
+                  type="radio"
+                />
+                <span>
+                  <span className="block font-semibold">Demo Online Payment</span>
+                  <span className="text-sm font-medium text-orange-700">
+                    Demo payment only
+                  </span>
+                </span>
+              </label>
+            </div>
+          </fieldset>
+
+          {paymentMethod === 'demo_online' && (
+            <section className="mt-5 rounded-xl border border-orange-200 bg-orange-50 p-5">
+              <h2 className="text-lg font-bold">Demo card details</h2>
+              <p className="mt-1 text-sm text-slate-600">
+                This is a demo payment. No real money will be charged.
+              </p>
+
+              <div className="mt-4 grid gap-4 sm:grid-cols-2">
+                <label className="sm:col-span-2">
+                  <span className="text-sm font-medium text-slate-700">
+                    Cardholder Name
+                  </span>
+                  <input
+                    className="mt-1 w-full rounded-md border border-slate-300 bg-white px-3 py-2 outline-none focus:border-orange-500"
+                    name="cardholderName"
+                    onChange={handleDemoCardChange}
+                    placeholder="Demo Customer"
+                    value={demoCard.cardholderName}
+                  />
+                </label>
+                <label className="sm:col-span-2">
+                  <span className="text-sm font-medium text-slate-700">
+                    Card Number
+                  </span>
+                  <input
+                    className="mt-1 w-full rounded-md border border-slate-300 bg-white px-3 py-2 outline-none focus:border-orange-500"
+                    inputMode="numeric"
+                    name="cardNumber"
+                    onChange={handleDemoCardChange}
+                    placeholder="4242 4242 4242 4242"
+                    value={demoCard.cardNumber}
+                  />
+                </label>
+                <label>
+                  <span className="text-sm font-medium text-slate-700">
+                    Expiry Date
+                  </span>
+                  <input
+                    className="mt-1 w-full rounded-md border border-slate-300 bg-white px-3 py-2 outline-none focus:border-orange-500"
+                    name="expiryDate"
+                    onChange={handleDemoCardChange}
+                    placeholder="12/34"
+                    value={demoCard.expiryDate}
+                  />
+                </label>
+                <label>
+                  <span className="text-sm font-medium text-slate-700">CVC</span>
+                  <input
+                    className="mt-1 w-full rounded-md border border-slate-300 bg-white px-3 py-2 outline-none focus:border-orange-500"
+                    inputMode="numeric"
+                    name="cvc"
+                    onChange={handleDemoCardChange}
+                    placeholder="123"
+                    value={demoCard.cvc}
+                  />
+                </label>
+              </div>
+            </section>
+          )}
+
+          {paymentMessage && (
+            <p className="mt-5 rounded-md bg-green-50 px-3 py-2 text-sm font-semibold text-green-700">
+              {paymentMessage}
+            </p>
+          )}
+
           <button
             className="mt-6 rounded-md bg-orange-600 px-5 py-3 font-semibold text-white hover:bg-orange-700 disabled:cursor-not-allowed disabled:bg-orange-300"
             disabled={isSubmitting}
             type="submit"
           >
-            {isSubmitting ? 'Placing order...' : 'Place Order'}
+            {isProcessingPayment
+              ? 'Processing demo payment...'
+              : isSubmitting
+                ? 'Placing order...'
+                : paymentMethod === 'demo_online'
+                  ? 'Pay Demo'
+                  : 'Place Order'}
           </button>
         </form>
 
@@ -229,4 +408,3 @@ function CheckoutPage() {
 }
 
 export default CheckoutPage;
-

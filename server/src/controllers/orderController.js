@@ -65,7 +65,19 @@ const getOwnedRestaurant = async (ownerId) => {
 
 export const createOrder = async (req, res) => {
   try {
-    const { deliveryAddress, items, orderNote, restaurantId } = req.body;
+    const {
+      deliveryAddress,
+      items,
+      orderNote,
+      paymentMethod = 'cash_on_delivery',
+      restaurantId,
+    } = req.body;
+
+    const allowedPaymentMethods = ['cash_on_delivery', 'demo_online'];
+
+    if (!allowedPaymentMethods.includes(paymentMethod)) {
+      return sendErrorResponse(res, 400, 'Invalid payment method');
+    }
 
     if (!mongoose.Types.ObjectId.isValid(restaurantId)) {
       return sendErrorResponse(res, 400, 'Invalid restaurant id');
@@ -135,6 +147,11 @@ export const createOrder = async (req, res) => {
     const deliveryFee = Number(restaurant.deliveryFee || 0);
     const totalAmount = subtotal + deliveryFee;
 
+    // Demo online payment is simulated and does not process real payments.
+    // Prices and order totals are still calculated from trusted database values.
+    const paymentStatus =
+      paymentMethod === 'demo_online' ? 'paid' : 'unpaid';
+
     const order = await Order.create({
       customer: req.user._id,
       restaurant: restaurant._id,
@@ -144,6 +161,8 @@ export const createOrder = async (req, res) => {
       subtotal,
       deliveryFee,
       totalAmount,
+      paymentMethod,
+      paymentStatus,
     });
 
     const populatedOrder = await populateOrder(Order.findById(order._id));

@@ -58,6 +58,10 @@ const statusClasses = {
 };
 
 const formatCurrency = (value) => `€${Number(value || 0).toFixed(2)}`;
+const formatPaymentMethod = (method) =>
+  method === 'demo_online' ? 'Demo Online Payment' : 'Cash on Delivery';
+const formatPaymentStatus = (status) =>
+  status ? status.charAt(0).toUpperCase() + status.slice(1) : 'Unpaid';
 
 function DetailItem({ label, value }) {
   return (
@@ -237,10 +241,10 @@ function OrderCard({ onStatusChange, order }) {
             Payment
           </p>
           <p className="mt-2 text-sm text-slate-800">
-            Method: {order.paymentMethod}
+            Method: {formatPaymentMethod(order.paymentMethod)}
           </p>
           <p className="mt-1 text-sm text-slate-800">
-            Status: {order.paymentStatus}
+            Status: {formatPaymentStatus(order.paymentStatus)}
           </p>
         </div>
       </div>

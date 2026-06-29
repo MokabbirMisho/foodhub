@@ -5,6 +5,10 @@ import { cancelMyOrder, getMyOrders } from '../../services/orderService';
 import { createReview, getMyReviews } from '../../services/reviewService';
 
 const formatCurrency = (value) => `€${Number(value || 0).toFixed(2)}`;
+const formatPaymentMethod = (method) =>
+  method === 'demo_online' ? 'Demo Online Payment' : 'Cash on Delivery';
+const formatPaymentStatus = (status) =>
+  status ? status.charAt(0).toUpperCase() + status.slice(1) : 'Unpaid';
 
 const statusClasses = {
   pending: 'bg-yellow-50 text-yellow-700',
@@ -156,10 +160,10 @@ function MyOrdersPage() {
                       {order.status}
                     </span>
                     <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-700">
-                      {order.paymentStatus}
+                      Payment: {formatPaymentStatus(order.paymentStatus)}
                     </span>
                     <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-700">
-                      {order.paymentMethod}
+                      {formatPaymentMethod(order.paymentMethod)}
                     </span>
                   </div>
                 </div>

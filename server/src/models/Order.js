@@ -121,12 +121,12 @@ const orderSchema = new mongoose.Schema(
     },
     paymentMethod: {
       type: String,
-      enum: ['cash_on_delivery'],
+      enum: ['cash_on_delivery', 'demo_online'],
       default: 'cash_on_delivery',
     },
     paymentStatus: {
       type: String,
-      enum: ['unpaid', 'paid', 'refunded'],
+      enum: ['unpaid', 'paid', 'refunded', 'failed'],
       default: 'unpaid',
     },
   },

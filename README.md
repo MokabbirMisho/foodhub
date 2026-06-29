@@ -1,112 +1,77 @@
 # FoodHub
 
-FoodHub is a full-stack, multi-vendor food ordering and delivery platform built
-as a portfolio and demo project. It supports restaurant discovery, menu
-management, ordering, delivery workflows, image uploads, and restaurant reviews.
+A production-deployed, multi-vendor food ordering and delivery platform built
+with the MERN stack. FoodHub provides dedicated workflows for customers,
+restaurant owners, riders, and administrators.
+
+[Live Demo](https://foodhub-phi-wine.vercel.app) |
+[Backend API](https://foodhub-zurl.onrender.com) |
+[API Health](https://foodhub-zurl.onrender.com/api/health)
 
 ## Tech Stack
 
-- React, Vite, Tailwind CSS, React Router, and Axios
-- Node.js and Express
-- MongoDB and Mongoose
-- JWT, bcryptjs, and Google Identity
-- Cloudinary and Multer
+- **Frontend:** React, Vite, Tailwind CSS, React Router, Axios
+- **Backend:** Node.js, Express, MongoDB, Mongoose
+- **Authentication:** JWT, bcryptjs, Google Identity
+- **Media:** Cloudinary, Multer
+- **Deployment:** Vercel, Render, MongoDB Atlas
+
+## Project Highlights
+
+- Role-based authentication and authorization across four account types
+- Complete multi-vendor restaurant approval and management flow
+- Persistent guest cart with authenticated customer checkout
+- Secure backend-side order price and total calculation
+- Restaurant preparation and rider delivery workflows
+- Cloudinary restaurant, cover, and food image uploads
+- Delivered-order restaurant reviews with aggregated ratings
+- Production security middleware, rate limiting, CORS, and environment config
 
 ## Features By Role
 
 ### Customer
 
-- Browse approved restaurants and menus
-- Maintain a guest cart in localStorage
-- Place and cancel orders
-- Track order status
-- Review restaurants after a delivered order
+- Browse approved restaurants and available menus
+- Manage a persistent cart and place orders
+- Follow order status, cancel pending orders, and review delivered orders
 
 ### Restaurant Owner
 
-- Create and update a restaurant profile
-- Upload restaurant and food images
-- Create and manage menu items
-- View orders and update preparation status
+- Create and maintain a restaurant profile
+- Upload images and manage food availability
+- View incoming orders and update preparation status
 
 ### Rider
 
-- Browse available deliveries
-- Accept ready orders
-- View assigned deliveries and mark them delivered
+- Browse ready, unassigned deliveries
+- Accept deliveries and mark assigned orders as delivered
 
 ### Admin
 
-- Approve or reject restaurants
-- View all orders with filters
-- View reviews through the admin API
+- Review, approve, or reject restaurant applications
+- Search and filter platform-wide orders
+- Access platform review data through the admin API
 
-## Project Structure
+## Screenshots
 
-```text
-foodhub/
-  client/   React and Vite frontend
-  server/   Express and MongoDB API
-```
+> Add the final production screenshots to `docs/screenshots/` using the filenames
+> below.
 
-## Environment Setup
+| Home and authentication | Restaurant discovery |
+| --- | --- |
+| ![FoodHub home](docs/screenshots/home.png) | ![Restaurant listing](docs/screenshots/restaurants.png) |
 
-Create local environment files from the included examples:
+| Cart and checkout | Restaurant dashboard |
+| --- | --- |
+| ![Cart and checkout](docs/screenshots/cart-checkout.png) | ![Restaurant dashboard](docs/screenshots/restaurant-dashboard.png) |
 
-```bash
-cp server/.env.example server/.env
-cp client/.env.example client/.env
-```
-
-Server variables:
-
-```env
-PORT=5001
-MONGO_URI=
-JWT_SECRET=
-JWT_EXPIRES_IN=7d
-CLIENT_URL=http://localhost:5173
-GOOGLE_CLIENT_ID=
-CLOUDINARY_CLOUD_NAME=
-CLOUDINARY_API_KEY=
-CLOUDINARY_API_SECRET=
-NODE_ENV=development
-```
-
-Client variables:
-
-```env
-VITE_API_URL=http://localhost:5001/api
-VITE_GOOGLE_CLIENT_ID=
-```
-
-Never commit real `.env` files or production secrets.
-
-## Run Locally
-
-Install and start the backend:
-
-```bash
-cd server
-npm install
-npm run dev
-```
-
-In another terminal, install and start the frontend:
-
-```bash
-cd client
-npm install
-npm run dev
-```
-
-The frontend runs at `http://localhost:5173` and the API defaults to
-`http://localhost:5001`. Check the API with `GET /api/health`.
+| Rider dashboard | Admin dashboard |
+| --- | --- |
+| ![Rider dashboard](docs/screenshots/rider-dashboard.png) | ![Admin dashboard](docs/screenshots/admin-dashboard.png) |
 
 ## Demo Credentials
 
-These are local/demo examples only and should not be used in production. Create
-matching users in your local database before using them.
+These credentials are for demo and testing only.
 
 | Role | Email | Password |
 | --- | --- | --- |
@@ -115,90 +80,88 @@ matching users in your local database before using them.
 | Customer | `customer10@example.com` | `Customer123` |
 | Rider | `rider1@example.com` | `Rider123` |
 
+## Local Setup
+
+Clone the repository and create local environment files from the supplied
+examples:
+
+```bash
+cp server/.env.example server/.env
+cp client/.env.example client/.env
+```
+
+Start the backend:
+
+```bash
+cd server
+npm install
+npm run dev
+```
+
+Start the frontend in a second terminal:
+
+```bash
+cd client
+npm install
+npm run dev
+```
+
+The frontend defaults to `http://localhost:5173` and the API to
+`http://localhost:5001`.
+
+## Environment Variables
+
+Backend (`server/.env`):
+
+```env
+PORT=5001
+NODE_ENV=development
+MONGO_URI=
+JWT_SECRET=
+JWT_EXPIRES_IN=7d
+CLIENT_URL=http://localhost:5173
+GOOGLE_CLIENT_ID=
+CLOUDINARY_CLOUD_NAME=
+CLOUDINARY_API_KEY=
+CLOUDINARY_API_SECRET=
+```
+
+Frontend (`client/.env`):
+
+```env
+VITE_API_URL=http://localhost:5001/api
+VITE_GOOGLE_CLIENT_ID=
+```
+
+Real credentials and secrets must never be committed.
+
 ## API Overview
 
-- `/api/auth` registration, login, Google authentication, and current user
-- `/api/restaurants` restaurant profiles, public discovery, and approval
-- `/api/foods` owner menu management and public menus
-- `/api/orders` customer, restaurant, rider, and admin order workflows
-- `/api/uploads` Cloudinary image uploads
-- `/api/reviews` customer restaurant reviews and public ratings
+| Resource | Base path | Purpose |
+| --- | --- | --- |
+| Auth | `/api/auth` | Local and Google authentication |
+| Restaurants | `/api/restaurants` | Profiles, discovery, and approval |
+| Foods | `/api/foods` | Menu management and public menus |
+| Orders | `/api/orders` | Customer, owner, rider, and admin workflows |
+| Uploads | `/api/uploads` | Cloudinary image uploads |
+| Reviews | `/api/reviews` | Customer reviews and public ratings |
 
 ## Deployment
 
-### Backend On Render
+- **Frontend:** Vercel
+- **Backend API:** Render
+- **Database:** MongoDB Atlas
+- **Image hosting:** Cloudinary
 
-Create a Render Web Service from this repository. The included `render.yaml`
-can configure the service automatically, or use these manual settings:
+The frontend uses `VITE_API_URL` for the deployed API. Render uses `CLIENT_URL`
+for the allowed Vercel origin. The included `client/vercel.json` handles SPA
+route refreshes, while `render.yaml` documents the backend service setup.
 
-- Root directory: `server`
-- Build command: `npm install`
-- Start command: `npm start`
-- Health check path: `/api/health`
+## Future Improvements
 
-Add these environment variables in Render:
-
-```env
-NODE_ENV=production
-MONGO_URI=your_mongodb_atlas_connection_string
-JWT_SECRET=use_a_long_random_production_secret
-JWT_EXPIRES_IN=7d
-CLIENT_URL=https://your-foodhub-app.vercel.app
-GOOGLE_CLIENT_ID=your_google_client_id
-CLOUDINARY_CLOUD_NAME=your_cloudinary_cloud_name
-CLOUDINARY_API_KEY=your_cloudinary_api_key
-CLOUDINARY_API_SECRET=your_cloudinary_api_secret
-```
-
-Render supplies `PORT` automatically. After deployment, verify:
-
-```text
-https://your-render-backend-url.onrender.com/api/health
-```
-
-### Frontend On Vercel
-
-Import the repository into Vercel with these project settings:
-
-- Root directory: `client`
-- Framework preset: Vite
-- Build command: `npm run build`
-- Output directory: `dist`
-
-Add these environment variables before deploying:
-
-```env
-VITE_API_URL=https://your-render-backend-url.onrender.com/api
-VITE_GOOGLE_CLIENT_ID=your_google_client_id
-```
-
-The included `client/vercel.json` sends SPA routes such as `/restaurants`,
-`/cart`, and dashboard URLs to `index.html`, preventing refresh 404 errors.
-
-### MongoDB Atlas
-
-- Use a dedicated database user with a strong password.
-- Add Render's outbound address to Atlas Network Access when available.
-- `0.0.0.0/0` can be used for a temporary demo, but it permits connections
-  from every IP and is less secure.
-- Keep the Atlas connection string only in Render's environment settings.
-
-### Google OAuth
-
-- Add the deployed Vercel URL to Authorized JavaScript origins.
-- Keep `VITE_GOOGLE_CLIENT_ID` and backend `GOOGLE_CLIENT_ID` synchronized.
-- Add the Render backend URL to the Google configuration if your OAuth setup
-  uses backend origins or redirect URIs.
-
-### Final URL Updates
-
-The two deployments depend on each other:
-
-1. Deploy the backend and copy its Render URL.
-2. Set Vercel's `VITE_API_URL` to the Render URL followed by `/api`.
-3. Deploy the frontend and copy its Vercel URL.
-4. Set Render's `CLIENT_URL` to that exact Vercel origin.
-5. Redeploy both services after changing build-time or runtime variables.
-
-Serve both applications over HTTPS and keep all secrets in the hosting
-providers' environment settings.
+- Stripe payment integration
+- Live rider location tracking
+- Transactional email notifications
+- Admin analytics and reporting
+- Restaurant availability schedules
+- Location-aware search optimization
