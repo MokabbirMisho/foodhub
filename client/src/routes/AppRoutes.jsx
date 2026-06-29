@@ -2,6 +2,7 @@ import { Route, Routes } from 'react-router-dom';
 import LoginPage from '../pages/auth/LoginPage';
 import RegisterPage from '../pages/auth/RegisterPage';
 import AdminDashboard from '../pages/admin/AdminDashboard';
+import CustomerNavbar from '../components/layout/CustomerNavbar';
 import CartPage from '../pages/customer/CartPage';
 import CheckoutPage from '../pages/customer/CheckoutPage';
 import CustomerDashboard from '../pages/customer/CustomerDashboard';
@@ -17,39 +18,87 @@ import RiderDashboard from '../pages/rider/RiderDashboard';
 import ProtectedRoute from './ProtectedRoute';
 import RoleRoute from './RoleRoute';
 
+function CustomerPageLayout({ children }) {
+  return (
+    <>
+      <CustomerNavbar />
+      {children}
+    </>
+  );
+}
+
 function AppRoutes() {
   return (
     <Routes>
       <Route path="/" element={<HomePage />} />
       <Route path="/login" element={<LoginPage />} />
       <Route path="/register" element={<RegisterPage />} />
-      <Route path="/restaurants" element={<RestaurantsPage />} />
-      <Route path="/restaurants/:id" element={<RestaurantDetailsPage />} />
+      <Route
+        path="/restaurants"
+        element={
+          <CustomerPageLayout>
+            <RestaurantsPage />
+          </CustomerPageLayout>
+        }
+      />
+      <Route
+        path="/restaurants/:id"
+        element={
+          <CustomerPageLayout>
+            <RestaurantDetailsPage />
+          </CustomerPageLayout>
+        }
+      />
       <Route path="/unauthorized" element={<UnauthorizedPage />} />
 
-      <Route path="/cart" element={<CartPage />} />
-      <Route path="/checkout" element={<CheckoutPage />} />
-      <Route path="/orders/success" element={<OrderSuccessPage />} />
+      <Route
+        path="/cart"
+        element={
+          <CustomerPageLayout>
+            <CartPage />
+          </CustomerPageLayout>
+        }
+      />
+      <Route
+        path="/checkout"
+        element={
+          <CustomerPageLayout>
+            <CheckoutPage />
+          </CustomerPageLayout>
+        }
+      />
+      <Route
+        path="/orders/success"
+        element={
+          <CustomerPageLayout>
+            <OrderSuccessPage />
+          </CustomerPageLayout>
+        }
+      />
 
       <Route
         path="/my-orders"
         element={
-          <ProtectedRoute>
-            <RoleRoute allowedRoles={['customer']}>
-              <MyOrdersPage />
-            </RoleRoute>
-          </ProtectedRoute>
+          <CustomerPageLayout>
+            <ProtectedRoute>
+              <RoleRoute allowedRoles={['customer']}>
+                <MyOrdersPage />
+              </RoleRoute>
+            </ProtectedRoute>
+          </CustomerPageLayout>
         }
       />
 
       <Route
         path="/customer/dashboard"
         element={
-          <ProtectedRoute>
-            <RoleRoute allowedRoles={['customer']}>
-              <CustomerDashboard />
-            </RoleRoute>
-          </ProtectedRoute>
+          <CustomerPageLayout>
+            <ProtectedRoute>
+              <RoleRoute allowedRoles={['customer']}>
+                <CustomerDashboard />
+              </RoleRoute>
+            </ProtectedRoute>
+          </CustomerPageLayout>
         }
       />
 

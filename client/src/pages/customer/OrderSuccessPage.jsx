@@ -1,4 +1,5 @@
 import { Link, useLocation } from 'react-router-dom';
+import BackButton from '../../components/common/BackButton';
 
 const formatPaymentMethod = (method) =>
   method === 'demo_online' ? 'Demo Online Payment' : 'Cash on Delivery';
@@ -10,7 +11,9 @@ function OrderSuccessPage() {
 
   return (
     <main className="min-h-screen bg-orange-50 px-6 py-10 text-slate-900">
-      <section className="mx-auto max-w-3xl rounded-xl bg-white p-6 text-center shadow-sm">
+      <section className="mx-auto max-w-3xl">
+        <BackButton />
+        <div className="mt-6 rounded-xl bg-white p-6 text-center shadow-sm">
         <p className="text-sm font-semibold uppercase tracking-wide text-orange-600">
           Order placed
         </p>
@@ -36,6 +39,7 @@ function OrderSuccessPage() {
           >
             Browse Restaurants
           </Link>
+        </div>
         </div>
       </section>
     </main>

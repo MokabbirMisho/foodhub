@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import BackButton from '../../components/common/BackButton';
 import ReviewForm from '../../components/reviews/ReviewForm';
 import { cancelMyOrder, getMyOrders } from '../../services/orderService';
 import { createReview, getMyReviews } from '../../services/reviewService';
@@ -94,6 +95,7 @@ function MyOrdersPage() {
   return (
     <main className="min-h-screen bg-orange-50 px-6 py-10 text-slate-900">
       <section className="mx-auto max-w-5xl space-y-6">
+        <BackButton />
         <header className="flex flex-col gap-4 rounded-xl bg-white p-6 shadow-sm md:flex-row md:items-end md:justify-between">
           <div>
             <p className="text-sm font-semibold uppercase tracking-wide text-orange-600">

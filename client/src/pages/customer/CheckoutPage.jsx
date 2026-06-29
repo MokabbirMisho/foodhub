@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import BackButton from '../../components/common/BackButton';
 import { useCart } from '../../context/CartContext';
 import { useAuth } from '../../hooks/useAuth';
 import { createOrder } from '../../services/orderService';
@@ -151,7 +152,9 @@ function CheckoutPage() {
   if (cartItems.length === 0) {
     return (
       <main className="min-h-screen bg-orange-50 px-6 py-10 text-slate-900">
-        <section className="mx-auto max-w-3xl rounded-xl bg-white p-6 shadow-sm">
+        <section className="mx-auto max-w-3xl space-y-6">
+          <BackButton />
+          <div className="rounded-xl bg-white p-6 shadow-sm">
           <h1 className="text-3xl font-bold">Your cart is empty.</h1>
           <Link
             className="mt-5 inline-block rounded-md bg-orange-600 px-4 py-2 font-semibold text-white hover:bg-orange-700"
@@ -159,6 +162,7 @@ function CheckoutPage() {
           >
             Browse Restaurants
           </Link>
+          </div>
         </section>
       </main>
     );
@@ -167,7 +171,9 @@ function CheckoutPage() {
   if (!isAuthenticated) {
     return (
       <main className="min-h-screen bg-orange-50 px-6 py-10 text-slate-900">
-        <section className="mx-auto max-w-3xl rounded-xl bg-white p-6 shadow-sm">
+        <section className="mx-auto max-w-3xl space-y-6">
+          <BackButton fallbackPath="/" />
+          <div className="rounded-xl bg-white p-6 shadow-sm">
           <h1 className="text-3xl font-bold">Please login to place your order.</h1>
           <p className="mt-3 text-slate-700">
             Your cart is saved. Sign in from the landing page to continue checkout.
@@ -178,6 +184,7 @@ function CheckoutPage() {
           >
             Go to Sign In
           </Link>
+          </div>
         </section>
       </main>
     );
@@ -186,7 +193,9 @@ function CheckoutPage() {
   if (user?.role !== 'customer') {
     return (
       <main className="min-h-screen bg-orange-50 px-6 py-10 text-slate-900">
-        <section className="mx-auto max-w-3xl rounded-xl bg-white p-6 shadow-sm">
+        <section className="mx-auto max-w-3xl space-y-6">
+          <BackButton />
+          <div className="rounded-xl bg-white p-6 shadow-sm">
           <h1 className="text-3xl font-bold">Only customers can place orders.</h1>
           <Link
             className="mt-5 inline-block rounded-md bg-orange-600 px-4 py-2 font-semibold text-white hover:bg-orange-700"
@@ -194,6 +203,7 @@ function CheckoutPage() {
           >
             Browse Restaurants
           </Link>
+          </div>
         </section>
       </main>
     );
@@ -201,7 +211,9 @@ function CheckoutPage() {
 
   return (
     <main className="min-h-screen bg-orange-50 px-6 py-10 text-slate-900">
-      <section className="mx-auto grid max-w-6xl gap-6 lg:grid-cols-[1fr_360px]">
+      <section className="mx-auto max-w-6xl">
+        <BackButton />
+        <div className="mt-6 grid gap-6 lg:grid-cols-[1fr_360px]">
         <form className="rounded-xl bg-white p-6 shadow-sm" onSubmit={handleSubmit}>
           <p className="text-sm font-semibold uppercase tracking-wide text-orange-600">
             Checkout
@@ -402,6 +414,7 @@ function CheckoutPage() {
             </div>
           </div>
         </aside>
+        </div>
       </section>
     </main>
   );

@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import BackButton from '../../components/common/BackButton';
 import { useCart } from '../../context/CartContext';
 
 const formatCurrency = (value) => `€${Number(value || 0).toFixed(2)}`;
@@ -27,6 +28,7 @@ function CartPage() {
   return (
     <main className="min-h-screen bg-orange-50 px-6 py-10 text-slate-900">
       <section className="mx-auto max-w-5xl space-y-6">
+        <BackButton />
         <header className="flex flex-col gap-4 rounded-xl bg-white p-6 shadow-sm md:flex-row md:items-end md:justify-between">
           <div>
             <p className="text-sm font-semibold uppercase tracking-wide text-orange-600">

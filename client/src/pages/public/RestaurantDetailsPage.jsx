@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
+import BackButton from '../../components/common/BackButton';
 import { useCart } from '../../context/CartContext';
 import { getPublicRestaurantFoodItems } from '../../services/foodService';
 import { getRestaurantById } from '../../services/restaurantService';
@@ -122,12 +123,7 @@ function RestaurantDetailsPage() {
     <main className="min-h-screen bg-orange-50 px-6 py-10 text-slate-900">
       <section className="mx-auto max-w-5xl space-y-6">
         <div className="flex flex-wrap gap-3">
-          <Link
-            className="inline-flex w-fit rounded-md bg-orange-600 px-4 py-2 font-semibold text-white hover:bg-orange-700"
-            to="/restaurants"
-          >
-            Back to restaurants
-          </Link>
+          <BackButton />
           <Link
             className="inline-flex w-fit rounded-md bg-white px-4 py-2 font-semibold text-slate-900 shadow-sm hover:bg-orange-50"
             to="/cart"
