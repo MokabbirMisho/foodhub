@@ -1,0 +1,278 @@
+import mongoose from 'mongoose';
+import FoodItem from '../models/FoodItem.js';
+import Restaurant from '../models/Restaurant.js';
+
+const sendSuccessResponse = (res, statusCode, message, data) => {
+  res.status(statusCode).json({
+    success: true,
+    message,
+    data,
+  });
+};
+
+const sendErrorResponse = (res, statusCode, message) => {
+  res.status(statusCode).json({
+    success: false,
+    message,
+    data: null,
+  });
+};
+
+const handleFoodError = (res, error) => {
+  if (process.env.NODE_ENV !== 'production') {
+    console.error(error);
+  }
+
+  if (error.name === 'ValidationError') {
+    const message = Object.values(error.errors)
+      .map((validationError) => validationError.message)
+      .join(', ');
+
+    return sendErrorResponse(res, 400, message);
+  }
+
+  return sendErrorResponse(res, 500, 'Server error');
+};
+
+const getOwnedRestaurant = async (ownerId) => {
+  return Restaurant.findOne({ owner: ownerId });
+};
+
+const buildFoodFilters = (query) => {
+  const { category, isAvailable, search } = query;
+  const filters = {};
+
+  if (category) {
+    filters.category = new RegExp(category, 'i');
+  }
+
+  if (search) {
+    filters.name = new RegExp(search, 'i');
+  }
+
+  if (isAvailable === 'true') {
+    filters.isAvailable = true;
+  }
+
+  if (isAvailable === 'false') {
+    filters.isAvailable = false;
+  }
+
+  return filters;
+};
+
+export const createFoodItem = async (req, res) => {
+  try {
+    const restaurant = await getOwnedRestaurant(req.user._id);
+
+    if (!restaurant) {
+      return sendErrorResponse(res, 404, 'Create a restaurant profile first');
+    }
+
+    // Food items always belong to the logged-in owner's restaurant.
+    const foodItem = await FoodItem.create({
+      ...req.body,
+      restaurant: restaurant._id,
+    });
+
+    sendSuccessResponse(res, 201, 'Food item created successfully', {
+      foodItem,
+    });
+  } catch (error) {
+    handleFoodError(res, error);
+  }
+};
+
+export const getMyRestaurantFoodItems = async (req, res) => {
+  try {
+    const restaurant = await getOwnedRestaurant(req.user._id);
+
+    if (!restaurant) {
+      return sendErrorResponse(res, 404, 'Create a restaurant profile first');
+    }
+
+    const filters = {
+      restaurant: restaurant._id,
+      ...buildFoodFilters(req.query),
+    };
+
+    const foodItems = await FoodItem.find(filters).sort({ createdAt: -1 });
+
+    sendSuccessResponse(res, 200, 'Food items fetched successfully', {
+      foodItems,
+    });
+  } catch (error) {
+    handleFoodError(res, error);
+  }
+};
+
+export const getPublicRestaurantFoodItems = async (req, res) => {
+  try {
+    const { restaurantId } = req.params;
+
+    if (!mongoose.Types.ObjectId.isValid(restaurantId)) {
+      return sendErrorResponse(res, 400, 'Invalid restaurant id');
+    }
+
+    const restaurant = await Restaurant.findOne({
+      _id: restaurantId,
+      isApproved: true,
+      isActive: true,
+    });
+
+    if (!restaurant) {
+      return sendErrorResponse(res, 404, 'Restaurant not found');
+    }
+
+    const filters = {
+      restaurant: restaurantId,
+      ...buildFoodFilters(req.query),
+      isAvailable: true,
+    };
+
+    const foodItems = await FoodItem.find(filters).sort({ createdAt: -1 });
+
+    sendSuccessResponse(res, 200, 'Restaurant menu fetched successfully', {
+      foodItems,
+    });
+  } catch (error) {
+    handleFoodError(res, error);
+  }
+};
+
+export const getFoodItemById = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return sendErrorResponse(res, 400, 'Invalid food item id');
+    }
+
+    const foodItem = await FoodItem.findOne({
+      _id: id,
+      isAvailable: true,
+    }).populate('restaurant', 'name address isApproved isActive');
+
+    if (
+      !foodItem ||
+      !foodItem.restaurant?.isApproved ||
+      !foodItem.restaurant?.isActive
+    ) {
+      return sendErrorResponse(res, 404, 'Food item not found');
+    }
+
+    sendSuccessResponse(res, 200, 'Food item fetched successfully', {
+      foodItem,
+    });
+  } catch (error) {
+    handleFoodError(res, error);
+  }
+};
+
+export const updateFoodItem = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return sendErrorResponse(res, 400, 'Invalid food item id');
+    }
+
+    const restaurant = await getOwnedRestaurant(req.user._id);
+
+    if (!restaurant) {
+      return sendErrorResponse(res, 404, 'Create a restaurant profile first');
+    }
+
+    const updates = { ...req.body };
+
+    // Owners cannot move a food item to another restaurant.
+    delete updates.restaurant;
+
+    const foodItem = await FoodItem.findOneAndUpdate(
+      {
+        _id: id,
+        restaurant: restaurant._id,
+      },
+      updates,
+      {
+        new: true,
+        runValidators: true,
+      },
+    );
+
+    if (!foodItem) {
+      return sendErrorResponse(res, 404, 'Food item not found');
+    }
+
+    sendSuccessResponse(res, 200, 'Food item updated successfully', {
+      foodItem,
+    });
+  } catch (error) {
+    handleFoodError(res, error);
+  }
+};
+
+export const deleteFoodItem = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return sendErrorResponse(res, 400, 'Invalid food item id');
+    }
+
+    const restaurant = await getOwnedRestaurant(req.user._id);
+
+    if (!restaurant) {
+      return sendErrorResponse(res, 404, 'Create a restaurant profile first');
+    }
+
+    const foodItem = await FoodItem.findOneAndDelete({
+      _id: id,
+      restaurant: restaurant._id,
+    });
+
+    if (!foodItem) {
+      return sendErrorResponse(res, 404, 'Food item not found');
+    }
+
+    sendSuccessResponse(res, 200, 'Food item deleted successfully', {
+      foodItem,
+    });
+  } catch (error) {
+    handleFoodError(res, error);
+  }
+};
+
+export const toggleFoodAvailability = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return sendErrorResponse(res, 400, 'Invalid food item id');
+    }
+
+    const restaurant = await getOwnedRestaurant(req.user._id);
+
+    if (!restaurant) {
+      return sendErrorResponse(res, 404, 'Create a restaurant profile first');
+    }
+
+    const foodItem = await FoodItem.findOne({
+      _id: id,
+      restaurant: restaurant._id,
+    });
+
+    if (!foodItem) {
+      return sendErrorResponse(res, 404, 'Food item not found');
+    }
+
+    foodItem.isAvailable = !foodItem.isAvailable;
+    await foodItem.save();
+
+    sendSuccessResponse(res, 200, 'Food availability updated successfully', {
+      foodItem,
+    });
+  } catch (error) {
+    handleFoodError(res, error);
+  }
+};
