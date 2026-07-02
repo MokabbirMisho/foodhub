@@ -397,18 +397,18 @@ function CheckoutPage() {
   }
 
   return (
-    <main className="min-h-screen bg-orange-50 px-6 py-10 text-slate-900">
-      <section className="mx-auto max-w-6xl">
+    <main className="fh-page">
+      <section className="fh-container">
         <BackButton />
         <div className="mt-6 grid gap-6 lg:grid-cols-[1fr_360px]">
-        <form className="rounded-xl bg-white p-6 shadow-sm" onSubmit={handleSubmit}>
-          <p className="text-sm font-semibold uppercase tracking-wide text-orange-600">
-            Checkout
+        <form className="fh-card p-7" onSubmit={handleSubmit}>
+          <p className="fh-eyebrow">
+            Step 1 · Checkout
           </p>
-          <h1 className="mt-2 text-4xl font-bold">Delivery details</h1>
+          <h1 className="mt-2 text-4xl font-black">Delivery details</h1>
 
           {error && (
-            <p className="mt-5 rounded-md bg-red-50 px-3 py-2 text-sm text-red-700">
+            <p className="fh-alert-error mt-5">
               {error}
             </p>
           )}
@@ -425,7 +425,7 @@ function CheckoutPage() {
               <label className="block" key={name}>
                 <span className="text-sm font-medium text-slate-700">{label}</span>
                 <input
-                  className="mt-1 w-full rounded-md border border-slate-300 px-3 py-2 outline-none focus:border-orange-500"
+                  className="fh-input mt-1"
                   name={name}
                   onChange={handleAddressChange}
                   required
@@ -442,7 +442,7 @@ function CheckoutPage() {
                   Choose saved address
                 </span>
                 <select
-                  className="mt-2 w-full rounded-md border border-slate-300 bg-white px-3 py-2 outline-none focus:border-orange-500"
+                  className="fh-input mt-2"
                   onChange={handleSavedAddressChange}
                   value={selectedAddressId}
                 >
@@ -465,7 +465,7 @@ function CheckoutPage() {
           <label className="mt-4 block">
             <span className="text-sm font-medium text-slate-700">Order note</span>
             <textarea
-              className="mt-1 min-h-24 w-full rounded-md border border-slate-300 px-3 py-2 outline-none focus:border-orange-500"
+              className="fh-input mt-1 min-h-24"
               onChange={(event) => setOrderNote(event.target.value)}
               value={orderNote}
             />
@@ -479,7 +479,7 @@ function CheckoutPage() {
 
             <div className="mt-4 flex flex-wrap gap-3">
               <button
-                className="rounded-md bg-orange-600 px-4 py-2 text-sm font-semibold text-white hover:bg-orange-700 disabled:bg-orange-300"
+                className="fh-btn-primary text-sm"
                 disabled={isFindingLocation}
                 onClick={handleUseCurrentLocation}
                 type="button"
@@ -487,7 +487,7 @@ function CheckoutPage() {
                 Use my current location
               </button>
               <button
-                className="rounded-md border border-orange-300 bg-white px-4 py-2 text-sm font-semibold text-orange-700 hover:bg-orange-100 disabled:text-orange-300"
+                className="fh-btn-secondary text-sm"
                 disabled={isFindingLocation}
                 onClick={handleFindAddressLocation}
                 type="button"
@@ -549,7 +549,7 @@ function CheckoutPage() {
                   Address label
                 </span>
                 <input
-                  className="mt-1 w-full rounded-md border border-slate-300 px-3 py-2 outline-none focus:border-orange-500"
+                  className="fh-input mt-1"
                   onChange={(event) => setAddressLabel(event.target.value)}
                   placeholder="Home / Work"
                   value={addressLabel}
@@ -563,9 +563,9 @@ function CheckoutPage() {
             )}
           </section>
 
-          <fieldset className="mt-6">
+          <fieldset className="mt-8 border-t border-orange-100 pt-6">
             <legend className="text-sm font-semibold text-slate-700">
-              Payment method
+              Step 2 · Payment method
             </legend>
             <div className="mt-2 grid gap-3 sm:grid-cols-2">
               <label className="flex cursor-pointer items-start gap-3 rounded-lg border border-slate-200 p-4">
@@ -615,7 +615,7 @@ function CheckoutPage() {
                     Cardholder Name
                   </span>
                   <input
-                    className="mt-1 w-full rounded-md border border-slate-300 bg-white px-3 py-2 outline-none focus:border-orange-500"
+                    className="fh-input mt-1"
                     name="cardholderName"
                     onChange={handleDemoCardChange}
                     placeholder="Demo Customer"
@@ -627,7 +627,7 @@ function CheckoutPage() {
                     Card Number
                   </span>
                   <input
-                    className="mt-1 w-full rounded-md border border-slate-300 bg-white px-3 py-2 outline-none focus:border-orange-500"
+                    className="fh-input mt-1"
                     inputMode="numeric"
                     name="cardNumber"
                     onChange={handleDemoCardChange}
@@ -640,7 +640,7 @@ function CheckoutPage() {
                     Expiry Date
                   </span>
                   <input
-                    className="mt-1 w-full rounded-md border border-slate-300 bg-white px-3 py-2 outline-none focus:border-orange-500"
+                    className="fh-input mt-1"
                     name="expiryDate"
                     onChange={handleDemoCardChange}
                     placeholder="12/34"
@@ -650,7 +650,7 @@ function CheckoutPage() {
                 <label>
                   <span className="text-sm font-medium text-slate-700">CVC</span>
                   <input
-                    className="mt-1 w-full rounded-md border border-slate-300 bg-white px-3 py-2 outline-none focus:border-orange-500"
+                    className="fh-input mt-1"
                     inputMode="numeric"
                     name="cvc"
                     onChange={handleDemoCardChange}
@@ -669,7 +669,7 @@ function CheckoutPage() {
           )}
 
           <button
-            className="mt-6 rounded-md bg-orange-600 px-5 py-3 font-semibold text-white hover:bg-orange-700 disabled:cursor-not-allowed disabled:bg-orange-300"
+            className="fh-btn-primary mt-7 w-full sm:w-auto"
             disabled={isSubmitting}
             type="submit"
           >
@@ -683,8 +683,9 @@ function CheckoutPage() {
           </button>
         </form>
 
-        <aside className="h-fit rounded-xl bg-white p-6 shadow-sm">
-          <h2 className="text-2xl font-bold">Order summary</h2>
+        <aside className="fh-card sticky top-24 h-fit p-6">
+          <p className="fh-eyebrow">Step 3 · Review</p>
+          <h2 className="mt-2 text-2xl font-bold">Order summary</h2>
           <p className="mt-2 text-slate-700">{restaurant?.name}</p>
 
           <div className="mt-5 space-y-4">

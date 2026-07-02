@@ -75,7 +75,7 @@ function AvailableDeliveryCard({ onAccept, order }) {
   const deliveryAddress = order.deliveryAddress;
 
   return (
-    <article className="rounded-xl bg-white p-6 shadow-sm">
+    <article className="fh-card p-6">
       <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
         <div>
           <p className="text-sm font-semibold uppercase tracking-wide text-orange-600">
@@ -175,7 +175,7 @@ function MyDeliveryCard({
 
   return (
     <article
-      className={`rounded-xl bg-white p-6 shadow-sm ${
+      className={`fh-card p-6 ${
         isHighlighted ? 'ring-2 ring-orange-500' : ''
       }`}
     >
@@ -480,14 +480,14 @@ function RiderDashboard() {
   };
 
   return (
-    <main className="min-h-screen bg-orange-50 px-6 py-10 text-slate-900">
-      <section className="mx-auto max-w-7xl space-y-6">
-        <header className="flex flex-col gap-4 rounded-xl bg-white p-6 shadow-sm md:flex-row md:items-center md:justify-between">
+    <main className="fh-page">
+      <section className="fh-container space-y-6">
+        <header className="fh-card flex flex-col gap-4 p-7 md:flex-row md:items-center md:justify-between">
           <div>
             <p className="text-sm font-semibold uppercase tracking-wide text-orange-600">
               Rider Dashboard
             </p>
-            <h1 className="mt-2 text-3xl font-bold">Delivery Workspace</h1>
+            <h1 className="mt-2 text-3xl font-black">Delivery Workspace</h1>
             <p className="mt-2 text-slate-700">
               Signed in as {user?.name || 'Rider'}
             </p>
@@ -505,7 +505,7 @@ function RiderDashboard() {
           </div>
         </header>
 
-        <nav className="grid gap-3 rounded-xl bg-white p-3 shadow-sm md:w-fit md:grid-cols-2">
+        <nav className="fh-card grid gap-3 p-3 md:w-fit md:grid-cols-2">
           <button
             className={`rounded-lg px-4 py-3 text-sm font-semibold ${
               activeTab === 'available'
@@ -543,7 +543,7 @@ function RiderDashboard() {
 
         {activeTab === 'available' && (
           <section className="space-y-5">
-            <div className="rounded-xl bg-white p-6 shadow-sm">
+            <div className="fh-card p-6">
               <h2 className="text-2xl font-bold">Available Deliveries</h2>
               <p className="mt-2 text-slate-700">
                 Ready orders without an assigned rider appear here.
@@ -584,7 +584,7 @@ function RiderDashboard() {
 
         {activeTab === 'mine' && (
           <section className="space-y-5">
-            <div className="flex flex-col gap-4 rounded-xl bg-white p-6 shadow-sm md:flex-row md:items-end md:justify-between">
+            <div className="fh-card flex flex-col gap-4 p-6 md:flex-row md:items-end md:justify-between">
               <div>
                 <h2 className="text-2xl font-bold">My Deliveries</h2>
                 <p className="mt-2 text-slate-700">

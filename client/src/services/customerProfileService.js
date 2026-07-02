@@ -10,6 +10,11 @@ export const updateMyProfile = async (data) => {
   return response.data;
 };
 
+export const changeMyPassword = async (data) => {
+  const response = await api.patch('/customer/change-password', data);
+  return response.data;
+};
+
 export const getMyAddresses = async () => {
   const response = await api.get('/customer/addresses');
   return response.data;

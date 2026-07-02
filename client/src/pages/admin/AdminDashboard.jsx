@@ -41,7 +41,7 @@ function AdminOrderCard({ order }) {
   const address = order.deliveryAddress;
 
   return (
-    <article className="rounded-xl bg-white p-6 shadow-sm">
+    <article className="fh-card p-6">
       <div className="flex flex-col gap-4 xl:flex-row xl:items-start xl:justify-between">
         <div>
           <p className="text-sm font-semibold uppercase tracking-wide text-orange-600">
@@ -263,14 +263,14 @@ function AdminDashboard() {
   };
 
   return (
-    <main className="min-h-screen bg-orange-50 px-6 py-10 text-slate-900">
-      <section className="mx-auto max-w-7xl space-y-6">
-        <header className="flex flex-col gap-4 rounded-xl bg-white p-6 shadow-sm md:flex-row md:items-center md:justify-between">
+    <main className="fh-page">
+      <section className="fh-container space-y-6">
+        <header className="fh-card flex flex-col gap-4 p-7 md:flex-row md:items-center md:justify-between">
           <div>
             <p className="text-sm font-semibold uppercase tracking-wide text-orange-600">
               Admin Dashboard
             </p>
-            <h1 className="mt-2 text-3xl font-bold">
+            <h1 className="mt-2 text-3xl font-black">
               {activeTab === 'orders' ? 'Order Overview' : 'User Management'}
             </h1>
             <p className="mt-2 text-slate-700">
@@ -290,7 +290,7 @@ function AdminDashboard() {
           </div>
         </header>
 
-        <nav className="flex w-fit gap-2 rounded-xl bg-white p-2 shadow-sm">
+        <nav className="fh-card flex w-fit gap-2 p-2">
           {[
             ['orders', 'Orders'],
             ['users', 'Users'],
@@ -315,7 +315,7 @@ function AdminDashboard() {
         ) : (
           <>
             <form
-              className="grid gap-3 rounded-xl bg-white p-5 shadow-sm lg:grid-cols-[180px_1fr_1fr_auto_auto]"
+              className="fh-card grid gap-3 p-5 lg:grid-cols-[180px_1fr_1fr_auto_auto]"
               onSubmit={handleApplyFilters}
             >
               <select
@@ -345,7 +345,7 @@ function AdminDashboard() {
                 value={filters.customerId}
               />
               <button
-                className="rounded-md bg-orange-600 px-4 py-2 font-semibold text-white hover:bg-orange-700"
+                className="fh-btn-primary"
                 type="submit"
               >
                 Apply Filters

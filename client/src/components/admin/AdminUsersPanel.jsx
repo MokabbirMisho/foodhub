@@ -193,7 +193,7 @@ function AdminUsersPanel({ currentUserId }) {
   return (
     <section className="space-y-6">
       <form
-        className="grid gap-3 rounded-xl bg-white p-5 shadow-sm lg:grid-cols-[1fr_200px_180px_auto_auto]"
+        className="fh-card grid gap-3 p-5 lg:grid-cols-[1fr_200px_180px_auto_auto]"
         onSubmit={handleApplyFilters}
       >
         <input
@@ -226,7 +226,7 @@ function AdminUsersPanel({ currentUserId }) {
           <option value="blocked">Blocked</option>
         </select>
         <button
-          className="rounded-md bg-orange-600 px-4 py-2 font-semibold text-white hover:bg-orange-700"
+          className="fh-btn-primary"
           type="submit"
         >
           Apply Filters
@@ -246,10 +246,10 @@ function AdminUsersPanel({ currentUserId }) {
       </div>
 
       {error && (
-        <p className="rounded-xl bg-red-50 p-4 text-red-700">{error}</p>
+        <p className="fh-alert-error">{error}</p>
       )}
       {successMessage && (
-        <p className="rounded-xl bg-green-50 p-4 text-green-700">
+        <p className="fh-alert-success">
           {successMessage}
         </p>
       )}
@@ -272,7 +272,7 @@ function AdminUsersPanel({ currentUserId }) {
 
             return (
               <article
-                className="rounded-xl bg-white p-5 shadow-sm"
+                className="fh-card p-5"
                 key={user._id}
               >
                 <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">

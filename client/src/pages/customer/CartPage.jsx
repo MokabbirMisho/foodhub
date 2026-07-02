@@ -26,22 +26,22 @@ function CartPage() {
   } = useCart();
 
   return (
-    <main className="min-h-screen bg-orange-50 px-6 py-10 text-slate-900">
-      <section className="mx-auto max-w-5xl space-y-6">
+    <main className="fh-page">
+      <section className="mx-auto max-w-6xl space-y-6">
         <BackButton />
-        <header className="flex flex-col gap-4 rounded-xl bg-white p-6 shadow-sm md:flex-row md:items-end md:justify-between">
+        <header className="fh-card flex flex-col gap-4 p-7 md:flex-row md:items-end md:justify-between">
           <div>
             <p className="text-sm font-semibold uppercase tracking-wide text-orange-600">
               FoodHub Cart
             </p>
-            <h1 className="mt-2 text-4xl font-bold">Your cart</h1>
+            <h1 className="mt-2 text-4xl font-black">Your cart</h1>
             {restaurant && (
               <p className="mt-3 text-slate-700">Restaurant: {restaurant.name}</p>
             )}
           </div>
 
           <Link
-            className="rounded-md bg-orange-600 px-4 py-2 font-semibold text-white hover:bg-orange-700"
+            className="fh-btn-primary"
             to="/restaurants"
           >
             Browse Restaurants
@@ -49,21 +49,25 @@ function CartPage() {
         </header>
 
         {cartItems.length === 0 ? (
-          <section className="rounded-xl bg-white p-6 text-slate-700 shadow-sm">
-            <p>Your cart is empty.</p>
+          <section className="fh-card p-10 text-center text-slate-700">
+            <p className="text-5xl" aria-hidden="true">🛒</p>
+            <h2 className="mt-4 text-2xl font-bold text-slate-900">
+              Your cart is empty
+            </h2>
+            <p className="mt-2">Add something delicious from a local restaurant.</p>
             <Link
-              className="mt-5 inline-block rounded-md bg-orange-600 px-4 py-2 font-semibold text-white hover:bg-orange-700"
+              className="fh-btn-primary mt-6"
               to="/restaurants"
             >
               Browse Restaurants
             </Link>
           </section>
         ) : (
-          <div className="grid gap-6 lg:grid-cols-[1fr_320px]">
+          <div className="grid gap-6 lg:grid-cols-[1fr_340px]">
             <section className="space-y-4">
               {cartItems.map((item) => (
                 <article
-                  className="flex flex-col gap-4 rounded-xl bg-white p-5 shadow-sm md:flex-row"
+                  className="fh-card flex flex-col gap-4 p-5 md:flex-row"
                   key={item._id}
                 >
                   {item.image ? (
@@ -89,7 +93,8 @@ function CartPage() {
 
                     <div className="mt-4 flex flex-wrap items-center gap-2">
                       <button
-                        className="h-9 w-9 rounded-md border border-slate-300 font-bold hover:bg-orange-50"
+                        aria-label={`Decrease ${item.name} quantity`}
+                        className="h-10 w-10 rounded-lg border border-slate-300 font-bold hover:border-orange-300 hover:bg-orange-50"
                         onClick={() => decreaseQuantity(item._id)}
                         type="button"
                       >
@@ -99,14 +104,15 @@ function CartPage() {
                         {item.quantity}
                       </span>
                       <button
-                        className="h-9 w-9 rounded-md border border-slate-300 font-bold hover:bg-orange-50"
+                        aria-label={`Increase ${item.name} quantity`}
+                        className="h-10 w-10 rounded-lg border border-slate-300 font-bold hover:border-orange-300 hover:bg-orange-50"
                         onClick={() => increaseQuantity(item._id)}
                         type="button"
                       >
                         +
                       </button>
                       <button
-                        className="ml-2 rounded-md border border-red-200 px-3 py-2 text-sm font-semibold text-red-700 hover:bg-red-50"
+                        className="ml-2 rounded-lg border border-red-200 px-3 py-2 text-sm font-semibold text-red-700 hover:bg-red-50"
                         onClick={() => removeFromCart(item._id)}
                         type="button"
                       >
@@ -118,7 +124,7 @@ function CartPage() {
               ))}
             </section>
 
-            <aside className="h-fit rounded-xl bg-white p-6 shadow-sm">
+            <aside className="fh-card sticky top-24 h-fit p-6">
               <h2 className="text-2xl font-bold">Summary</h2>
               <div className="mt-5 space-y-3 text-slate-700">
                 <div className="flex justify-between">
@@ -138,13 +144,13 @@ function CartPage() {
               </div>
 
               <Link
-                className="mt-6 block w-full rounded-md bg-orange-600 px-4 py-3 text-center font-semibold text-white hover:bg-orange-700"
+                className="fh-btn-primary mt-6 w-full"
                 to="/checkout"
               >
                 Proceed to Checkout
               </Link>
               <button
-                className="mt-3 w-full rounded-md border border-red-200 px-4 py-3 font-semibold text-red-700 hover:bg-red-50"
+                className="fh-btn-danger mt-3 w-full"
                 onClick={clearCart}
                 type="button"
               >

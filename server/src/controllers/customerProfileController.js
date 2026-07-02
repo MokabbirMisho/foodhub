@@ -2,6 +2,7 @@ import User from '../models/User.js';
 
 const customerProfileFields =
   'name email phone avatar role authProvider isBlocked addresses createdAt updatedAt';
+const passwordMinimumLength = 6;
 
 const sendErrorResponse = (res, statusCode, message) => {
   res.status(statusCode).json({
@@ -116,6 +117,61 @@ export const updateMyProfile = async (req, res) => {
       success: true,
       message: 'Profile updated successfully',
       data: { user },
+    });
+  } catch (error) {
+    handleProfileError(res, error);
+  }
+};
+
+export const changeMyPassword = async (req, res) => {
+  try {
+    const { confirmPassword, currentPassword, newPassword } = req.body;
+
+    if (!currentPassword || !newPassword || !confirmPassword) {
+      return sendErrorResponse(res, 400, 'All password fields are required');
+    }
+
+    if (newPassword !== confirmPassword) {
+      return sendErrorResponse(res, 400, 'New passwords do not match');
+    }
+
+    if (newPassword.length < passwordMinimumLength) {
+      return sendErrorResponse(
+        res,
+        400,
+        `New password must be at least ${passwordMinimumLength} characters`,
+      );
+    }
+
+    // Password is hidden by default and must be selected for comparison.
+    const user = await User.findOne({
+      _id: req.user._id,
+      role: 'customer',
+    }).select('+password');
+
+    if (user.authProvider === 'google' && !user.password) {
+      return sendErrorResponse(
+        res,
+        400,
+        'Password change is not available for Google sign-in accounts.',
+      );
+    }
+
+    const isCurrentPasswordCorrect =
+      await user.comparePassword(currentPassword);
+
+    if (!isCurrentPasswordCorrect) {
+      return sendErrorResponse(res, 400, 'Current password is incorrect');
+    }
+
+    // The User model's save middleware hashes this new value before storage.
+    user.password = newPassword;
+    await user.save();
+
+    res.json({
+      success: true,
+      message: 'Password changed successfully',
+      data: null,
     });
   } catch (error) {
     handleProfileError(res, error);

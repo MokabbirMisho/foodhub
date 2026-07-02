@@ -89,10 +89,10 @@ function AuthCard({ initialMode = 'signin', initialRole = 'customer' }) {
   };
 
   return (
-    <section className="w-full max-w-md rounded-2xl bg-white/95 p-6 text-slate-900 shadow-2xl backdrop-blur">
-      <div className="grid grid-cols-2 rounded-lg bg-slate-100 p-1">
+    <section className="w-full max-w-md rounded-2xl border border-white/70 bg-white/95 p-6 text-slate-900 shadow-[0_24px_70px_rgba(15,23,42,0.25)] backdrop-blur">
+      <div className="grid grid-cols-2 rounded-xl bg-orange-50 p-1">
         <button
-          className={`rounded-md px-4 py-2 text-sm font-semibold ${
+          className={`rounded-lg px-4 py-2.5 text-sm font-semibold ${
             isSignIn ? 'bg-orange-600 text-white shadow-sm' : 'text-slate-700'
           }`}
           onClick={() => setMode('signin')}
@@ -101,7 +101,7 @@ function AuthCard({ initialMode = 'signin', initialRole = 'customer' }) {
           Sign In
         </button>
         <button
-          className={`rounded-md px-4 py-2 text-sm font-semibold ${
+          className={`rounded-lg px-4 py-2.5 text-sm font-semibold ${
             !isSignIn ? 'bg-orange-600 text-white shadow-sm' : 'text-slate-700'
           }`}
           onClick={() => setMode('signup')}
@@ -123,7 +123,7 @@ function AuthCard({ initialMode = 'signin', initialRole = 'customer' }) {
       </div>
 
       {error && (
-        <p className="mt-4 rounded-md bg-red-50 px-3 py-2 text-sm text-red-700">
+        <p className="fh-alert-error mt-4">
           {error}
         </p>
       )}
@@ -133,7 +133,7 @@ function AuthCard({ initialMode = 'signin', initialRole = 'customer' }) {
           <label className="block">
             <span className="text-sm font-medium text-slate-700">Name</span>
             <input
-              className="mt-1 w-full rounded-md border border-slate-300 px-3 py-2 outline-none focus:border-orange-500"
+              className="fh-input mt-1"
               name="name"
               onChange={handleChange}
               required
@@ -146,7 +146,7 @@ function AuthCard({ initialMode = 'signin', initialRole = 'customer' }) {
         <label className="block">
           <span className="text-sm font-medium text-slate-700">Email</span>
           <input
-            className="mt-1 w-full rounded-md border border-slate-300 px-3 py-2 outline-none focus:border-orange-500"
+            className="fh-input mt-1"
             name="email"
             onChange={handleChange}
             required
@@ -158,7 +158,7 @@ function AuthCard({ initialMode = 'signin', initialRole = 'customer' }) {
         <label className="block">
           <span className="text-sm font-medium text-slate-700">Password</span>
           <input
-            className="mt-1 w-full rounded-md border border-slate-300 px-3 py-2 outline-none focus:border-orange-500"
+            className="fh-input mt-1"
             name="password"
             onChange={handleChange}
             required
@@ -173,7 +173,7 @@ function AuthCard({ initialMode = 'signin', initialRole = 'customer' }) {
               Confirm Password
             </span>
             <input
-              className="mt-1 w-full rounded-md border border-slate-300 px-3 py-2 outline-none focus:border-orange-500"
+              className="fh-input mt-1"
               name="confirmPassword"
               onChange={handleChange}
               required
@@ -187,7 +187,7 @@ function AuthCard({ initialMode = 'signin', initialRole = 'customer' }) {
           <label className="block">
             <span className="text-sm font-medium text-slate-700">Account type</span>
             <select
-              className="mt-1 w-full rounded-md border border-slate-300 px-3 py-2 outline-none focus:border-orange-500"
+              className="fh-input mt-1"
               name="role"
               onChange={handleChange}
               value={formData.role}
@@ -202,7 +202,7 @@ function AuthCard({ initialMode = 'signin', initialRole = 'customer' }) {
         )}
 
         <button
-          className="w-full rounded-md bg-orange-600 px-4 py-2 font-semibold text-white hover:bg-orange-700 disabled:cursor-not-allowed disabled:bg-orange-300"
+          className="fh-btn-primary w-full"
           disabled={isSubmitting}
           type="submit"
         >

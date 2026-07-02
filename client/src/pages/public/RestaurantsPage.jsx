@@ -4,6 +4,14 @@ import { useCart } from '../../context/CartContext';
 import { getRestaurants } from '../../services/restaurantService';
 
 const formatCurrency = (value) => `€${Number(value || 0).toFixed(2)}`;
+const cuisineShortcuts = [
+  'Pizza',
+  'Burger',
+  'Biryani',
+  'Sushi',
+  'Pasta',
+  'Vegan',
+];
 
 function RestaurantsPage() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -76,15 +84,24 @@ function RestaurantsPage() {
     loadRestaurants(emptyFilters);
   };
 
+  const handleCuisineShortcut = (cuisine) => {
+    const nextFilters = {
+      ...filters,
+      cuisine,
+    };
+    setFilters(nextFilters);
+    loadRestaurants(nextFilters);
+  };
+
   return (
-    <main className="min-h-screen bg-orange-50 px-6 py-10 text-slate-900">
-      <section className="mx-auto max-w-6xl space-y-6">
-        <header className="flex flex-col gap-4 rounded-xl bg-white p-6 shadow-sm md:flex-row md:items-end md:justify-between">
+    <main className="fh-page">
+      <section className="fh-container space-y-7">
+        <header className="fh-card flex flex-col gap-4 p-7 md:flex-row md:items-end md:justify-between">
           <div>
             <p className="text-sm font-semibold uppercase tracking-wide text-orange-600">
               FoodHub Restaurants
             </p>
-            <h1 className="mt-2 text-4xl font-bold">Browse restaurants</h1>
+            <h1 className="mt-2 text-4xl font-black">Browse restaurants</h1>
             <p className="mt-3 max-w-2xl text-slate-700">
               Discover approved restaurants that are active on FoodHub.
             </p>
@@ -100,39 +117,56 @@ function RestaurantsPage() {
           </div>
         </header>
 
+        <div className="flex gap-2 overflow-x-auto pb-1">
+          {cuisineShortcuts.map((cuisine) => (
+            <button
+              className={`shrink-0 rounded-full border px-4 py-2 text-sm font-semibold ${
+                filters.cuisine === cuisine
+                  ? 'border-orange-600 bg-orange-600 text-white'
+                  : 'border-orange-200 bg-white text-slate-700 hover:border-orange-400'
+              }`}
+              key={cuisine}
+              onClick={() => handleCuisineShortcut(cuisine)}
+              type="button"
+            >
+              {cuisine}
+            </button>
+          ))}
+        </div>
+
         <form
-          className="grid gap-3 rounded-xl bg-white p-5 shadow-sm md:grid-cols-[1fr_1fr_1fr_auto_auto]"
+          className="fh-card grid gap-3 p-5 md:grid-cols-[1fr_1fr_1fr_auto_auto]"
           onSubmit={handleSearch}
         >
           <input
-            className="rounded-md border border-slate-300 px-3 py-2 outline-none focus:border-orange-500"
+            className="fh-input"
             name="search"
             onChange={handleChange}
             placeholder="Search by name"
             value={filters.search}
           />
           <input
-            className="rounded-md border border-slate-300 px-3 py-2 outline-none focus:border-orange-500"
+            className="fh-input"
             name="city"
             onChange={handleChange}
             placeholder="City"
             value={filters.city}
           />
           <input
-            className="rounded-md border border-slate-300 px-3 py-2 outline-none focus:border-orange-500"
+            className="fh-input"
             name="cuisine"
             onChange={handleChange}
             placeholder="Cuisine"
             value={filters.cuisine}
           />
           <button
-            className="rounded-md bg-orange-600 px-4 py-2 font-semibold text-white hover:bg-orange-700"
+            className="fh-btn-primary"
             type="submit"
           >
             Search
           </button>
           <button
-            className="rounded-md border border-slate-300 px-4 py-2 font-semibold text-slate-700 hover:bg-orange-50"
+            className="fh-btn-secondary"
             onClick={handleClearFilters}
             type="button"
           >
@@ -141,19 +175,24 @@ function RestaurantsPage() {
         </form>
 
         {isLoading && (
-          <p className="rounded-lg bg-white p-6 text-slate-700 shadow-sm">
-            Loading restaurants...
-          </p>
+          <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+            {[1, 2, 3, 4, 5, 6].map((item) => (
+              <div
+                className="fh-card h-96 animate-pulse bg-white"
+                key={item}
+              />
+            ))}
+          </div>
         )}
 
         {error && (
-          <p className="rounded-lg bg-red-50 p-6 text-red-700 shadow-sm">
+          <p className="fh-alert-error">
             {error}
           </p>
         )}
 
         {!isLoading && !error && restaurants.length === 0 && (
-          <p className="rounded-lg bg-white p-6 text-slate-700 shadow-sm">
+          <p className="fh-card p-8 text-center text-slate-700">
             No restaurants found.
           </p>
         )}
@@ -162,7 +201,7 @@ function RestaurantsPage() {
           <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
             {restaurants.map((restaurant) => (
               <article
-                className="flex flex-col overflow-hidden rounded-xl bg-white shadow-sm"
+                className="fh-card fh-card-hover flex flex-col overflow-hidden"
                 key={restaurant._id}
               >
                 {restaurant.coverImage || restaurant.logo ? (
@@ -246,7 +285,7 @@ function RestaurantsPage() {
                 </div>
 
                 <Link
-                  className="mt-5 inline-block rounded-md bg-slate-900 px-4 py-2 text-center font-semibold text-white hover:bg-slate-700"
+                  className="fh-btn-primary mt-5 w-full"
                   to={`/restaurants/${restaurant._id}`}
                 >
                   View details

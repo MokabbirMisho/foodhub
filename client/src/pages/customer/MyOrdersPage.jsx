@@ -107,19 +107,19 @@ function MyOrdersPage() {
   const reviewedOrderIds = getReviewedOrderIds();
 
   return (
-    <main className="min-h-screen bg-orange-50 px-6 py-10 text-slate-900">
-      <section className="mx-auto max-w-5xl space-y-6">
+    <main className="fh-page">
+      <section className="mx-auto max-w-6xl space-y-6">
         <BackButton />
-        <header className="flex flex-col gap-4 rounded-xl bg-white p-6 shadow-sm md:flex-row md:items-end md:justify-between">
+        <header className="fh-card flex flex-col gap-4 p-7 md:flex-row md:items-end md:justify-between">
           <div>
             <p className="text-sm font-semibold uppercase tracking-wide text-orange-600">
               FoodHub Orders
             </p>
-            <h1 className="mt-2 text-4xl font-bold">My Orders</h1>
+            <h1 className="mt-2 text-4xl font-black">My Orders</h1>
           </div>
 
           <Link
-            className="rounded-md bg-orange-600 px-4 py-2 font-semibold text-white hover:bg-orange-700"
+            className="fh-btn-primary"
             to="/restaurants"
           >
             Browse Restaurants
@@ -153,7 +153,7 @@ function MyOrdersPage() {
         {!isLoading && !error && orders.length > 0 && (
           <div className="space-y-5">
             {orders.map((order) => (
-              <article className="rounded-xl bg-white p-6 shadow-sm" key={order._id}>
+              <article className="fh-card p-6" key={order._id}>
                 <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
                   <div>
                     <p className="text-sm font-semibold uppercase tracking-wide text-orange-600">
@@ -246,7 +246,7 @@ function MyOrdersPage() {
                       />
                     ) : (
                       <button
-                        className="rounded-md bg-orange-600 px-4 py-2 font-semibold text-white hover:bg-orange-700"
+                        className="fh-btn-primary"
                         onClick={() => setActiveReviewOrderId(order._id)}
                         type="button"
                       >

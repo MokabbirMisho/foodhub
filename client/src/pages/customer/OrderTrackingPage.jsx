@@ -64,12 +64,12 @@ function OrderTrackingPage() {
   }, [id, loadTracking]);
 
   return (
-    <main className="min-h-screen bg-orange-50 px-6 py-10 text-slate-900">
+    <main className="fh-page">
       <section className="mx-auto max-w-6xl space-y-6">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <BackButton fallbackPath="/my-orders" />
           <button
-            className="rounded-md bg-orange-600 px-4 py-2 font-semibold text-white hover:bg-orange-700 disabled:bg-orange-300"
+            className="fh-btn-primary"
             disabled={isLoading}
             onClick={loadTracking}
             type="button"
@@ -92,7 +92,7 @@ function OrderTrackingPage() {
 
         {tracking && (
           <>
-            <header className="rounded-xl bg-white p-6 shadow-sm">
+            <header className="fh-card p-7">
               <p className="text-sm font-semibold uppercase tracking-wide text-orange-600">
                 Order #{String(tracking.orderId).slice(-8)}
               </p>

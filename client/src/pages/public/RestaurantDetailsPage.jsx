@@ -35,6 +35,7 @@ function RestaurantDetailsPage() {
   const [restaurant, setRestaurant] = useState(null);
   const [foodItems, setFoodItems] = useState([]);
   const [reviews, setReviews] = useState([]);
+  const [menuCategory, setMenuCategory] = useState('all');
   const [reviewRatingFilter, setReviewRatingFilter] = useState('all');
   const [isLoading, setIsLoading] = useState(true);
   const [isMenuLoading, setIsMenuLoading] = useState(true);
@@ -90,6 +91,7 @@ function RestaurantDetailsPage() {
       try {
         setMenuError('');
         setIsMenuLoading(true);
+        setMenuCategory('all');
         const response = await getPublicRestaurantFoodItems(id);
         setFoodItems(response.data.foodItems || []);
       } catch (error) {
@@ -119,13 +121,22 @@ function RestaurantDetailsPage() {
     });
   };
 
+  const menuCategories = [
+    'all',
+    ...new Set(foodItems.map((foodItem) => foodItem.category).filter(Boolean)),
+  ];
+  const visibleFoodItems =
+    menuCategory === 'all'
+      ? foodItems
+      : foodItems.filter((foodItem) => foodItem.category === menuCategory);
+
   return (
-    <main className="min-h-screen bg-orange-50 px-6 py-10 text-slate-900">
-      <section className="mx-auto max-w-5xl space-y-6">
+    <main className="fh-page">
+      <section className="mx-auto max-w-6xl space-y-6">
         <div className="flex flex-wrap gap-3">
           <BackButton />
           <Link
-            className="inline-flex w-fit rounded-md bg-white px-4 py-2 font-semibold text-slate-900 shadow-sm hover:bg-orange-50"
+            className="fh-btn-secondary"
             to="/cart"
           >
             Cart ({getCartCount()})
@@ -146,11 +157,11 @@ function RestaurantDetailsPage() {
 
         {!isLoading && !error && restaurant && (
           <>
-            <header className="rounded-xl bg-white p-6 shadow-sm">
+            <header className="fh-card p-6">
               {restaurant.coverImage ? (
                 <img
                   alt={`${restaurant.name} cover`}
-                  className="mb-6 h-64 w-full rounded-xl object-cover"
+                  className="mb-6 h-72 w-full rounded-xl object-cover"
                   src={restaurant.coverImage}
                 />
               ) : (
@@ -163,7 +174,7 @@ function RestaurantDetailsPage() {
                   {restaurant.logo && (
                     <img
                       alt={`${restaurant.name} logo`}
-                      className="h-20 w-20 rounded-full object-cover"
+                      className="-mt-12 h-24 w-24 rounded-full border-4 border-white bg-white object-cover shadow-md sm:-mt-14"
                       src={restaurant.logo}
                     />
                   )}
@@ -171,7 +182,7 @@ function RestaurantDetailsPage() {
                   <p className="text-sm font-semibold uppercase tracking-wide text-orange-600">
                     Restaurant Details
                   </p>
-                  <h1 className="mt-2 text-4xl font-bold">{restaurant.name}</h1>
+                  <h1 className="mt-2 text-4xl font-black">{restaurant.name}</h1>
                   <p className="mt-4 max-w-3xl leading-7 text-slate-700">
                     {restaurant.description || 'No description provided.'}
                   </p>
@@ -190,7 +201,7 @@ function RestaurantDetailsPage() {
               </div>
             </header>
 
-            <section className="rounded-xl bg-white p-6 shadow-sm">
+            <section className="fh-card p-6">
               <h2 className="text-2xl font-bold">Information</h2>
               <div className="mt-5 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
                 <DetailItem label="Phone" value={restaurant.phone} />
@@ -230,7 +241,7 @@ function RestaurantDetailsPage() {
               </div>
             </section>
 
-            <section className="rounded-xl bg-white p-6 shadow-sm">
+            <section className="fh-card p-6">
               <h2 className="text-2xl font-bold">Opening hours</h2>
               <div className="mt-5 grid gap-3 md:grid-cols-2">
                 {[
@@ -251,8 +262,27 @@ function RestaurantDetailsPage() {
               </div>
             </section>
 
-            <section className="rounded-xl bg-white p-6 shadow-sm">
-              <h2 className="text-2xl font-bold">Menu</h2>
+            <section className="fh-card p-6">
+              <h2 className="fh-section-title">Menu</h2>
+
+              {foodItems.length > 0 && (
+                <div className="mt-5 flex gap-2 overflow-x-auto pb-2">
+                  {menuCategories.map((category) => (
+                    <button
+                      className={`shrink-0 rounded-full border px-4 py-2 text-sm font-semibold capitalize ${
+                        menuCategory === category
+                          ? 'border-orange-600 bg-orange-600 text-white'
+                          : 'border-orange-200 bg-white text-slate-700 hover:border-orange-400'
+                      }`}
+                      key={category}
+                      onClick={() => setMenuCategory(category)}
+                      type="button"
+                    >
+                      {category}
+                    </button>
+                  ))}
+                </div>
+              )}
 
               {cartMessage && (
                 <p
@@ -284,9 +314,9 @@ function RestaurantDetailsPage() {
 
               {!isMenuLoading && !menuError && foodItems.length > 0 && (
                 <div className="mt-5 grid gap-4 md:grid-cols-2">
-                  {foodItems.map((foodItem) => (
+                  {visibleFoodItems.map((foodItem) => (
                     <article
-                      className="overflow-hidden rounded-xl border border-orange-100 bg-orange-50"
+                      className="overflow-hidden rounded-xl border border-orange-100 bg-white shadow-sm transition hover:-translate-y-0.5 hover:shadow-md"
                       key={foodItem._id}
                     >
                       {foodItem.image ? (
@@ -358,7 +388,7 @@ function RestaurantDetailsPage() {
                         </div>
                       ) : (
                         <button
-                          className="mt-5 rounded-md bg-orange-600 px-4 py-2 text-sm font-semibold text-white hover:bg-orange-700"
+                          className="fh-btn-primary mt-5 text-sm"
                           onClick={() => handleAddToCart(foodItem)}
                           type="button"
                         >
@@ -372,7 +402,7 @@ function RestaurantDetailsPage() {
               )}
             </section>
 
-            <section className="rounded-xl bg-white p-6 shadow-sm">
+            <section className="fh-card p-6">
               <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
                 <div>
                   <h2 className="text-2xl font-bold">Reviews</h2>
@@ -388,7 +418,7 @@ function RestaurantDetailsPage() {
                     Filter by rating
                   </span>
                   <select
-                    className="mt-1 w-full rounded-md border border-slate-300 px-3 py-2 outline-none focus:border-orange-500"
+                    className="fh-input mt-1"
                     onChange={handleReviewFilterChange}
                     value={reviewRatingFilter}
                   >

@@ -151,7 +151,7 @@ function AddressForm({ initialData, onCancel, onSubmit }) {
 
   return (
     <form
-      className="rounded-xl border border-orange-100 bg-white p-5 shadow-sm"
+      className="fh-card p-6"
       onSubmit={handleSubmit}
     >
       <div className="grid gap-4 md:grid-cols-2">
@@ -167,7 +167,7 @@ function AddressForm({ initialData, onCancel, onSubmit }) {
           <label className={name === 'street' ? 'md:col-span-2' : ''} key={name}>
             <span className="text-sm font-medium text-slate-700">{label}</span>
             <input
-              className="mt-1 w-full rounded-md border border-slate-300 px-3 py-2 outline-none focus:border-orange-500"
+              className="fh-input mt-1"
               name={name}
               onChange={handleChange}
               placeholder={placeholder}
@@ -182,7 +182,7 @@ function AddressForm({ initialData, onCancel, onSubmit }) {
         <p className="font-semibold text-slate-900">Map location</p>
         <div className="mt-3 flex flex-wrap gap-2">
           <button
-            className="rounded-md bg-orange-600 px-3 py-2 text-sm font-semibold text-white hover:bg-orange-700 disabled:bg-orange-300"
+            className="fh-btn-primary text-sm"
             disabled={isLocating}
             onClick={handleUseCurrentLocation}
             type="button"
@@ -190,7 +190,7 @@ function AddressForm({ initialData, onCancel, onSubmit }) {
             Use my current location
           </button>
           <button
-            className="rounded-md border border-orange-300 bg-white px-3 py-2 text-sm font-semibold text-orange-700 hover:bg-orange-100 disabled:text-orange-300"
+            className="fh-btn-secondary text-sm"
             disabled={isLocating}
             onClick={handleFindFromAddress}
             type="button"
@@ -231,7 +231,7 @@ function AddressForm({ initialData, onCancel, onSubmit }) {
 
       <div className="mt-5 flex flex-wrap gap-3">
         <button
-          className="rounded-md bg-orange-600 px-4 py-2 font-semibold text-white hover:bg-orange-700 disabled:bg-orange-300"
+          className="fh-btn-primary"
           disabled={isSubmitting}
           type="submit"
         >

@@ -889,9 +889,9 @@ function RestaurantDashboard() {
   }
 
   return (
-    <main className="min-h-screen bg-orange-50 text-slate-900">
+    <main className="min-h-screen bg-foodhub-cream text-slate-900">
       <div className="mx-auto flex max-w-7xl flex-col gap-6 px-4 py-6 lg:flex-row">
-        <aside className="rounded-xl bg-white p-4 shadow-sm lg:sticky lg:top-6 lg:h-[calc(100vh-3rem)] lg:w-64">
+        <aside className="fh-card p-4 lg:sticky lg:top-6 lg:h-[calc(100vh-3rem)] lg:w-64">
           <div className="border-b border-slate-200 pb-4">
             <p className="text-sm font-semibold uppercase tracking-wide text-orange-600">
               FoodHub
@@ -923,12 +923,12 @@ function RestaurantDashboard() {
         </aside>
 
         <section className="min-w-0 flex-1 space-y-6">
-          <header className="flex flex-col gap-4 rounded-xl bg-white p-6 shadow-sm md:flex-row md:items-center md:justify-between">
+          <header className="fh-card flex flex-col gap-4 p-7 md:flex-row md:items-center md:justify-between">
             <div>
               <p className="text-sm font-semibold uppercase tracking-wide text-orange-600">
                 Restaurant Owner Dashboard
               </p>
-              <h1 className="mt-2 text-3xl font-bold">{pageTitle}</h1>
+              <h1 className="mt-2 text-3xl font-black">{pageTitle}</h1>
               <p className="mt-2 text-slate-700">
                 Signed in as {user?.name || 'Restaurant Owner'}
               </p>

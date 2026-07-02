@@ -6,6 +6,7 @@ import { useCart } from '../../context/CartContext';
 import { useAuth } from '../../hooks/useAuth';
 import {
   addMyAddress,
+  changeMyPassword,
   deleteMyAddress,
   getMyAddresses,
   getMyProfile,
@@ -48,6 +49,12 @@ function CustomerAccountPage() {
   const [isAddingAddress, setIsAddingAddress] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [isSavingProfile, setIsSavingProfile] = useState(false);
+  const [isSavingPassword, setIsSavingPassword] = useState(false);
+  const [passwordForm, setPasswordForm] = useState({
+    currentPassword: '',
+    newPassword: '',
+    confirmPassword: '',
+  });
   const [error, setError] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
 
@@ -113,6 +120,53 @@ function CustomerAccountPage() {
     }
   };
 
+  const handlePasswordChange = (event) => {
+    setPasswordForm((current) => ({
+      ...current,
+      [event.target.name]: event.target.value,
+    }));
+  };
+
+  const handlePasswordSubmit = async (event) => {
+    event.preventDefault();
+    setError('');
+    setSuccessMessage('');
+
+    if (
+      !passwordForm.currentPassword ||
+      !passwordForm.newPassword ||
+      !passwordForm.confirmPassword
+    ) {
+      setError('All password fields are required');
+      return;
+    }
+
+    if (passwordForm.newPassword !== passwordForm.confirmPassword) {
+      setError('New passwords do not match');
+      return;
+    }
+
+    if (passwordForm.newPassword.length < 6) {
+      setError('New password must be at least 6 characters');
+      return;
+    }
+
+    try {
+      setIsSavingPassword(true);
+      const response = await changeMyPassword(passwordForm);
+      setPasswordForm({
+        currentPassword: '',
+        newPassword: '',
+        confirmPassword: '',
+      });
+      setSuccessMessage(response.message);
+    } catch (requestError) {
+      setError(requestError.message);
+    } finally {
+      setIsSavingPassword(false);
+    }
+  };
+
   const handleAddAddress = async (data) => {
     const response = await addMyAddress(data);
     setAddresses(response.data.addresses || []);
@@ -162,15 +216,15 @@ function CustomerAccountPage() {
   }
 
   return (
-    <main className="min-h-screen bg-orange-50 px-6 py-10 text-slate-900">
+    <main className="fh-page">
       <section className="mx-auto max-w-6xl space-y-6">
         <BackButton />
 
-        <header className="rounded-xl bg-white p-6 shadow-sm">
+        <header className="fh-card p-7">
           <p className="text-sm font-semibold uppercase tracking-wide text-orange-600">
             Customer Account
           </p>
-          <h1 className="mt-2 text-4xl font-bold">
+          <h1 className="mt-2 text-4xl font-black">
             Welcome, {profile?.name || user?.name}
           </h1>
           <p className="mt-3 text-slate-700">
@@ -178,8 +232,9 @@ function CustomerAccountPage() {
           </p>
         </header>
 
-        <nav className="flex flex-wrap gap-2 rounded-xl bg-white p-2 shadow-sm">
-          {['overview', 'profile', 'addresses'].map((tab) => (
+        <div className="grid items-start gap-6 lg:grid-cols-[220px_1fr]">
+        <nav className="fh-card flex gap-2 overflow-x-auto p-2 lg:sticky lg:top-24 lg:flex-col lg:overflow-visible">
+          {['overview', 'profile', 'addresses', 'security'].map((tab) => (
             <button
               className={`rounded-lg px-5 py-2 text-sm font-semibold capitalize ${
                 activeTab === tab
@@ -195,11 +250,12 @@ function CustomerAccountPage() {
           ))}
         </nav>
 
+        <div className="min-w-0 space-y-6">
         {error && (
-          <p className="rounded-xl bg-red-50 p-4 text-red-700">{error}</p>
+          <p className="fh-alert-error">{error}</p>
         )}
         {successMessage && (
-          <p className="rounded-xl bg-green-50 p-4 text-green-700">
+          <p className="fh-alert-success">
             {successMessage}
           </p>
         )}
@@ -209,7 +265,7 @@ function CustomerAccountPage() {
             <div className="grid gap-5 md:grid-cols-3">
               {quickActions.map((action) => (
                 <article
-                  className="rounded-xl bg-white p-6 shadow-sm"
+                  className="fh-card p-6"
                   key={action.to}
                 >
                   <h2 className="text-xl font-bold">
@@ -222,7 +278,7 @@ function CustomerAccountPage() {
                     {action.description}
                   </p>
                   <Link
-                    className="mt-5 inline-flex rounded-md bg-orange-600 px-4 py-2 font-semibold text-white hover:bg-orange-700"
+                    className="fh-btn-primary mt-5"
                     to={action.to}
                   >
                     Open
@@ -232,7 +288,7 @@ function CustomerAccountPage() {
             </div>
 
             <button
-              className="w-full rounded-xl bg-white p-6 text-left shadow-sm hover:bg-orange-50"
+              className="fh-card fh-card-hover w-full p-6 text-left"
               onClick={() => setActiveTab('addresses')}
               type="button"
             >
@@ -247,7 +303,7 @@ function CustomerAccountPage() {
 
         {activeTab === 'profile' && (
           <form
-            className="rounded-xl bg-white p-6 shadow-sm"
+            className="fh-card p-7"
             onSubmit={handleProfileSubmit}
           >
             <h2 className="text-2xl font-bold">Profile Information</h2>
@@ -300,13 +356,67 @@ function CustomerAccountPage() {
               </label>
             </div>
             <button
-              className="mt-6 rounded-md bg-orange-600 px-5 py-2 font-semibold text-white hover:bg-orange-700 disabled:bg-orange-300"
+              className="fh-btn-primary mt-6"
               disabled={isSavingProfile}
               type="submit"
             >
               {isSavingProfile ? 'Saving...' : 'Save Profile'}
             </button>
           </form>
+        )}
+
+        {activeTab === 'security' && (
+          <section className="fh-card p-7">
+            <h2 className="text-2xl font-bold">Security</h2>
+            <p className="mt-2 text-sm text-slate-600">
+              Change the password used to sign in to your FoodHub account.
+            </p>
+
+            {profile?.authProvider === 'google' ? (
+              <p className="mt-5 rounded-lg bg-orange-50 p-4 text-orange-800">
+                Password change is not available for Google sign-in accounts.
+              </p>
+            ) : (
+              <form
+                className="mt-6 max-w-xl space-y-4"
+                onSubmit={handlePasswordSubmit}
+              >
+                {[
+                  ['currentPassword', 'Current Password'],
+                  ['newPassword', 'New Password'],
+                  ['confirmPassword', 'Confirm New Password'],
+                ].map(([name, label]) => (
+                  <label className="block" key={name}>
+                    <span className="text-sm font-medium text-slate-700">
+                      {label}
+                    </span>
+                    <input
+                      autoComplete={
+                        name === 'currentPassword'
+                          ? 'current-password'
+                          : 'new-password'
+                      }
+                      className="mt-1 w-full rounded-md border border-slate-300 px-3 py-2 outline-none focus:border-orange-500"
+                      minLength={name === 'currentPassword' ? undefined : 6}
+                      name={name}
+                      onChange={handlePasswordChange}
+                      required
+                      type="password"
+                      value={passwordForm[name]}
+                    />
+                  </label>
+                ))}
+
+                <button
+                  className="rounded-md bg-orange-600 px-5 py-2 font-semibold text-white hover:bg-orange-700 disabled:bg-orange-300"
+                  disabled={isSavingPassword}
+                  type="submit"
+                >
+                  {isSavingPassword ? 'Saving...' : 'Save Password'}
+                </button>
+              </form>
+            )}
+          </section>
         )}
 
         {activeTab === 'addresses' && (
@@ -320,7 +430,7 @@ function CustomerAccountPage() {
               </div>
               {!isAddingAddress && !editingAddress && (
                 <button
-                  className="rounded-md bg-orange-600 px-4 py-2 font-semibold text-white hover:bg-orange-700"
+                  className="fh-btn-primary"
                   onClick={() => setIsAddingAddress(true)}
                   type="button"
                 >
@@ -353,7 +463,7 @@ function CustomerAccountPage() {
               <div className="grid gap-4 md:grid-cols-2">
                 {addresses.map((address) => (
                   <article
-                    className="rounded-xl bg-white p-5 shadow-sm"
+                    className="fh-card p-5"
                     key={address._id}
                   >
                     <div className="flex items-start justify-between gap-3">
@@ -410,6 +520,8 @@ function CustomerAccountPage() {
             )}
           </section>
         )}
+        </div>
+        </div>
       </section>
     </main>
   );

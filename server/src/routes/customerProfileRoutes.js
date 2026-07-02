@@ -1,6 +1,7 @@
 import express from 'express';
 import {
   addMyAddress,
+  changeMyPassword,
   deleteMyAddress,
   getMyAddresses,
   getMyProfile,
@@ -16,6 +17,7 @@ router.use(protect, authorizeRoles('customer'));
 
 router.get('/profile', getMyProfile);
 router.patch('/profile', updateMyProfile);
+router.patch('/change-password', changeMyPassword);
 router.get('/addresses', getMyAddresses);
 router.post('/addresses', addMyAddress);
 router.patch('/addresses/:addressId', updateMyAddress);
