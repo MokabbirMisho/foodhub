@@ -49,6 +49,17 @@ export function AuthProvider({ children }) {
     setUser(null);
   }, []);
 
+  const updateCurrentUser = useCallback((nextUser) => {
+    const normalizedUser = {
+      ...nextUser,
+      id: nextUser.id || nextUser._id,
+    };
+
+    localStorage.setItem('foodhub_user', JSON.stringify(normalizedUser));
+    setUser(normalizedUser);
+    return normalizedUser;
+  }, []);
+
   const loadCurrentUser = useCallback(async () => {
     const savedToken = localStorage.getItem('foodhub_token');
 
@@ -111,8 +122,9 @@ export function AuthProvider({ children }) {
       signInWithGoogle,
       logout,
       loadCurrentUser,
+      updateCurrentUser,
     }),
-    [user, token, isLoading, logout, loadCurrentUser],
+    [user, token, isLoading, logout, loadCurrentUser, updateCurrentUser],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

@@ -1,4 +1,4 @@
-import { lazy, Suspense, useState } from 'react';
+import { lazy, Suspense, useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import BackButton from '../../components/common/BackButton';
 import { useCart } from '../../context/CartContext';
@@ -7,6 +7,10 @@ import {
   geocodeAddress,
   reverseGeocodeLocation,
 } from '../../services/geocodeService';
+import {
+  addMyAddress,
+  getMyAddresses,
+} from '../../services/customerProfileService';
 import { createOrder } from '../../services/orderService';
 
 const DeliveryMap = lazy(() => import('../../components/map/DeliveryMap'));
@@ -43,6 +47,12 @@ function CheckoutPage() {
     country: 'Germany',
   });
   const [orderNote, setOrderNote] = useState('');
+  const [savedAddresses, setSavedAddresses] = useState([]);
+  const [selectedAddressId, setSelectedAddressId] = useState('');
+  const [savedAddressMessage, setSavedAddressMessage] = useState('');
+  const [addressSaveWarning, setAddressSaveWarning] = useState('');
+  const [saveAddress, setSaveAddress] = useState(false);
+  const [addressLabel, setAddressLabel] = useState('Home');
   const [deliveryLocation, setDeliveryLocation] = useState(null);
   const [locationMessage, setLocationMessage] = useState('');
   const [locationError, setLocationError] = useState('');
@@ -59,11 +69,73 @@ function CheckoutPage() {
   const [isProcessingPayment, setIsProcessingPayment] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  const applySavedAddress = (address) => {
+    setDeliveryAddress((current) => ({
+      ...current,
+      fullName: address.fullName || current.fullName || user?.name || '',
+      phone: address.phone || current.phone,
+      street: address.street,
+      city: address.city,
+      postalCode: address.postalCode,
+      country: address.country || 'Germany',
+    }));
+    setDeliveryLocation(
+      Number.isFinite(address.location?.lat) &&
+        Number.isFinite(address.location?.lng)
+        ? address.location
+        : null,
+    );
+    setSavedAddressMessage('Saved address applied');
+  };
+
+  useEffect(() => {
+    if (!isAuthenticated || user?.role !== 'customer') {
+      return;
+    }
+
+    const loadSavedAddresses = async () => {
+      try {
+        const response = await getMyAddresses();
+        const nextAddresses = response.data.addresses || [];
+        setSavedAddresses(nextAddresses);
+
+        const defaultAddress = nextAddresses.find(
+          (address) => address.isDefault,
+        );
+        const addressFormIsEmpty =
+          !deliveryAddress.street &&
+          !deliveryAddress.city &&
+          !deliveryAddress.postalCode;
+
+        if (defaultAddress && addressFormIsEmpty) {
+          setSelectedAddressId(defaultAddress._id);
+          applySavedAddress(defaultAddress);
+        }
+      } catch (requestError) {
+        setAddressSaveWarning('Saved addresses could not be loaded.');
+      }
+    };
+
+    loadSavedAddresses();
+  }, [isAuthenticated, user?.id, user?._id]);
+
   const handleAddressChange = (event) => {
     setDeliveryAddress({
       ...deliveryAddress,
       [event.target.name]: event.target.value,
     });
+  };
+
+  const handleSavedAddressChange = (event) => {
+    const addressId = event.target.value;
+    setSelectedAddressId(addressId);
+    setSavedAddressMessage('');
+
+    const address = savedAddresses.find((item) => item._id === addressId);
+
+    if (address) {
+      applySavedAddress(address);
+    }
   };
 
   const handleDemoCardChange = (event) => {
@@ -220,6 +292,22 @@ function CheckoutPage() {
         await wait(600);
       }
 
+      if (saveAddress) {
+        try {
+          await addMyAddress({
+            label: addressLabel.trim() || 'Home',
+            ...deliveryAddress,
+            location: deliveryLocation,
+            isDefault: savedAddresses.length === 0,
+          });
+        } catch (requestError) {
+          // Saving is optional and must never prevent the order itself.
+          setAddressSaveWarning(
+            'Your order can continue, but this address could not be saved.',
+          );
+        }
+      }
+
       await createOrder({
         restaurantId: restaurant._id,
         items: cartItems.map((item) => ({
@@ -347,6 +435,33 @@ function CheckoutPage() {
             ))}
           </div>
 
+          {savedAddresses.length > 0 && (
+            <section className="mt-6 rounded-xl border border-orange-100 bg-orange-50 p-5">
+              <label className="block">
+                <span className="text-sm font-semibold text-slate-700">
+                  Choose saved address
+                </span>
+                <select
+                  className="mt-2 w-full rounded-md border border-slate-300 bg-white px-3 py-2 outline-none focus:border-orange-500"
+                  onChange={handleSavedAddressChange}
+                  value={selectedAddressId}
+                >
+                  <option value="">Select an address</option>
+                  {savedAddresses.map((address) => (
+                    <option key={address._id} value={address._id}>
+                      {address.label} - {address.street}, {address.city}
+                    </option>
+                  ))}
+                </select>
+              </label>
+              {savedAddressMessage && (
+                <p className="mt-2 text-sm font-semibold text-green-700">
+                  {savedAddressMessage}
+                </p>
+              )}
+            </section>
+          )}
+
           <label className="mt-4 block">
             <span className="text-sm font-medium text-slate-700">Order note</span>
             <textarea
@@ -414,6 +529,36 @@ function CheckoutPage() {
               <p className="mt-4 text-sm text-slate-600">
                 No map location added yet. Rider will still see your written
                 address.
+              </p>
+            )}
+          </section>
+
+          <section className="mt-5 rounded-xl border border-orange-100 bg-white p-4">
+            <label className="flex items-center gap-2 text-sm font-semibold text-slate-700">
+              <input
+                checked={saveAddress}
+                className="accent-orange-600"
+                onChange={(event) => setSaveAddress(event.target.checked)}
+                type="checkbox"
+              />
+              Save this address for future orders
+            </label>
+            {saveAddress && (
+              <label className="mt-3 block">
+                <span className="text-sm font-medium text-slate-700">
+                  Address label
+                </span>
+                <input
+                  className="mt-1 w-full rounded-md border border-slate-300 px-3 py-2 outline-none focus:border-orange-500"
+                  onChange={(event) => setAddressLabel(event.target.value)}
+                  placeholder="Home / Work"
+                  value={addressLabel}
+                />
+              </label>
+            )}
+            {addressSaveWarning && (
+              <p className="mt-3 text-sm text-orange-700">
+                {addressSaveWarning}
               </p>
             )}
           </section>

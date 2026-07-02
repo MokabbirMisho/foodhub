@@ -6,6 +6,7 @@ import helmet from 'helmet';
 import morgan from 'morgan';
 import adminUserRoutes from './routes/adminUserRoutes.js';
 import authRoutes from './routes/authRoutes.js';
+import customerProfileRoutes from './routes/customerProfileRoutes.js';
 import foodRoutes from './routes/foodRoutes.js';
 import geocodeRoutes from './routes/geocodeRoutes.js';
 import orderRoutes from './routes/orderRoutes.js';
@@ -63,6 +64,9 @@ app.use('/api/auth', authRoutes);
 
 // Admin-only user management routes.
 app.use('/api/admin/users', adminUserRoutes);
+
+// Customer profile and saved delivery addresses.
+app.use('/api/customer', customerProfileRoutes);
 
 // Restaurant profile routes.
 app.use('/api/restaurants', restaurantRoutes);

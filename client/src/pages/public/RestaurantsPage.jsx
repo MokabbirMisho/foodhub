@@ -1,15 +1,17 @@
 import { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import { useCart } from '../../context/CartContext';
 import { getRestaurants } from '../../services/restaurantService';
 
 const formatCurrency = (value) => `€${Number(value || 0).toFixed(2)}`;
 
 function RestaurantsPage() {
+  const [searchParams, setSearchParams] = useSearchParams();
+  const urlSearch = searchParams.get('search') || '';
   const { getCartCount } = useCart();
   const [restaurants, setRestaurants] = useState([]);
   const [filters, setFilters] = useState({
-    search: '',
+    search: urlSearch,
     city: '',
     cuisine: '',
   });
@@ -35,8 +37,14 @@ function RestaurantsPage() {
   };
 
   useEffect(() => {
-    loadRestaurants();
-  }, []);
+    const nextFilters = {
+      ...filters,
+      search: urlSearch,
+    };
+
+    setFilters(nextFilters);
+    loadRestaurants(nextFilters);
+  }, [urlSearch]);
 
   const handleChange = (event) => {
     setFilters({
@@ -47,7 +55,13 @@ function RestaurantsPage() {
 
   const handleSearch = (event) => {
     event.preventDefault();
-    loadRestaurants(filters);
+    const nextSearch = filters.search.trim();
+
+    if (nextSearch !== urlSearch) {
+      setSearchParams(nextSearch ? { search: nextSearch } : {});
+    } else {
+      loadRestaurants(filters);
+    }
   };
 
   const handleClearFilters = () => {
@@ -58,6 +72,7 @@ function RestaurantsPage() {
     };
 
     setFilters(emptyFilters);
+    setSearchParams({});
     loadRestaurants(emptyFilters);
   };
 

@@ -3,6 +3,8 @@ import User from '../models/User.js';
 
 const allowedRoles = ['customer', 'restaurant_owner', 'rider', 'admin'];
 const allowedStatuses = ['active', 'blocked'];
+const adminUserFields =
+  'name email role phone avatar authProvider isBlocked createdAt updatedAt';
 
 const sendErrorResponse = (res, statusCode, message) => {
   res.status(statusCode).json({
@@ -43,7 +45,7 @@ export const getAllUsersForAdmin = async (req, res) => {
     }
 
     const [users, total] = await Promise.all([
-      User.find(filters).select('-password').sort({ createdAt: -1 }),
+      User.find(filters).select(adminUserFields).sort({ createdAt: -1 }),
       User.countDocuments(filters),
     ]);
 
@@ -72,7 +74,7 @@ export const getUserByIdForAdmin = async (req, res) => {
       return sendErrorResponse(res, 400, 'Invalid user id');
     }
 
-    const user = await User.findById(id).select('-password');
+    const user = await User.findById(id).select(adminUserFields);
 
     if (!user) {
       return sendErrorResponse(res, 404, 'User not found');
@@ -118,7 +120,7 @@ export const toggleUserBlockStatus = async (req, res) => {
         : !user.isBlocked;
     await user.save();
 
-    const updatedUser = await User.findById(user._id).select('-password');
+    const updatedUser = await User.findById(user._id).select(adminUserFields);
 
     res.json({
       success: true,
