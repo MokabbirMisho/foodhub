@@ -14,6 +14,7 @@ function CustomerNavbar() {
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const cartCount = getCartCount();
   const isCustomer = user?.role === 'customer';
+  const homePath = isCustomer ? '/customer/dashboard' : '/';
 
   useEffect(() => {
     const params = new URLSearchParams(location.search);
@@ -66,7 +67,7 @@ function CustomerNavbar() {
       >
         <Link
           className="order-1 text-2xl font-black text-orange-600"
-          to="/"
+          to={homePath}
         >
           FoodHub
         </Link>
@@ -130,7 +131,7 @@ function CustomerNavbar() {
                       <Link
                         className="block px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-orange-50"
                         onClick={() => setIsProfileOpen(false)}
-                        to="/customer/dashboard"
+                        to="/customer/account"
                       >
                         Account
                       </Link>

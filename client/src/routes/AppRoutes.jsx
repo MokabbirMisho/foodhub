@@ -6,6 +6,7 @@ import AdminDashboard from '../pages/admin/AdminDashboard';
 import CustomerNavbar from '../components/layout/CustomerNavbar';
 import CartPage from '../pages/customer/CartPage';
 import CheckoutPage from '../pages/customer/CheckoutPage';
+import CustomerAccountPage from '../pages/customer/CustomerAccountPage';
 import CustomerDashboard from '../pages/customer/CustomerDashboard';
 import MyOrdersPage from '../pages/customer/MyOrdersPage';
 import OrderSuccessPage from '../pages/customer/OrderSuccessPage';
@@ -122,6 +123,19 @@ function AppRoutes() {
             <ProtectedRoute>
               <RoleRoute allowedRoles={['customer']}>
                 <CustomerDashboard />
+              </RoleRoute>
+            </ProtectedRoute>
+          </CustomerPageLayout>
+        }
+      />
+
+      <Route
+        path="/customer/account"
+        element={
+          <CustomerPageLayout>
+            <ProtectedRoute>
+              <RoleRoute allowedRoles={['customer']}>
+                <CustomerAccountPage />
               </RoleRoute>
             </ProtectedRoute>
           </CustomerPageLayout>

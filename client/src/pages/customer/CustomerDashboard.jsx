@@ -1,408 +1,375 @@
 import { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
-import BackButton from '../../components/common/BackButton';
-import AddressForm from '../../components/customer/AddressForm';
-import { useCart } from '../../context/CartContext';
+import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
 import {
-  addMyAddress,
-  deleteMyAddress,
   getMyAddresses,
   getMyProfile,
-  setDefaultAddress,
-  updateMyAddress,
-  updateMyProfile,
 } from '../../services/customerProfileService';
+import { getMyOrders } from '../../services/orderService';
+import { getRestaurants } from '../../services/restaurantService';
 
-const quickActions = [
-  {
-    description: 'Discover approved restaurants and explore available menus.',
-    label: 'Browse Restaurants',
-    to: '/restaurants',
-  },
-  {
-    description: 'Review selected meals and continue to checkout.',
-    label: 'Cart',
-    to: '/cart',
-  },
-  {
-    description: 'Follow active orders and revisit your order history.',
-    label: 'My Orders',
-    to: '/my-orders',
-  },
+const categories = [
+  'Pizza',
+  'Burger',
+  'Biryani',
+  'Sushi',
+  'Pasta',
+  'Desserts',
+  'Drinks',
+  'Vegan',
+  'Chicken',
+  'Fast Food',
 ];
 
-function CustomerDashboard() {
-  const { getCartCount } = useCart();
-  const { updateCurrentUser, user } = useAuth();
-  const [activeTab, setActiveTab] = useState('overview');
-  const [profile, setProfile] = useState(null);
-  const [profileForm, setProfileForm] = useState({
-    name: '',
-    phone: '',
-    avatar: '',
-  });
-  const [addresses, setAddresses] = useState([]);
-  const [editingAddress, setEditingAddress] = useState(null);
-  const [isAddingAddress, setIsAddingAddress] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
-  const [isSavingProfile, setIsSavingProfile] = useState(false);
-  const [error, setError] = useState('');
-  const [successMessage, setSuccessMessage] = useState('');
+const activeStatuses = [
+  'pending',
+  'accepted',
+  'preparing',
+  'ready',
+  'out_for_delivery',
+];
 
-  useEffect(() => {
-    const loadCustomerData = async () => {
-      try {
-        setError('');
-        setIsLoading(true);
-        const [profileResponse, addressesResponse] = await Promise.all([
-          getMyProfile(),
-          getMyAddresses(),
-        ]);
-        const customer = profileResponse.data.user;
+const statusClasses = {
+  pending: 'bg-yellow-50 text-yellow-700',
+  accepted: 'bg-blue-50 text-blue-700',
+  preparing: 'bg-orange-50 text-orange-700',
+  ready: 'bg-purple-50 text-purple-700',
+  out_for_delivery: 'bg-indigo-50 text-indigo-700',
+};
 
-        setProfile(customer);
-        setProfileForm({
-          name: customer.name || '',
-          phone: customer.phone || '',
-          avatar: customer.avatar || '',
-        });
-        setAddresses(addressesResponse.data.addresses || []);
-      } catch (requestError) {
-        setError(requestError.message);
-      } finally {
-        setIsLoading(false);
-      }
-    };
+const formatCurrency = (value) => `€${Number(value || 0).toFixed(2)}`;
 
-    loadCustomerData();
-  }, []);
+const getGreeting = () => {
+  const hour = new Date().getHours();
 
-  const handleProfileChange = (event) => {
-    setProfileForm((current) => ({
-      ...current,
-      [event.target.name]: event.target.value,
-    }));
-  };
-
-  const handleProfileSubmit = async (event) => {
-    event.preventDefault();
-
-    try {
-      setError('');
-      setSuccessMessage('');
-      setIsSavingProfile(true);
-      const response = await updateMyProfile(profileForm);
-      const updatedProfile = response.data.user;
-
-      setProfile(updatedProfile);
-      updateCurrentUser(updatedProfile);
-      setSuccessMessage('Profile updated successfully');
-    } catch (requestError) {
-      setError(requestError.message);
-    } finally {
-      setIsSavingProfile(false);
-    }
-  };
-
-  const handleAddAddress = async (data) => {
-    const response = await addMyAddress(data);
-    setAddresses(response.data.addresses || []);
-    setIsAddingAddress(false);
-    setSuccessMessage('Address added successfully');
-  };
-
-  const handleUpdateAddress = async (data) => {
-    const response = await updateMyAddress(editingAddress._id, data);
-    setAddresses(response.data.addresses || []);
-    setEditingAddress(null);
-    setSuccessMessage('Address updated successfully');
-  };
-
-  const handleDeleteAddress = async (addressId) => {
-    if (!window.confirm('Are you sure you want to delete this address?')) {
-      return;
-    }
-
-    try {
-      setError('');
-      const response = await deleteMyAddress(addressId);
-      setAddresses(response.data.addresses || []);
-      setSuccessMessage('Address deleted successfully');
-    } catch (requestError) {
-      setError(requestError.message);
-    }
-  };
-
-  const handleSetDefault = async (addressId) => {
-    try {
-      setError('');
-      const response = await setDefaultAddress(addressId);
-      setAddresses(response.data.addresses || []);
-      setSuccessMessage('Default address updated successfully');
-    } catch (requestError) {
-      setError(requestError.message);
-    }
-  };
-
-  if (isLoading) {
-    return (
-      <main className="min-h-screen bg-orange-50 p-6 text-slate-700">
-        Loading customer profile...
-      </main>
-    );
+  if (hour < 12) {
+    return 'Good morning';
   }
 
+  if (hour < 18) {
+    return 'Good afternoon';
+  }
+
+  return 'Good evening';
+};
+
+function RestaurantCard({ restaurant }) {
   return (
-    <main className="min-h-screen bg-orange-50 px-6 py-10 text-slate-900">
-      <section className="mx-auto max-w-6xl space-y-6">
-        <BackButton />
-
-        <header className="rounded-xl bg-white p-6 shadow-sm">
-          <p className="text-sm font-semibold uppercase tracking-wide text-orange-600">
-            Customer Account
+    <Link
+      className="group overflow-hidden rounded-xl bg-white shadow-sm transition hover:-translate-y-0.5 hover:shadow-md"
+      to={`/restaurants/${restaurant._id}`}
+    >
+      {restaurant.coverImage || restaurant.logo ? (
+        <img
+          alt={restaurant.name}
+          className="h-40 w-full object-cover"
+          src={restaurant.coverImage || restaurant.logo}
+        />
+      ) : (
+        <div className="flex h-40 items-center justify-center bg-orange-100 font-semibold text-orange-700">
+          FoodHub Restaurant
+        </div>
+      )}
+      <div className="p-5">
+        <div className="flex items-start justify-between gap-3">
+          <h3 className="text-xl font-bold group-hover:text-orange-700">
+            {restaurant.name}
+          </h3>
+          <span
+            className={`rounded-full px-2.5 py-1 text-xs font-semibold ${
+              restaurant.isOpen
+                ? 'bg-green-50 text-green-700'
+                : 'bg-slate-100 text-slate-600'
+            }`}
+          >
+            {restaurant.isOpen ? 'Open' : 'Closed'}
+          </span>
+        </div>
+        <p className="mt-2 line-clamp-1 text-sm text-slate-600">
+          {restaurant.cuisineTypes?.join(', ') || 'Cuisine details coming soon'}
+        </p>
+        <div className="mt-4 grid grid-cols-2 gap-2 text-sm text-slate-600">
+          <p>
+            {restaurant.ratingCount
+              ? `★ ${restaurant.ratingAverage}`
+              : 'No ratings yet'}
           </p>
-          <h1 className="mt-2 text-4xl font-bold">
-            Welcome, {profile?.name || user?.name}
+          <p>{restaurant.estimatedDeliveryTime || 'Time not provided'}</p>
+          <p>Delivery {formatCurrency(restaurant.deliveryFee)}</p>
+          <p>Min. {formatCurrency(restaurant.minimumOrderAmount)}</p>
+        </div>
+      </div>
+    </Link>
+  );
+}
+
+function CustomerDashboard() {
+  const navigate = useNavigate();
+  const { user } = useAuth();
+  const [profile, setProfile] = useState(null);
+  const [defaultAddress, setDefaultAddress] = useState(null);
+  const [restaurants, setRestaurants] = useState([]);
+  const [orders, setOrders] = useState([]);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState('');
+
+  useEffect(() => {
+    const loadDashboard = async () => {
+      setIsLoading(true);
+      setError('');
+
+      const results = await Promise.allSettled([
+        getMyProfile(),
+        getMyAddresses(),
+        getRestaurants(),
+        getMyOrders(),
+      ]);
+
+      if (results[0].status === 'fulfilled') {
+        setProfile(results[0].value.data.user);
+      }
+
+      if (results[1].status === 'fulfilled') {
+        const addresses = results[1].value.data.addresses || [];
+        setDefaultAddress(
+          addresses.find((address) => address.isDefault) || addresses[0] || null,
+        );
+      }
+
+      if (results[2].status === 'fulfilled') {
+        setRestaurants((results[2].value.data.restaurants || []).slice(0, 8));
+      }
+
+      if (results[3].status === 'fulfilled') {
+        setOrders(results[3].value.data.orders || []);
+      }
+
+      if (results.some((result) => result.status === 'rejected')) {
+        setError('Some dashboard information could not be loaded.');
+      }
+
+      setIsLoading(false);
+    };
+
+    loadDashboard();
+  }, []);
+
+  const handleSearch = (event) => {
+    event.preventDefault();
+    const query = searchTerm.trim();
+    navigate(query ? `/restaurants?search=${encodeURIComponent(query)}` : '/restaurants');
+  };
+
+  const activeOrder = orders.find((order) =>
+    activeStatuses.includes(order.status),
+  );
+  const deliveredOrders = orders
+    .filter((order) => order.status === 'delivered')
+    .slice(0, 3);
+  const accountAddressState = {
+    section: 'addresses',
+    addAddress: !defaultAddress,
+  };
+
+  return (
+    <main className="min-h-screen bg-orange-50 text-slate-900">
+      <section className="bg-orange-100 px-5 py-10 sm:px-8">
+        <div className="mx-auto max-w-7xl">
+          <p className="text-sm font-semibold text-orange-700">
+            {getGreeting()}, {profile?.name || user?.name || 'Food lover'}
+          </p>
+          <h1 className="mt-2 max-w-3xl text-4xl font-black sm:text-5xl">
+            What would you like to eat today?
           </h1>
-          <p className="mt-3 text-slate-700">
-            Manage your profile and delivery addresses.
-          </p>
-        </header>
 
-        <nav className="flex flex-wrap gap-2 rounded-xl bg-white p-2 shadow-sm">
-          {['overview', 'profile', 'addresses'].map((tab) => (
-            <button
-              className={`rounded-lg px-5 py-2 text-sm font-semibold capitalize ${
-                activeTab === tab
-                  ? 'bg-orange-600 text-white'
-                  : 'text-slate-700 hover:bg-orange-50'
-              }`}
-              key={tab}
-              onClick={() => setActiveTab(tab)}
-              type="button"
+          <div className="mt-5 flex flex-col gap-3 text-sm text-slate-700 sm:flex-row sm:items-center">
+            <p>
+              {defaultAddress
+                ? `Delivering to: ${defaultAddress.street}, ${defaultAddress.city}`
+                : 'Add your delivery address to find better restaurants near you'}
+            </p>
+            <Link
+              className="w-fit font-semibold text-orange-700 underline decoration-orange-300 underline-offset-4"
+              state={accountAddressState}
+              to="/customer/account"
             >
-              {tab}
+              {defaultAddress ? 'Change address' : 'Add address'}
+            </Link>
+            {!defaultAddress && (
+              <Link
+                className="w-fit rounded-md border border-orange-300 px-3 py-1.5 font-semibold text-orange-700 hover:bg-orange-50"
+                state={{ section: 'addresses', addAddress: true }}
+                to="/customer/account"
+              >
+                Use current location
+              </Link>
+            )}
+          </div>
+
+          <form
+            className="mt-7 flex max-w-3xl overflow-hidden rounded-xl bg-white shadow-sm focus-within:ring-2 focus-within:ring-orange-400"
+            onSubmit={handleSearch}
+          >
+            <input
+              className="min-w-0 flex-1 px-5 py-4 outline-none"
+              onChange={(event) => setSearchTerm(event.target.value)}
+              placeholder="Search restaurants, cuisines, or dishes..."
+              value={searchTerm}
+            />
+            <button
+              className="bg-orange-600 px-6 font-semibold text-white hover:bg-orange-700"
+              type="submit"
+            >
+              Search
             </button>
-          ))}
-        </nav>
+          </form>
+        </div>
+      </section>
 
-        {error && (
-          <p className="rounded-xl bg-red-50 p-4 text-red-700">{error}</p>
-        )}
-        {successMessage && (
-          <p className="rounded-xl bg-green-50 p-4 text-green-700">
-            {successMessage}
-          </p>
-        )}
+      <div className="mx-auto max-w-7xl space-y-10 px-5 py-8 sm:px-8">
+        <section>
+          <h2 className="text-xl font-bold">Explore categories</h2>
+          <div className="mt-4 flex gap-3 overflow-x-auto pb-2">
+            {categories.map((category) => (
+              <button
+                className="shrink-0 rounded-full border border-orange-200 bg-white px-5 py-2 text-sm font-semibold text-slate-700 hover:border-orange-500 hover:text-orange-700"
+                key={category}
+                onClick={() =>
+                  navigate(
+                    `/restaurants?search=${encodeURIComponent(category)}`,
+                  )
+                }
+                type="button"
+              >
+                {category}
+              </button>
+            ))}
+          </div>
+        </section>
 
-        {activeTab === 'overview' && (
-          <>
-            <div className="grid gap-5 md:grid-cols-3">
-              {quickActions.map((action) => (
-                <article
-                  className="rounded-xl bg-white p-6 shadow-sm"
-                  key={action.to}
+        {activeOrder && (
+          <section className="flex flex-col gap-5 rounded-xl border border-indigo-100 bg-white p-6 shadow-sm md:flex-row md:items-center md:justify-between">
+            <div>
+              <div className="flex flex-wrap items-center gap-3">
+                <h2 className="text-2xl font-bold">Track your order</h2>
+                <span
+                  className={`rounded-full px-3 py-1 text-xs font-semibold ${
+                    statusClasses[activeOrder.status] ||
+                    'bg-slate-100 text-slate-700'
+                  }`}
                 >
-                  <h2 className="text-xl font-bold">
-                    {action.label}
-                    {action.to === '/cart' && getCartCount() > 0
-                      ? ` (${getCartCount()})`
-                      : ''}
-                  </h2>
-                  <p className="mt-2 min-h-12 text-sm leading-6 text-slate-600">
-                    {action.description}
+                  {activeOrder.status}
+                </span>
+              </div>
+              <p className="mt-2 font-semibold text-slate-800">
+                {activeOrder.restaurant?.name || 'Restaurant'}
+              </p>
+              <p className="mt-1 text-sm text-slate-600">
+                Your order is {activeOrder.status.replaceAll('_', ' ')}.
+              </p>
+            </div>
+            <div className="flex flex-wrap gap-3">
+              <Link
+                className="rounded-md bg-indigo-600 px-4 py-2 font-semibold text-white hover:bg-indigo-700"
+                to={`/orders/${activeOrder._id}/tracking`}
+              >
+                Track order
+              </Link>
+              <Link
+                className="rounded-md border border-slate-300 px-4 py-2 font-semibold text-slate-700 hover:bg-slate-50"
+                to="/my-orders"
+              >
+                View orders
+              </Link>
+            </div>
+          </section>
+        )}
+
+        <section className="flex flex-col gap-5 rounded-xl bg-orange-600 p-7 text-white shadow-sm md:flex-row md:items-center md:justify-between">
+          <div>
+            <h2 className="text-3xl font-black">
+              Hungry? Your next favorite meal is waiting.
+            </h2>
+            <p className="mt-2 text-orange-50">
+              Discover local restaurants and order in minutes.
+            </p>
+          </div>
+          <Link
+            className="w-fit rounded-md bg-white px-5 py-3 font-bold text-orange-700 hover:bg-orange-50"
+            to="/restaurants"
+          >
+            Browse restaurants
+          </Link>
+        </section>
+
+        <section>
+          <div className="flex items-end justify-between gap-4">
+            <div>
+              <p className="text-sm font-semibold uppercase text-orange-600">
+                Discover
+              </p>
+              <h2 className="mt-1 text-3xl font-bold">Restaurants near you</h2>
+            </div>
+            <Link className="font-semibold text-orange-700" to="/restaurants">
+              View all
+            </Link>
+          </div>
+
+          {isLoading ? (
+            <div className="mt-5 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+              {[1, 2, 3, 4].map((item) => (
+                <div
+                  className="h-72 animate-pulse rounded-xl bg-white"
+                  key={item}
+                />
+              ))}
+            </div>
+          ) : restaurants.length > 0 ? (
+            <div className="mt-5 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+              {restaurants.map((restaurant) => (
+                <RestaurantCard key={restaurant._id} restaurant={restaurant} />
+              ))}
+            </div>
+          ) : (
+            <p className="mt-5 rounded-xl bg-white p-6 text-slate-600 shadow-sm">
+              Restaurants are not available right now.
+            </p>
+          )}
+        </section>
+
+        {deliveredOrders.length > 0 && (
+          <section>
+            <h2 className="text-3xl font-bold">Order again</h2>
+            <div className="mt-5 grid gap-4 md:grid-cols-3">
+              {deliveredOrders.map((order) => (
+                <article className="rounded-xl bg-white p-5 shadow-sm" key={order._id}>
+                  <h3 className="text-xl font-bold">
+                    {order.restaurant?.name || 'Restaurant'}
+                  </h3>
+                  <p className="mt-2 text-sm text-slate-600">
+                    Total {formatCurrency(order.totalAmount)}
                   </p>
-                  <Link
-                    className="mt-5 inline-flex rounded-md bg-orange-600 px-4 py-2 font-semibold text-white hover:bg-orange-700"
-                    to={action.to}
-                  >
-                    Open
-                  </Link>
+                  {order.restaurant?._id && (
+                    <Link
+                      className="mt-5 inline-flex rounded-md bg-orange-600 px-4 py-2 font-semibold text-white hover:bg-orange-700"
+                      to={`/restaurants/${order.restaurant._id}`}
+                    >
+                      Order again
+                    </Link>
+                  )}
                 </article>
               ))}
             </div>
-
-            <button
-              className="w-full rounded-xl bg-white p-6 text-left shadow-sm hover:bg-orange-50"
-              onClick={() => setActiveTab('addresses')}
-              type="button"
-            >
-              <span className="text-xl font-bold">Saved Addresses</span>
-              <span className="mt-2 block text-sm text-slate-600">
-                {addresses.length} saved delivery address
-                {addresses.length === 1 ? '' : 'es'}
-              </span>
-            </button>
-          </>
-        )}
-
-        {activeTab === 'profile' && (
-          <form
-            className="rounded-xl bg-white p-6 shadow-sm"
-            onSubmit={handleProfileSubmit}
-          >
-            <h2 className="text-2xl font-bold">Profile Information</h2>
-            <div className="mt-5 grid gap-4 md:grid-cols-2">
-              <label>
-                <span className="text-sm font-medium text-slate-700">Name</span>
-                <input
-                  className="mt-1 w-full rounded-md border border-slate-300 px-3 py-2 outline-none focus:border-orange-500"
-                  name="name"
-                  onChange={handleProfileChange}
-                  required
-                  value={profileForm.name}
-                />
-              </label>
-              <label>
-                <span className="text-sm font-medium text-slate-700">Phone</span>
-                <input
-                  className="mt-1 w-full rounded-md border border-slate-300 px-3 py-2 outline-none focus:border-orange-500"
-                  name="phone"
-                  onChange={handleProfileChange}
-                  value={profileForm.phone}
-                />
-              </label>
-              <label className="md:col-span-2">
-                <span className="text-sm font-medium text-slate-700">
-                  Avatar URL
-                </span>
-                <input
-                  className="mt-1 w-full rounded-md border border-slate-300 px-3 py-2 outline-none focus:border-orange-500"
-                  name="avatar"
-                  onChange={handleProfileChange}
-                  value={profileForm.avatar}
-                />
-              </label>
-              <label>
-                <span className="text-sm font-medium text-slate-700">Email</span>
-                <input
-                  className="mt-1 w-full rounded-md border border-slate-200 bg-slate-50 px-3 py-2 text-slate-500"
-                  readOnly
-                  value={profile?.email || ''}
-                />
-              </label>
-              <label>
-                <span className="text-sm font-medium text-slate-700">Role</span>
-                <input
-                  className="mt-1 w-full rounded-md border border-slate-200 bg-slate-50 px-3 py-2 text-slate-500"
-                  readOnly
-                  value={profile?.role || ''}
-                />
-              </label>
-            </div>
-            <button
-              className="mt-6 rounded-md bg-orange-600 px-5 py-2 font-semibold text-white hover:bg-orange-700 disabled:bg-orange-300"
-              disabled={isSavingProfile}
-              type="submit"
-            >
-              {isSavingProfile ? 'Saving...' : 'Save Profile'}
-            </button>
-          </form>
-        )}
-
-        {activeTab === 'addresses' && (
-          <section className="space-y-5">
-            <div className="flex flex-wrap items-center justify-between gap-3">
-              <div>
-                <h2 className="text-2xl font-bold">Saved Addresses</h2>
-                <p className="mt-1 text-sm text-slate-600">
-                  Choose a default address for faster checkout.
-                </p>
-              </div>
-              {!isAddingAddress && !editingAddress && (
-                <button
-                  className="rounded-md bg-orange-600 px-4 py-2 font-semibold text-white hover:bg-orange-700"
-                  onClick={() => setIsAddingAddress(true)}
-                  type="button"
-                >
-                  Add New Address
-                </button>
-              )}
-            </div>
-
-            {isAddingAddress && (
-              <AddressForm
-                onCancel={() => setIsAddingAddress(false)}
-                onSubmit={handleAddAddress}
-              />
-            )}
-            {editingAddress && (
-              <AddressForm
-                initialData={editingAddress}
-                onCancel={() => setEditingAddress(null)}
-                onSubmit={handleUpdateAddress}
-              />
-            )}
-
-            {!isAddingAddress && !editingAddress && addresses.length === 0 && (
-              <p className="rounded-xl bg-white p-6 text-slate-700 shadow-sm">
-                No saved addresses yet.
-              </p>
-            )}
-
-            {!isAddingAddress && !editingAddress && addresses.length > 0 && (
-              <div className="grid gap-4 md:grid-cols-2">
-                {addresses.map((address) => (
-                  <article
-                    className="rounded-xl bg-white p-5 shadow-sm"
-                    key={address._id}
-                  >
-                    <div className="flex items-start justify-between gap-3">
-                      <h3 className="text-xl font-bold">{address.label}</h3>
-                      {address.isDefault && (
-                        <span className="rounded-full bg-green-50 px-3 py-1 text-xs font-semibold text-green-700">
-                          Default
-                        </span>
-                      )}
-                    </div>
-                    <div className="mt-3 text-sm leading-6 text-slate-700">
-                      <p>{address.fullName || profile?.name}</p>
-                      <p>{address.phone || profile?.phone}</p>
-                      <p>{address.street}</p>
-                      <p>
-                        {address.postalCode} {address.city}
-                      </p>
-                      <p>{address.country}</p>
-                    </div>
-                    <p className="mt-3 text-xs font-semibold text-indigo-700">
-                      {Number.isFinite(address.location?.lat) &&
-                      Number.isFinite(address.location?.lng)
-                        ? 'Map location available'
-                        : 'Written address only'}
-                    </p>
-                    <div className="mt-5 flex flex-wrap gap-2">
-                      <button
-                        className="rounded-md border border-orange-200 px-3 py-2 text-sm font-semibold text-orange-700 hover:bg-orange-50"
-                        onClick={() => setEditingAddress(address)}
-                        type="button"
-                      >
-                        Edit
-                      </button>
-                      {!address.isDefault && (
-                        <button
-                          className="rounded-md border border-green-200 px-3 py-2 text-sm font-semibold text-green-700 hover:bg-green-50"
-                          onClick={() => handleSetDefault(address._id)}
-                          type="button"
-                        >
-                          Set Default
-                        </button>
-                      )}
-                      <button
-                        className="rounded-md border border-red-200 px-3 py-2 text-sm font-semibold text-red-700 hover:bg-red-50"
-                        onClick={() => handleDeleteAddress(address._id)}
-                        type="button"
-                      >
-                        Delete
-                      </button>
-                    </div>
-                  </article>
-                ))}
-              </div>
-            )}
           </section>
         )}
-      </section>
+
+        {error && (
+          <p className="rounded-xl bg-white p-4 text-sm text-orange-700 shadow-sm">
+            {error}
+          </p>
+        )}
+      </div>
     </main>
   );
 }
