@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import NotificationBell from '../../components/common/NotificationBell';
 import FoodItemForm from '../../components/restaurant/FoodItemForm';
 import RestaurantForm from '../../components/restaurant/RestaurantForm';
 import { useAuth } from '../../hooks/useAuth';
@@ -19,6 +20,10 @@ import {
   getMyRestaurant,
   updateMyRestaurant,
 } from '../../services/restaurantService';
+import {
+  offSocketEvent,
+  onSocketEvent,
+} from '../../services/socketService';
 
 const navItems = [
   { id: 'dashboard', label: 'Dashboard' },
@@ -319,6 +324,7 @@ function RestaurantDashboard() {
   const [orderError, setOrderError] = useState('');
   const [orderSuccess, setOrderSuccess] = useState('');
   const [orderStatusFilter, setOrderStatusFilter] = useState('all');
+  const [newOrderCount, setNewOrderCount] = useState(0);
   const [isOrdersLoading, setIsOrdersLoading] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
@@ -395,6 +401,19 @@ function RestaurantDashboard() {
     }
   }, [activeTab, restaurant?._id, orderStatusFilter]);
 
+  useEffect(() => {
+    const handleNewOrder = () => {
+      setNewOrderCount((current) => current + 1);
+
+      if (restaurant) {
+        loadOrders(orderStatusFilter);
+      }
+    };
+
+    onSocketEvent('new_order', handleNewOrder);
+    return () => offSocketEvent('new_order', handleNewOrder);
+  }, [restaurant?._id, orderStatusFilter]);
+
   const handleCreateRestaurant = async (data) => {
     await createRestaurant(data);
     await loadRestaurant();
@@ -411,6 +430,10 @@ function RestaurantDashboard() {
 
   const handleTabChange = (tabId) => {
     setActiveTab(tabId);
+
+    if (tabId === 'orders') {
+      setNewOrderCount(0);
+    }
 
     if (tabId !== 'profile') {
       setIsEditing(false);
@@ -889,6 +912,11 @@ function RestaurantDashboard() {
                 type="button"
               >
                 {item.label}
+                {item.id === 'orders' && newOrderCount > 0 && (
+                  <span className="ml-2 rounded-full bg-white px-2 py-0.5 text-xs text-orange-700">
+                    {newOrderCount}
+                  </span>
+                )}
               </button>
             ))}
           </nav>
@@ -906,13 +934,16 @@ function RestaurantDashboard() {
               </p>
             </div>
 
-            <button
-              className="rounded-md bg-slate-900 px-4 py-2 font-semibold text-white hover:bg-slate-700"
-              onClick={handleLogout}
-              type="button"
-            >
-              Logout
-            </button>
+            <div className="flex flex-wrap items-center gap-3">
+              <NotificationBell />
+              <button
+                className="rounded-md bg-slate-900 px-4 py-2 font-semibold text-white hover:bg-slate-700"
+                onClick={handleLogout}
+                type="button"
+              >
+                Logout
+              </button>
+            </div>
           </header>
 
           {error && (

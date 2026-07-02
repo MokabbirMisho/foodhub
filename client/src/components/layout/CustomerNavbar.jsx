@@ -1,4 +1,5 @@
 import { Link, NavLink, useNavigate } from 'react-router-dom';
+import NotificationBell from '../common/NotificationBell';
 import { useCart } from '../../context/CartContext';
 import { useAuth } from '../../hooks/useAuth';
 
@@ -57,7 +58,8 @@ function CustomerNavbar() {
           )}
         </div>
 
-        <div className="order-2 sm:order-3">
+        <div className="order-2 flex items-center gap-3 sm:order-3">
+          {isAuthenticated && <NotificationBell />}
           {isAuthenticated ? (
             <button
               className="rounded-md border border-orange-200 px-3 py-2 text-sm font-semibold text-orange-700 hover:bg-orange-50"

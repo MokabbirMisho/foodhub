@@ -1,5 +1,6 @@
 import { lazy, Suspense, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import NotificationBell from '../../components/common/NotificationBell';
 import { useAuth } from '../../hooks/useAuth';
 import {
   acceptDelivery,
@@ -8,6 +9,10 @@ import {
   markDeliveryAsDelivered,
   updateRiderLocation,
 } from '../../services/orderService';
+import {
+  offSocketEvent,
+  onSocketEvent,
+} from '../../services/socketService';
 
 const DeliveryMap = lazy(() => import('../../components/map/DeliveryMap'));
 
@@ -347,6 +352,16 @@ function RiderDashboard() {
     loadMyDeliveries();
   }, []);
 
+  useEffect(() => {
+    const handleDeliveryAvailable = () => {
+      loadAvailableDeliveries();
+    };
+
+    onSocketEvent('delivery_available', handleDeliveryAvailable);
+    return () =>
+      offSocketEvent('delivery_available', handleDeliveryAvailable);
+  }, []);
+
   const handleAcceptDelivery = async (orderId) => {
     try {
       setSuccessMessage('');
@@ -478,13 +493,16 @@ function RiderDashboard() {
             </p>
           </div>
 
-          <button
-            className="rounded-md bg-slate-900 px-4 py-2 font-semibold text-white hover:bg-slate-700"
-            onClick={handleLogout}
-            type="button"
-          >
-            Logout
-          </button>
+          <div className="flex flex-wrap items-center gap-3">
+            <NotificationBell />
+            <button
+              className="rounded-md bg-slate-900 px-4 py-2 font-semibold text-white hover:bg-slate-700"
+              onClick={handleLogout}
+              type="button"
+            >
+              Logout
+            </button>
+          </div>
         </header>
 
         <nav className="grid gap-3 rounded-xl bg-white p-3 shadow-sm md:w-fit md:grid-cols-2">
@@ -498,6 +516,11 @@ function RiderDashboard() {
             type="button"
           >
             Available Deliveries
+            {availableDeliveries.length > 0 && (
+              <span className="ml-2 rounded-full bg-white px-2 py-0.5 text-xs text-orange-700">
+                {availableDeliveries.length}
+              </span>
+            )}
           </button>
           <button
             className={`rounded-lg px-4 py-3 text-sm font-semibold ${

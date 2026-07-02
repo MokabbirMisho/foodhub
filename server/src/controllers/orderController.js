@@ -2,6 +2,12 @@ import mongoose from 'mongoose';
 import FoodItem from '../models/FoodItem.js';
 import Order from '../models/Order.js';
 import Restaurant from '../models/Restaurant.js';
+import {
+  emitToAdmin,
+  emitToRestaurantOwner,
+  emitToRiders,
+  emitToUser,
+} from '../socket/socket.js';
 
 const allowedRestaurantStatuses = [
   'accepted',
@@ -61,6 +67,16 @@ const populateOrder = (query) => {
 
 const getOwnedRestaurant = async (ownerId) => {
   return Restaurant.findOne({ owner: ownerId });
+};
+
+const sendSocketNotification = (emitNotification) => {
+  try {
+    emitNotification();
+  } catch (error) {
+    if (process.env.NODE_ENV !== 'production') {
+      console.warn('Socket notification could not be sent');
+    }
+  }
 };
 
 const hasValidCoordinates = (location) => {
@@ -199,6 +215,25 @@ export const createOrder = async (req, res) => {
 
     const populatedOrder = await populateOrder(Order.findById(order._id));
 
+    const newOrderPayload = {
+      orderId: order._id,
+      restaurantId: restaurant._id,
+      customerName: req.user.name,
+      totalAmount: order.totalAmount,
+      status: order.status,
+      createdAt: order.createdAt,
+      message: 'New order received',
+    };
+
+    sendSocketNotification(() => {
+      emitToRestaurantOwner(restaurant.owner, 'new_order', newOrderPayload);
+      emitToUser(req.user._id, 'order_created', {
+        ...newOrderPayload,
+        message: 'Your order was placed successfully',
+      });
+      emitToAdmin('admin_new_order', newOrderPayload);
+    });
+
     sendSuccessResponse(res, 201, 'Order created successfully', {
       order: populatedOrder,
     });
@@ -326,6 +361,28 @@ export const updateOrderStatus = async (req, res) => {
     if (!order) {
       return sendErrorResponse(res, 404, 'Order not found');
     }
+
+    const statusPayload = {
+      orderId: order._id,
+      status: order.status,
+      message: `Your order status is now ${order.status}`,
+    };
+
+    sendSocketNotification(() => {
+      emitToUser(order.customer._id, 'order_status_updated', statusPayload);
+      emitToAdmin('admin_order_updated', statusPayload);
+
+      if (order.status === 'ready') {
+        emitToRiders('delivery_available', {
+          orderId: order._id,
+          restaurantName: order.restaurant.name,
+          deliveryCity: order.deliveryAddress?.city,
+          totalAmount: order.totalAmount,
+          status: 'ready',
+          message: 'New delivery is available',
+        });
+      }
+    });
 
     sendSuccessResponse(res, 200, 'Order status updated successfully', {
       order,
@@ -478,6 +535,16 @@ export const acceptDelivery = async (req, res) => {
 
     const populatedOrder = await populateOrder(Order.findById(order._id));
 
+    sendSocketNotification(() => {
+      const payload = {
+        orderId: order._id,
+        status: 'out_for_delivery',
+        message: 'Your order is out for delivery',
+      };
+      emitToUser(order.customer, 'order_status_updated', payload);
+      emitToAdmin('admin_order_updated', payload);
+    });
+
     sendSuccessResponse(res, 200, 'Delivery accepted successfully', {
       order: populatedOrder,
     });
@@ -512,6 +579,16 @@ export const markDeliveryAsDelivered = async (req, res) => {
     await order.save();
 
     const populatedOrder = await populateOrder(Order.findById(order._id));
+
+    sendSocketNotification(() => {
+      const payload = {
+        orderId: order._id,
+        status: 'delivered',
+        message: 'Your order has been delivered',
+      };
+      emitToUser(order.customer, 'order_status_updated', payload);
+      emitToAdmin('admin_order_updated', payload);
+    });
 
     sendSuccessResponse(res, 200, 'Delivery marked as delivered successfully', {
       order: populatedOrder,

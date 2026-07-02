@@ -130,6 +130,7 @@ Frontend (`client/.env`):
 
 ```env
 VITE_API_URL=http://localhost:5001/api
+VITE_SOCKET_URL=http://localhost:5001
 VITE_GOOGLE_CLIENT_ID=
 ```
 
@@ -156,6 +157,19 @@ Real credentials and secrets must never be committed.
 The frontend uses `VITE_API_URL` for the deployed API. Render uses `CLIENT_URL`
 for the allowed Vercel origin. The included `client/vercel.json` handles SPA
 route refreshes, while `render.yaml` documents the backend service setup.
+
+For the deployed real-time notification connection, configure:
+
+```env
+# Render
+CLIENT_URL=https://foodhub-phi-wine.vercel.app
+
+# Vercel
+VITE_SOCKET_URL=https://foodhub-zurl.onrender.com
+```
+
+Socket.io uses the existing FoodHub JWT for authentication. REST APIs remain
+the source of truth if the socket connection is unavailable.
 
 ## Future Improvements
 

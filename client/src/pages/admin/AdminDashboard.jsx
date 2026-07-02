@@ -1,7 +1,12 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import NotificationBell from '../../components/common/NotificationBell';
 import { useAuth } from '../../hooks/useAuth';
 import { getAllOrdersForAdmin } from '../../services/orderService';
+import {
+  offSocketEvent,
+  onSocketEvent,
+} from '../../services/socketService';
 
 const statusOptions = [
   'all',
@@ -218,6 +223,20 @@ function AdminDashboard() {
     loadOrders();
   }, []);
 
+  useEffect(() => {
+    const handleOrderUpdate = () => {
+      loadOrders(filters);
+    };
+
+    onSocketEvent('admin_new_order', handleOrderUpdate);
+    onSocketEvent('admin_order_updated', handleOrderUpdate);
+
+    return () => {
+      offSocketEvent('admin_new_order', handleOrderUpdate);
+      offSocketEvent('admin_order_updated', handleOrderUpdate);
+    };
+  }, [filters.status, filters.restaurantId, filters.customerId]);
+
   const handleFilterChange = (event) => {
     setFilters({
       ...filters,
@@ -255,13 +274,16 @@ function AdminDashboard() {
             </p>
           </div>
 
-          <button
-            className="rounded-md bg-slate-900 px-4 py-2 font-semibold text-white hover:bg-slate-700"
-            onClick={handleLogout}
-            type="button"
-          >
-            Logout
-          </button>
+          <div className="flex flex-wrap items-center gap-3">
+            <NotificationBell />
+            <button
+              className="rounded-md bg-slate-900 px-4 py-2 font-semibold text-white hover:bg-slate-700"
+              onClick={handleLogout}
+              type="button"
+            >
+              Logout
+            </button>
+          </div>
         </header>
 
         <form

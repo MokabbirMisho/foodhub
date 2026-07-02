@@ -4,6 +4,10 @@ import BackButton from '../../components/common/BackButton';
 import ReviewForm from '../../components/reviews/ReviewForm';
 import { cancelMyOrder, getMyOrders } from '../../services/orderService';
 import { createReview, getMyReviews } from '../../services/reviewService';
+import {
+  offSocketEvent,
+  onSocketEvent,
+} from '../../services/socketService';
 
 const formatCurrency = (value) => `€${Number(value || 0).toFixed(2)}`;
 const formatPaymentMethod = (method) =>
@@ -57,6 +61,16 @@ function MyOrdersPage() {
 
   useEffect(() => {
     loadOrders();
+  }, []);
+
+  useEffect(() => {
+    const handleOrderStatusUpdate = () => {
+      loadOrders();
+    };
+
+    onSocketEvent('order_status_updated', handleOrderStatusUpdate);
+    return () =>
+      offSocketEvent('order_status_updated', handleOrderStatusUpdate);
   }, []);
 
   const handleCancelOrder = async (orderId) => {

@@ -3,6 +3,10 @@ import { useParams } from 'react-router-dom';
 import BackButton from '../../components/common/BackButton';
 import DeliveryMap from '../../components/map/DeliveryMap';
 import { getOrderTracking } from '../../services/orderService';
+import {
+  offSocketEvent,
+  onSocketEvent,
+} from '../../services/socketService';
 
 const formatPaymentMethod = (method) =>
   method === 'demo_online' ? 'Demo Online Payment' : 'Cash on Delivery';
@@ -46,6 +50,18 @@ function OrderTrackingPage() {
   useEffect(() => {
     loadTracking();
   }, [loadTracking]);
+
+  useEffect(() => {
+    const handleOrderStatusUpdate = (payload) => {
+      if (String(payload.orderId) === String(id)) {
+        loadTracking();
+      }
+    };
+
+    onSocketEvent('order_status_updated', handleOrderStatusUpdate);
+    return () =>
+      offSocketEvent('order_status_updated', handleOrderStatusUpdate);
+  }, [id, loadTracking]);
 
   return (
     <main className="min-h-screen bg-orange-50 px-6 py-10 text-slate-900">
