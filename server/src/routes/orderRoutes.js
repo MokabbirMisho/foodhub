@@ -9,7 +9,9 @@ import {
   getMyOrders,
   getMyRestaurantOrders,
   getOrderById,
+  getOrderTracking,
   markDeliveryAsDelivered,
+  updateRiderLocation,
   updateOrderStatus,
 } from '../controllers/orderController.js';
 import { authorizeRoles, protect } from '../middleware/authMiddleware.js';
@@ -40,6 +42,18 @@ router.get(
 );
 router.get('/admin/all', protect, authorizeRoles('admin'), getAllOrdersForAdmin);
 
+router.get(
+  '/:id/tracking',
+  protect,
+  authorizeRoles('customer', 'restaurant_owner', 'rider', 'admin'),
+  getOrderTracking,
+);
+router.patch(
+  '/:id/rider-location',
+  protect,
+  authorizeRoles('rider'),
+  updateRiderLocation,
+);
 router.patch('/:id/cancel', protect, authorizeRoles('customer'), cancelMyOrder);
 router.patch('/:id/accept-delivery', protect, authorizeRoles('rider'), acceptDelivery);
 router.patch(

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { lazy, Suspense, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
 import {
@@ -6,7 +6,10 @@ import {
   getAvailableDeliveriesForRider,
   getMyDeliveriesForRider,
   markDeliveryAsDelivered,
+  updateRiderLocation,
 } from '../../services/orderService';
+
+const DeliveryMap = lazy(() => import('../../components/map/DeliveryMap'));
 
 const deliveryStatusOptions = [
   'all',
@@ -23,6 +26,10 @@ const statusClasses = {
 };
 
 const formatCurrency = (value) => `€${Number(value || 0).toFixed(2)}`;
+const formatPaymentMethod = (method) =>
+  method === 'demo_online' ? 'Demo Online Payment' : 'Cash on Delivery';
+const formatPaymentStatus = (status) =>
+  status ? status.charAt(0).toUpperCase() + status.slice(1) : 'Unpaid';
 
 const formatAddress = (address) => {
   if (!address) {
@@ -99,20 +106,46 @@ function AvailableDeliveryCard({ onAccept, order }) {
             Dropoff
           </p>
           <DeliveryAddress address={deliveryAddress} />
+          <p className="mt-2 text-sm text-slate-700">
+            Customer: {order.customer?.name || deliveryAddress?.fullName}
+          </p>
+          <p className="text-sm text-slate-700">
+            Phone: {order.customer?.phone || deliveryAddress?.phone || 'Not provided'}
+          </p>
         </div>
       </div>
 
-      <div className="mt-5 grid gap-3 text-sm text-slate-700 md:grid-cols-3">
-        <p>Items: {order.items?.length || 0} item types</p>
-        <p>
-          Delivery area:{' '}
-          {[deliveryAddress?.city, deliveryAddress?.postalCode].filter(Boolean).join(', ') ||
-            'Not provided'}
+      {order.orderNote && (
+        <p className="mt-4 rounded-lg bg-slate-50 p-4 text-sm text-slate-700">
+          Note: {order.orderNote}
         </p>
+      )}
+
+      <div className="mt-5 space-y-3">
+        {order.items?.map((item) => (
+          <div
+            className="flex justify-between gap-3 border-b border-slate-100 pb-2 text-sm"
+            key={`${order._id}-${item.foodItem || item.name}`}
+          >
+            <span>
+              {item.name} x {item.quantity}
+            </span>
+            <span>{formatCurrency(item.price * item.quantity)}</span>
+          </div>
+        ))}
+      </div>
+
+      <div className="mt-5 grid gap-3 text-sm text-slate-700 md:grid-cols-3">
+        <p>{formatPaymentMethod(order.paymentMethod)}</p>
+        <p>Payment: {formatPaymentStatus(order.paymentStatus)}</p>
         <p className="font-bold text-slate-900">
           Total: {formatCurrency(order.totalAmount)}
         </p>
       </div>
+
+      <p className="mt-4 text-sm font-semibold text-indigo-700">
+        {order.deliveryLocation ? 'Map location available' : 'Address only'}
+      </p>
 
       <button
         className="mt-5 rounded-md bg-orange-600 px-4 py-2 font-semibold text-white hover:bg-orange-700"
@@ -125,12 +158,22 @@ function AvailableDeliveryCard({ onAccept, order }) {
   );
 }
 
-function MyDeliveryCard({ onMarkDelivered, order }) {
+function MyDeliveryCard({
+  isHighlighted,
+  isUpdatingLocation,
+  onMarkDelivered,
+  onUpdateLocation,
+  order,
+}) {
   const restaurantAddress = order.restaurant?.address;
   const deliveryAddress = order.deliveryAddress;
 
   return (
-    <article className="rounded-xl bg-white p-6 shadow-sm">
+    <article
+      className={`rounded-xl bg-white p-6 shadow-sm ${
+        isHighlighted ? 'ring-2 ring-orange-500' : ''
+      }`}
+    >
       <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
         <div>
           <p className="text-sm font-semibold uppercase tracking-wide text-orange-600">
@@ -166,6 +209,12 @@ function MyDeliveryCard({ onMarkDelivered, order }) {
             Customer delivery address
           </p>
           <DeliveryAddress address={deliveryAddress} />
+          <p className="mt-2 text-sm text-slate-700">
+            Customer: {order.customer?.name || deliveryAddress?.fullName}
+          </p>
+          <p className="text-sm text-slate-700">
+            Phone: {order.customer?.phone || deliveryAddress?.phone || 'Not provided'}
+          </p>
         </div>
       </div>
 
@@ -195,21 +244,52 @@ function MyDeliveryCard({ onMarkDelivered, order }) {
       </div>
 
       <div className="mt-5 grid gap-3 text-sm text-slate-700 md:grid-cols-3">
-        <p>Payment: {order.paymentMethod}</p>
-        <p>Payment status: {order.paymentStatus}</p>
+        <p>Payment: {formatPaymentMethod(order.paymentMethod)}</p>
+        <p>Payment status: {formatPaymentStatus(order.paymentStatus)}</p>
         <p className="font-bold text-slate-900">
           Total: {formatCurrency(order.totalAmount)}
         </p>
       </div>
 
+      {(order.deliveryLocation || order.riderLocation) && (
+        <div className="mt-5">
+          <Suspense
+            fallback={<p className="text-sm text-slate-600">Loading map...</p>}
+          >
+            <DeliveryMap
+              deliveryLocation={order.deliveryLocation}
+              height="300px"
+              riderLocation={order.riderLocation}
+            />
+          </Suspense>
+        </div>
+      )}
+
+      {order.riderLocation?.updatedAt && (
+        <p className="mt-4 rounded-lg bg-indigo-50 p-3 text-sm text-indigo-700">
+          Location last updated:{' '}
+          {new Date(order.riderLocation.updatedAt).toLocaleString()}
+        </p>
+      )}
+
       {order.status === 'out_for_delivery' && (
-        <button
-          className="mt-5 rounded-md bg-orange-600 px-4 py-2 font-semibold text-white hover:bg-orange-700"
-          onClick={() => onMarkDelivered(order._id)}
-          type="button"
-        >
-          Mark as Delivered
-        </button>
+        <div className="mt-5 flex flex-wrap gap-3">
+          <button
+            className="rounded-md bg-orange-600 px-4 py-2 font-semibold text-white hover:bg-orange-700 disabled:cursor-not-allowed disabled:bg-orange-300"
+            disabled={isUpdatingLocation}
+            onClick={() => onUpdateLocation(order._id)}
+            type="button"
+          >
+            {isUpdatingLocation ? 'Updating location...' : 'Update My Location'}
+          </button>
+          <button
+            className="rounded-md border border-green-200 px-4 py-2 font-semibold text-green-700 hover:bg-green-50"
+            onClick={() => onMarkDelivered(order._id)}
+            type="button"
+          >
+            Mark as Delivered
+          </button>
+        </div>
       )}
     </article>
   );
@@ -224,6 +304,8 @@ function RiderDashboard() {
   const [deliveryStatusFilter, setDeliveryStatusFilter] = useState('all');
   const [isAvailableLoading, setIsAvailableLoading] = useState(false);
   const [isMyDeliveriesLoading, setIsMyDeliveriesLoading] = useState(false);
+  const [updatingLocationOrderId, setUpdatingLocationOrderId] = useState(null);
+  const [highlightedOrderId, setHighlightedOrderId] = useState(null);
   const [availableError, setAvailableError] = useState('');
   const [myDeliveriesError, setMyDeliveriesError] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
@@ -273,7 +355,39 @@ function RiderDashboard() {
       setAvailableDeliveries((currentDeliveries) =>
         currentDeliveries.filter((order) => order._id !== orderId),
       );
-      setSuccessMessage('Delivery accepted successfully');
+      setActiveTab('mine');
+      setHighlightedOrderId(orderId);
+      setUpdatingLocationOrderId(orderId);
+
+      let locationMessage = 'Delivery accepted successfully';
+
+      try {
+        if (!navigator.geolocation) {
+          throw new Error('LOCATION_UNAVAILABLE');
+        }
+
+        const position = await new Promise((resolve, reject) => {
+          navigator.geolocation.getCurrentPosition(resolve, reject, {
+            enableHighAccuracy: true,
+            timeout: 10000,
+          });
+        });
+
+        await updateRiderLocation(orderId, {
+          lat: position.coords.latitude,
+          lng: position.coords.longitude,
+        });
+        locationMessage = 'Delivery accepted and your location was updated';
+      } catch (locationError) {
+        locationMessage =
+          locationError.code === locationError.PERMISSION_DENIED
+            ? 'Delivery accepted. Location permission denied. You can update location manually.'
+            : 'Delivery accepted. You can update your location manually.';
+      } finally {
+        setUpdatingLocationOrderId(null);
+      }
+
+      setSuccessMessage(locationMessage);
       await loadMyDeliveries();
     } catch (error) {
       setAvailableError(error.message);
@@ -296,6 +410,52 @@ function RiderDashboard() {
     } catch (error) {
       setMyDeliveriesError(error.message);
     }
+  };
+
+  const handleUpdateLocation = (orderId) => {
+    setSuccessMessage('');
+    setMyDeliveriesError('');
+
+    if (!navigator.geolocation) {
+      setMyDeliveriesError('Location is not supported by this browser.');
+      return;
+    }
+
+    setUpdatingLocationOrderId(orderId);
+    navigator.geolocation.getCurrentPosition(
+      async ({ coords }) => {
+        try {
+          const response = await updateRiderLocation(orderId, {
+            lat: coords.latitude,
+            lng: coords.longitude,
+          });
+          const riderLocation = response.data.riderLocation;
+
+          setMyDeliveries((currentDeliveries) =>
+            currentDeliveries.map((order) =>
+              order._id === orderId ? { ...order, riderLocation } : order,
+            ),
+          );
+          setSuccessMessage('Location updated successfully');
+        } catch (error) {
+          setMyDeliveriesError(error.message);
+        } finally {
+          setUpdatingLocationOrderId(null);
+        }
+      },
+      (geolocationError) => {
+        setUpdatingLocationOrderId(null);
+        setMyDeliveriesError(
+          geolocationError.code === geolocationError.PERMISSION_DENIED
+            ? 'Location permission denied. Please allow location access.'
+            : 'Unable to get your location. Please try again.',
+        );
+      },
+      {
+        enableHighAccuracy: true,
+        timeout: 10000,
+      },
+    );
   };
 
   const handleFilterChange = (event) => {
@@ -449,8 +609,11 @@ function RiderDashboard() {
               <div className="space-y-5">
                 {myDeliveries.map((order) => (
                   <MyDeliveryCard
+                    isHighlighted={highlightedOrderId === order._id}
+                    isUpdatingLocation={updatingLocationOrderId === order._id}
                     key={order._id}
                     onMarkDelivered={handleMarkDelivered}
+                    onUpdateLocation={handleUpdateLocation}
                     order={order}
                   />
                 ))}

@@ -36,6 +36,54 @@ const orderItemSchema = new mongoose.Schema(
   },
 );
 
+const riderLocationSchema = new mongoose.Schema(
+  {
+    lat: {
+      type: Number,
+      min: -90,
+      max: 90,
+      required: true,
+    },
+    lng: {
+      type: Number,
+      min: -180,
+      max: 180,
+      required: true,
+    },
+    updatedAt: {
+      type: Date,
+      required: true,
+    },
+  },
+  {
+    _id: false,
+  },
+);
+
+const deliveryLocationSchema = new mongoose.Schema(
+  {
+    lat: {
+      type: Number,
+      min: -90,
+      max: 90,
+      required: true,
+    },
+    lng: {
+      type: Number,
+      min: -180,
+      max: 180,
+      required: true,
+    },
+    displayName: {
+      type: String,
+      trim: true,
+    },
+  },
+  {
+    _id: false,
+  },
+);
+
 const orderSchema = new mongoose.Schema(
   {
     customer: {
@@ -52,6 +100,10 @@ const orderSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User',
       default: null,
+    },
+    riderLocation: {
+      type: riderLocationSchema,
+      default: undefined,
     },
     items: [orderItemSchema],
     deliveryAddress: {
@@ -85,6 +137,10 @@ const orderSchema = new mongoose.Schema(
         default: 'Germany',
         trim: true,
       },
+    },
+    deliveryLocation: {
+      type: deliveryLocationSchema,
+      default: undefined,
     },
     orderNote: {
       type: String,

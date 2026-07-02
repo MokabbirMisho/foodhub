@@ -6,6 +6,7 @@ import helmet from 'helmet';
 import morgan from 'morgan';
 import authRoutes from './routes/authRoutes.js';
 import foodRoutes from './routes/foodRoutes.js';
+import geocodeRoutes from './routes/geocodeRoutes.js';
 import orderRoutes from './routes/orderRoutes.js';
 import restaurantRoutes from './routes/restaurantRoutes.js';
 import reviewRoutes from './routes/reviewRoutes.js';
@@ -64,6 +65,9 @@ app.use('/api/restaurants', restaurantRoutes);
 
 // Food/menu item routes.
 app.use('/api/foods', foodRoutes);
+
+// Lightweight, customer-only address lookup for checkout map coordinates.
+app.use('/api/geocode', geocodeRoutes);
 
 // Order routes.
 app.use('/api/orders', orderRoutes);

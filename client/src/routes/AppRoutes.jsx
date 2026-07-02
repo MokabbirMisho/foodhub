@@ -1,3 +1,4 @@
+import { lazy, Suspense } from 'react';
 import { Route, Routes } from 'react-router-dom';
 import LoginPage from '../pages/auth/LoginPage';
 import RegisterPage from '../pages/auth/RegisterPage';
@@ -17,6 +18,10 @@ import RestaurantDashboard from '../pages/restaurant/RestaurantDashboard';
 import RiderDashboard from '../pages/rider/RiderDashboard';
 import ProtectedRoute from './ProtectedRoute';
 import RoleRoute from './RoleRoute';
+
+const OrderTrackingPage = lazy(
+  () => import('../pages/customer/OrderTrackingPage'),
+);
 
 function CustomerPageLayout({ children }) {
   return (
@@ -83,6 +88,27 @@ function AppRoutes() {
             <ProtectedRoute>
               <RoleRoute allowedRoles={['customer']}>
                 <MyOrdersPage />
+              </RoleRoute>
+            </ProtectedRoute>
+          </CustomerPageLayout>
+        }
+      />
+
+      <Route
+        path="/orders/:id/tracking"
+        element={
+          <CustomerPageLayout>
+            <ProtectedRoute>
+              <RoleRoute allowedRoles={['customer']}>
+                <Suspense
+                  fallback={
+                    <p className="min-h-screen bg-orange-50 p-6 text-slate-700">
+                      Loading tracking map...
+                    </p>
+                  }
+                >
+                  <OrderTrackingPage />
+                </Suspense>
               </RoleRoute>
             </ProtectedRoute>
           </CustomerPageLayout>

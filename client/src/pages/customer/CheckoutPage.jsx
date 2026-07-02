@@ -1,9 +1,15 @@
-import { useState } from 'react';
+import { lazy, Suspense, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import BackButton from '../../components/common/BackButton';
 import { useCart } from '../../context/CartContext';
 import { useAuth } from '../../hooks/useAuth';
+import {
+  geocodeAddress,
+  reverseGeocodeLocation,
+} from '../../services/geocodeService';
 import { createOrder } from '../../services/orderService';
+
+const DeliveryMap = lazy(() => import('../../components/map/DeliveryMap'));
 
 const formatCurrency = (value) => `€${Number(value || 0).toFixed(2)}`;
 const wait = (milliseconds) =>
@@ -37,6 +43,10 @@ function CheckoutPage() {
     country: 'Germany',
   });
   const [orderNote, setOrderNote] = useState('');
+  const [deliveryLocation, setDeliveryLocation] = useState(null);
+  const [locationMessage, setLocationMessage] = useState('');
+  const [locationError, setLocationError] = useState('');
+  const [isFindingLocation, setIsFindingLocation] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState('cash_on_delivery');
   const [demoCard, setDemoCard] = useState({
     cardholderName: '',
@@ -61,6 +71,94 @@ function CheckoutPage() {
       ...demoCard,
       [event.target.name]: event.target.value,
     });
+  };
+
+  const handleUseCurrentLocation = () => {
+    setLocationMessage('');
+    setLocationError('');
+
+    if (!navigator.geolocation) {
+      setLocationError('Location is not supported by this browser.');
+      return;
+    }
+
+    setIsFindingLocation(true);
+    navigator.geolocation.getCurrentPosition(
+      async ({ coords }) => {
+        const location = {
+          lat: coords.latitude,
+          lng: coords.longitude,
+          displayName: 'Current location',
+        };
+
+        // Save coordinates first so a failed address lookup never loses the map pin.
+        setDeliveryLocation(location);
+
+        try {
+          const response = await reverseGeocodeLocation({
+            lat: location.lat,
+            lng: location.lng,
+          });
+          const address = response.data;
+
+          setDeliveryAddress((currentAddress) => ({
+            ...currentAddress,
+            street: address.street || currentAddress.street,
+            city: address.city || currentAddress.city,
+            postalCode: address.postalCode || currentAddress.postalCode,
+            country: address.country || currentAddress.country,
+          }));
+          setDeliveryLocation({
+            ...location,
+            displayName: address.displayName || location.displayName,
+          });
+          setLocationMessage(
+            'Current location added and address filled automatically.',
+          );
+        } catch (requestError) {
+          setLocationError(
+            'Location added, but address could not be filled automatically. Please enter address manually.',
+          );
+        } finally {
+          setIsFindingLocation(false);
+        }
+      },
+      (geolocationError) => {
+        setIsFindingLocation(false);
+        setLocationError(
+          geolocationError.code === geolocationError.PERMISSION_DENIED
+            ? 'Location permission denied. You can still place the order with address only.'
+            : 'Could not get your current location. You can still use your written address.',
+        );
+      },
+      {
+        enableHighAccuracy: true,
+        timeout: 10000,
+      },
+    );
+  };
+
+  const handleFindAddressLocation = async () => {
+    try {
+      setLocationMessage('');
+      setLocationError('');
+      setIsFindingLocation(true);
+      const response = await geocodeAddress({
+        street: deliveryAddress.street,
+        city: deliveryAddress.city,
+        postalCode: deliveryAddress.postalCode,
+        country: deliveryAddress.country,
+      });
+
+      setDeliveryLocation(response.data);
+      setLocationMessage('Location found from address');
+    } catch (requestError) {
+      setLocationError(
+        'Could not find location from address. Please check your address or use current location.',
+      );
+    } finally {
+      setIsFindingLocation(false);
+    }
   };
 
   const validateDemoCard = () => {
@@ -129,6 +227,7 @@ function CheckoutPage() {
           quantity: item.quantity,
         })),
         deliveryAddress,
+        deliveryLocation,
         orderNote,
         paymentMethod,
       });
@@ -256,6 +355,68 @@ function CheckoutPage() {
               value={orderNote}
             />
           </label>
+
+          <section className="mt-6 rounded-xl border border-orange-200 bg-orange-50 p-5">
+            <h2 className="text-xl font-bold">Delivery Map Location</h2>
+            <p className="mt-1 text-sm text-slate-600">
+              Add a map location so the rider can find you more easily.
+            </p>
+
+            <div className="mt-4 flex flex-wrap gap-3">
+              <button
+                className="rounded-md bg-orange-600 px-4 py-2 text-sm font-semibold text-white hover:bg-orange-700 disabled:bg-orange-300"
+                disabled={isFindingLocation}
+                onClick={handleUseCurrentLocation}
+                type="button"
+              >
+                Use my current location
+              </button>
+              <button
+                className="rounded-md border border-orange-300 bg-white px-4 py-2 text-sm font-semibold text-orange-700 hover:bg-orange-100 disabled:text-orange-300"
+                disabled={isFindingLocation}
+                onClick={handleFindAddressLocation}
+                type="button"
+              >
+                Find location from address
+              </button>
+            </div>
+
+            {isFindingLocation && (
+              <p className="mt-3 text-sm text-slate-600">Finding location...</p>
+            )}
+            {locationMessage && (
+              <p className="mt-3 text-sm font-semibold text-green-700">
+                {locationMessage}
+              </p>
+            )}
+            {locationError && (
+              <p className="mt-3 text-sm text-red-700">{locationError}</p>
+            )}
+
+            {deliveryLocation ? (
+              <div className="mt-4 space-y-3">
+                <p className="text-sm text-slate-700">
+                  <span className="font-semibold">Map location added.</span>{' '}
+                  {deliveryLocation.displayName}
+                </p>
+                <Suspense
+                  fallback={
+                    <p className="text-sm text-slate-600">Loading map preview...</p>
+                  }
+                >
+                  <DeliveryMap
+                    deliveryLocation={deliveryLocation}
+                    height="240px"
+                  />
+                </Suspense>
+              </div>
+            ) : (
+              <p className="mt-4 text-sm text-slate-600">
+                No map location added yet. Rider will still see your written
+                address.
+              </p>
+            )}
+          </section>
 
           <fieldset className="mt-6">
             <legend className="text-sm font-semibold text-slate-700">

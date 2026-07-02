@@ -202,6 +202,23 @@ function MyOrdersPage() {
                   </button>
                 )}
 
+                {['out_for_delivery', 'delivered'].includes(order.status) && (
+                  <Link
+                    className="mt-5 inline-flex rounded-md bg-indigo-600 px-4 py-2 font-semibold text-white hover:bg-indigo-700"
+                    to={`/orders/${order._id}/tracking`}
+                  >
+                    Track Order
+                  </Link>
+                )}
+
+                {['pending', 'accepted', 'preparing', 'ready'].includes(
+                  order.status,
+                ) && (
+                  <p className="mt-5 text-sm text-slate-600">
+                    Tracking will be available after rider accepts delivery.
+                  </p>
+                )}
+
                 {order.status === 'delivered' && (
                   <div className="mt-5">
                     {reviewedOrderIds.has(String(order._id)) ? (

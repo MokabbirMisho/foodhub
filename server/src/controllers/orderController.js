@@ -63,10 +63,24 @@ const getOwnedRestaurant = async (ownerId) => {
   return Restaurant.findOne({ owner: ownerId });
 };
 
+const hasValidCoordinates = (location) => {
+  return (
+    typeof location?.lat === 'number' &&
+    Number.isFinite(location.lat) &&
+    location.lat >= -90 &&
+    location.lat <= 90 &&
+    typeof location?.lng === 'number' &&
+    Number.isFinite(location.lng) &&
+    location.lng >= -180 &&
+    location.lng <= 180
+  );
+};
+
 export const createOrder = async (req, res) => {
   try {
     const {
       deliveryAddress,
+      deliveryLocation,
       items,
       orderNote,
       paymentMethod = 'cash_on_delivery',
@@ -85,6 +99,14 @@ export const createOrder = async (req, res) => {
 
     if (!Array.isArray(items) || items.length === 0) {
       return sendErrorResponse(res, 400, 'Order items are required');
+    }
+
+    if (deliveryLocation && !hasValidCoordinates(deliveryLocation)) {
+      return sendErrorResponse(
+        res,
+        400,
+        'Delivery location must contain valid latitude and longitude',
+      );
     }
 
     const restaurant = await Restaurant.findOne({
@@ -157,6 +179,16 @@ export const createOrder = async (req, res) => {
       restaurant: restaurant._id,
       items: orderItems,
       deliveryAddress,
+      deliveryLocation: deliveryLocation
+        ? {
+            lat: deliveryLocation.lat,
+            lng: deliveryLocation.lng,
+            displayName:
+              typeof deliveryLocation.displayName === 'string'
+                ? deliveryLocation.displayName
+                : undefined,
+          }
+        : undefined,
       orderNote,
       subtotal,
       deliveryFee,
@@ -383,7 +415,7 @@ export const getAvailableDeliveriesForRider = async (req, res) => {
       $or: [{ rider: null }, { rider: { $exists: false } }],
     })
       .populate('restaurant', 'name address phone')
-      .populate('customer', 'name email')
+      .populate('customer', 'name email phone')
       .sort({ createdAt: -1 });
 
     sendSuccessResponse(res, 200, 'Available deliveries fetched successfully', {
@@ -406,7 +438,7 @@ export const getMyDeliveriesForRider = async (req, res) => {
 
     const orders = await Order.find(filters)
       .populate('restaurant', 'name address phone')
-      .populate('customer', 'name email')
+      .populate('customer', 'name email phone')
       .sort({ createdAt: -1 });
 
     sendSuccessResponse(res, 200, 'My deliveries fetched successfully', {
@@ -483,6 +515,132 @@ export const markDeliveryAsDelivered = async (req, res) => {
 
     sendSuccessResponse(res, 200, 'Delivery marked as delivered successfully', {
       order: populatedOrder,
+    });
+  } catch (error) {
+    handleOrderError(res, error);
+  }
+};
+
+export const updateRiderLocation = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { lat, lng } = req.body;
+
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return sendErrorResponse(res, 400, 'Invalid order id');
+    }
+
+    if (!hasValidCoordinates({ lat, lng })) {
+      return sendErrorResponse(res, 400, 'Valid latitude and longitude are required');
+    }
+
+    const order = await Order.findById(id);
+
+    if (!order) {
+      return sendErrorResponse(res, 404, 'Order not found');
+    }
+
+    if (String(order.rider) !== String(req.user._id)) {
+      return sendErrorResponse(res, 403, 'You can update only your own delivery');
+    }
+
+    if (order.status !== 'out_for_delivery') {
+      return sendErrorResponse(
+        res,
+        400,
+        'Location can be updated only while an order is out for delivery',
+      );
+    }
+
+    // Location is saved only when the rider explicitly presses the update button.
+    order.riderLocation = {
+      lat,
+      lng,
+      updatedAt: new Date(),
+    };
+    await order.save();
+
+    sendSuccessResponse(res, 200, 'Location updated successfully', {
+      riderLocation: order.riderLocation,
+    });
+  } catch (error) {
+    handleOrderError(res, error);
+  }
+};
+
+export const getOrderTracking = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return sendErrorResponse(res, 400, 'Invalid order id');
+    }
+
+    const order = await Order.findById(id)
+      .populate('restaurant', 'name address owner')
+      .populate('customer', 'name phone')
+      .populate('rider', 'name email phone');
+
+    if (!order) {
+      return sendErrorResponse(res, 404, 'Order not found');
+    }
+
+    const userId = String(req.user._id);
+    let canViewTracking = req.user.role === 'admin';
+
+    if (req.user.role === 'customer') {
+      canViewTracking = String(order.customer?._id) === userId;
+    }
+
+    if (req.user.role === 'restaurant_owner') {
+      canViewTracking = String(order.restaurant?.owner) === userId;
+    }
+
+    if (req.user.role === 'rider') {
+      canViewTracking = String(order.rider?._id) === userId;
+    }
+
+    if (!canViewTracking) {
+      return sendErrorResponse(
+        res,
+        403,
+        'You do not have permission to track this order',
+      );
+    }
+
+    const tracking = {
+      orderId: order._id,
+      status: order.status,
+      restaurant: order.restaurant
+        ? {
+            name: order.restaurant.name,
+            address: order.restaurant.address,
+          }
+        : null,
+      deliveryAddress: order.deliveryAddress,
+      deliveryLocation: order.deliveryLocation || null,
+      customer: order.customer
+        ? {
+            name: order.customer.name,
+            phone: order.customer.phone,
+          }
+        : null,
+      rider: order.rider
+        ? {
+            name: order.rider.name,
+            email: order.rider.email,
+            phone: order.rider.phone,
+          }
+        : null,
+      riderLocation: order.riderLocation || null,
+      orderNote: order.orderNote,
+      paymentMethod: order.paymentMethod,
+      paymentStatus: order.paymentStatus,
+      updatedAt: order.riderLocation?.updatedAt || order.updatedAt,
+    };
+
+    sendSuccessResponse(res, 200, 'Order tracking fetched successfully', {
+      tracking,
     });
   } catch (error) {
     handleOrderError(res, error);

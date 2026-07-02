@@ -54,3 +54,13 @@ export const markDeliveryAsDelivered = async (orderId) => {
   const response = await api.patch(`/orders/${orderId}/mark-delivered`);
   return response.data;
 };
+
+export const updateRiderLocation = async (orderId, location) => {
+  const response = await api.patch(`/orders/${orderId}/rider-location`, location);
+  return response.data;
+};
+
+export const getOrderTracking = async (orderId) => {
+  const response = await api.get(`/orders/${orderId}/tracking`);
+  return response.data;
+};
