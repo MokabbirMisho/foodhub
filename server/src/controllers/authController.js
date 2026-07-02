@@ -169,7 +169,11 @@ export const loginUser = async (req, res) => {
     }
 
     if (user.isBlocked) {
-      return sendErrorResponse(res, 403, 'Your account is blocked');
+      return sendErrorResponse(
+        res,
+        403,
+        'Your account has been blocked. Please contact support.',
+      );
     }
 
     const isPasswordCorrect = await user.comparePassword(password);
@@ -230,7 +234,11 @@ export const googleAuth = async (req, res) => {
 
     if (user) {
       if (user.isBlocked) {
-        return sendErrorResponse(res, 403, 'Your account is blocked');
+        return sendErrorResponse(
+          res,
+          403,
+          'Your account has been blocked. Please contact support.',
+        );
       }
 
       if (user.googleId && user.googleId !== googleId) {
@@ -297,7 +305,11 @@ export const googleSignUp = async (req, res) => {
 
     if (user) {
       if (user.isBlocked) {
-        return sendErrorResponse(res, 403, 'Your account is blocked');
+        return sendErrorResponse(
+          res,
+          403,
+          'Your account has been blocked. Please contact support.',
+        );
       }
 
       if (user.role !== 'customer') {
@@ -371,7 +383,11 @@ export const googleSignIn = async (req, res) => {
     }
 
     if (user.isBlocked) {
-      return sendErrorResponse(res, 403, 'Your account is blocked');
+      return sendErrorResponse(
+        res,
+        403,
+        'Your account has been blocked. Please contact support.',
+      );
     }
 
     if (user.role !== 'customer') {

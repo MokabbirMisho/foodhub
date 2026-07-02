@@ -4,6 +4,7 @@ import express from 'express';
 import rateLimit from 'express-rate-limit';
 import helmet from 'helmet';
 import morgan from 'morgan';
+import adminUserRoutes from './routes/adminUserRoutes.js';
 import authRoutes from './routes/authRoutes.js';
 import foodRoutes from './routes/foodRoutes.js';
 import geocodeRoutes from './routes/geocodeRoutes.js';
@@ -59,6 +60,9 @@ app.get('/api/health', (req, res) => {
 
 // Authentication routes for email/password signup and login.
 app.use('/api/auth', authRoutes);
+
+// Admin-only user management routes.
+app.use('/api/admin/users', adminUserRoutes);
 
 // Restaurant profile routes.
 app.use('/api/restaurants', restaurantRoutes);

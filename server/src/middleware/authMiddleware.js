@@ -29,7 +29,7 @@ export const protect = async (req, res, next) => {
     if (user.isBlocked) {
       return res.status(403).json({
         success: false,
-        message: 'Your account is blocked',
+        message: 'Your account has been blocked. Please contact support.',
         data: null,
       });
     }

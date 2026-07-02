@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import AdminUsersPanel from '../../components/admin/AdminUsersPanel';
 import NotificationBell from '../../components/common/NotificationBell';
 import { useAuth } from '../../hooks/useAuth';
 import { getAllOrdersForAdmin } from '../../services/orderService';
@@ -174,6 +175,7 @@ function AdminOrderCard({ order }) {
 function AdminDashboard() {
   const navigate = useNavigate();
   const { logout, user } = useAuth();
+  const [activeTab, setActiveTab] = useState('orders');
   const [orders, setOrders] = useState([]);
   const [filters, setFilters] = useState({
     status: 'all',
@@ -268,7 +270,9 @@ function AdminDashboard() {
             <p className="text-sm font-semibold uppercase tracking-wide text-orange-600">
               Admin Dashboard
             </p>
-            <h1 className="mt-2 text-3xl font-bold">Order Overview</h1>
+            <h1 className="mt-2 text-3xl font-bold">
+              {activeTab === 'orders' ? 'Order Overview' : 'User Management'}
+            </h1>
             <p className="mt-2 text-slate-700">
               Signed in as {user?.name || 'Admin'}
             </p>
@@ -286,75 +290,101 @@ function AdminDashboard() {
           </div>
         </header>
 
-        <form
-          className="grid gap-3 rounded-xl bg-white p-5 shadow-sm lg:grid-cols-[180px_1fr_1fr_auto_auto]"
-          onSubmit={handleApplyFilters}
-        >
-          <select
-            className="rounded-md border border-slate-300 px-3 py-2 outline-none focus:border-orange-500"
-            name="status"
-            onChange={handleFilterChange}
-            value={filters.status}
-          >
-            {statusOptions.map((status) => (
-              <option key={status} value={status}>
-                {status}
-              </option>
-            ))}
-          </select>
-          <input
-            className="rounded-md border border-slate-300 px-3 py-2 outline-none focus:border-orange-500"
-            name="restaurantId"
-            onChange={handleFilterChange}
-            placeholder="Filter by restaurant ID"
-            value={filters.restaurantId}
-          />
-          <input
-            className="rounded-md border border-slate-300 px-3 py-2 outline-none focus:border-orange-500"
-            name="customerId"
-            onChange={handleFilterChange}
-            placeholder="Filter by customer ID"
-            value={filters.customerId}
-          />
-          <button
-            className="rounded-md bg-orange-600 px-4 py-2 font-semibold text-white hover:bg-orange-700"
-            type="submit"
-          >
-            Apply Filters
-          </button>
-          <button
-            className="rounded-md border border-slate-300 px-4 py-2 font-semibold text-slate-700 hover:bg-orange-50"
-            onClick={handleClearFilters}
-            type="button"
-          >
-            Clear
-          </button>
-        </form>
+        <nav className="flex w-fit gap-2 rounded-xl bg-white p-2 shadow-sm">
+          {[
+            ['orders', 'Orders'],
+            ['users', 'Users'],
+          ].map(([tabId, label]) => (
+            <button
+              className={`rounded-lg px-5 py-2 text-sm font-semibold ${
+                activeTab === tabId
+                  ? 'bg-orange-600 text-white'
+                  : 'text-slate-700 hover:bg-orange-50'
+              }`}
+              key={tabId}
+              onClick={() => setActiveTab(tabId)}
+              type="button"
+            >
+              {label}
+            </button>
+          ))}
+        </nav>
 
-        {isLoading && (
-          <p className="rounded-xl bg-white p-6 text-slate-700 shadow-sm">
-            Loading orders...
-          </p>
-        )}
+        {activeTab === 'users' ? (
+          <AdminUsersPanel currentUserId={user?.id || user?._id} />
+        ) : (
+          <>
+            <form
+              className="grid gap-3 rounded-xl bg-white p-5 shadow-sm lg:grid-cols-[180px_1fr_1fr_auto_auto]"
+              onSubmit={handleApplyFilters}
+            >
+              <select
+                className="rounded-md border border-slate-300 px-3 py-2 outline-none focus:border-orange-500"
+                name="status"
+                onChange={handleFilterChange}
+                value={filters.status}
+              >
+                {statusOptions.map((status) => (
+                  <option key={status} value={status}>
+                    {status}
+                  </option>
+                ))}
+              </select>
+              <input
+                className="rounded-md border border-slate-300 px-3 py-2 outline-none focus:border-orange-500"
+                name="restaurantId"
+                onChange={handleFilterChange}
+                placeholder="Filter by restaurant ID"
+                value={filters.restaurantId}
+              />
+              <input
+                className="rounded-md border border-slate-300 px-3 py-2 outline-none focus:border-orange-500"
+                name="customerId"
+                onChange={handleFilterChange}
+                placeholder="Filter by customer ID"
+                value={filters.customerId}
+              />
+              <button
+                className="rounded-md bg-orange-600 px-4 py-2 font-semibold text-white hover:bg-orange-700"
+                type="submit"
+              >
+                Apply Filters
+              </button>
+              <button
+                className="rounded-md border border-slate-300 px-4 py-2 font-semibold text-slate-700 hover:bg-orange-50"
+                onClick={handleClearFilters}
+                type="button"
+              >
+                Clear
+              </button>
+            </form>
 
-        {error && (
-          <p className="rounded-xl bg-red-50 p-6 text-red-700 shadow-sm">
-            {error}
-          </p>
-        )}
+            {isLoading && (
+              <p className="rounded-xl bg-white p-6 text-slate-700 shadow-sm">
+                Loading orders...
+              </p>
+            )}
 
-        {!isLoading && !error && orders.length === 0 && (
-          <p className="rounded-xl bg-white p-6 text-slate-700 shadow-sm">
-            No orders found.
-          </p>
-        )}
+            {error && (
+              <p className="rounded-xl bg-red-50 p-6 text-red-700 shadow-sm">
+                {error}
+              </p>
+            )}
 
-        {!isLoading && !error && orders.length > 0 && (
-          <div className="space-y-5">
-            {orders.map((order) => (
-              <AdminOrderCard key={order._id} order={order} />
-            ))}
-          </div>
+            {!isLoading && !error && orders.length === 0 && (
+              <p className="rounded-xl bg-white p-6 text-slate-700 shadow-sm">
+                No orders found.
+              </p>
+            )}
+
+            {!isLoading && !error && orders.length > 0 && (
+              <div className="space-y-5">
+                {orders.map((order) => (
+                  <AdminOrderCard key={order._id} order={order} />
+                ))}
+              </div>
+            )}
+          </>
         )}
       </section>
     </main>
