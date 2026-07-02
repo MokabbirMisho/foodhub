@@ -1,20 +1,17 @@
 import {
-  createContext,
   useCallback,
-  useContext,
   useEffect,
   useMemo,
   useState,
 } from 'react';
 import { useAuth } from '../hooks/useAuth';
+import { NotificationContext } from './notificationContextValue';
 import {
   connectSocket,
   disconnectSocket,
   offSocketEvent,
   onSocketEvent,
 } from '../services/socketService';
-
-const NotificationContext = createContext(null);
 
 const eventTitles = {
   new_order: 'New Order',
@@ -37,6 +34,7 @@ const createNotificationId = () => {
 
 export function NotificationProvider({ children }) {
   const { token, user } = useAuth();
+  const userId = user?._id || user?.id;
   const [notifications, setNotifications] = useState([]);
   const [toast, setToast] = useState(null);
 
@@ -67,13 +65,17 @@ export function NotificationProvider({ children }) {
   }, []);
 
   useEffect(() => {
-    if (!token || !user) {
+    if (!token || !userId) {
       disconnectSocket();
       clearNotifications();
       return undefined;
     }
 
-    connectSocket({ token, user });
+    const socket = connectSocket({ token, user: { _id: userId } });
+    if (!socket) {
+      return undefined;
+    }
+
     const listeners = socketEvents.map((eventName) => {
       const listener = (payload = {}) => {
         addNotification({
@@ -83,6 +85,8 @@ export function NotificationProvider({ children }) {
         });
       };
 
+      // Remove this exact listener first so repeated effect setup stays idempotent.
+      offSocketEvent(eventName, listener);
       onSocketEvent(eventName, listener);
       return { eventName, listener };
     });
@@ -91,9 +95,8 @@ export function NotificationProvider({ children }) {
       listeners.forEach(({ eventName, listener }) => {
         offSocketEvent(eventName, listener);
       });
-      disconnectSocket();
     };
-  }, [addNotification, clearNotifications, token, user]);
+  }, [addNotification, clearNotifications, token, userId]);
 
   useEffect(() => {
     if (!toast) {
@@ -137,13 +140,3 @@ export function NotificationProvider({ children }) {
     </NotificationContext.Provider>
   );
 }
-
-export const useNotifications = () => {
-  const context = useContext(NotificationContext);
-
-  if (!context) {
-    throw new Error('useNotifications must be used inside NotificationProvider');
-  }
-
-  return context;
-};
