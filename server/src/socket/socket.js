@@ -1,16 +1,9 @@
 import jwt from 'jsonwebtoken';
 import { Server } from 'socket.io';
 import User from '../models/User.js';
+import { getAllowedOrigins } from '../config/corsOptions.js';
 
 let io;
-
-const getAllowedOrigins = () => {
-  return [
-    process.env.CLIENT_URL,
-    'http://localhost:5173',
-    'https://foodhub-phi-wine.vercel.app',
-  ].filter(Boolean);
-};
 
 export const initSocket = (httpServer) => {
   io = new Server(httpServer, {

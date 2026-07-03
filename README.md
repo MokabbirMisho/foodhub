@@ -131,7 +131,7 @@ Frontend (`client/.env`):
 ```env
 VITE_API_URL=http://localhost:5001/api
 VITE_SOCKET_URL=http://localhost:5001
-VITE_GOOGLE_CLIENT_ID=
+VITE_GOOGLE_CLIENT_ID=your_google_client_id_here
 ```
 
 Real credentials and secrets must never be committed.
@@ -162,14 +162,35 @@ For the deployed real-time notification connection, configure:
 
 ```env
 # Render
+NODE_ENV=production
 CLIENT_URL=https://foodhub-phi-wine.vercel.app
+MONGO_URI=
+JWT_SECRET=
+GOOGLE_CLIENT_ID=
+CLOUDINARY_CLOUD_NAME=
+CLOUDINARY_API_KEY=
+CLOUDINARY_API_SECRET=
 
 # Vercel
+VITE_API_URL=https://foodhub-zurl.onrender.com/api
 VITE_SOCKET_URL=https://foodhub-zurl.onrender.com
+VITE_GOOGLE_CLIENT_ID=your_google_client_id
 ```
 
 Socket.io uses the existing FoodHub JWT for authentication. REST APIs remain
 the source of truth if the socket connection is unavailable.
+
+### Security Notes
+
+- Never commit `.env` files or production credentials.
+- Local storage is used for JWT persistence in this demo; production systems
+  should consider secure, HTTP-only cookies.
+- Socket.io connections are authenticated with the FoodHub JWT and scoped to
+  user and role rooms.
+- Backend routes use role and ownership checks for customer, owner, rider, and
+  admin operations.
+- Demo online payment is simulated. It does not process or store card details.
+- Uploads accept JPEG, PNG, and WebP images up to 3 MB.
 
 ## Future Improvements
 

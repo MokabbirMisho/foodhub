@@ -19,13 +19,20 @@ api.interceptors.request.use((config) => {
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    if (error.response?.status === 401) {
+    const status = error.response?.status;
+    const responseMessage = error.response?.data?.message || '';
+    const sessionMustEnd =
+      status === 401 ||
+      (status === 403 && responseMessage.toLowerCase().includes('blocked'));
+
+    if (sessionMustEnd) {
       localStorage.removeItem('foodhub_token');
       localStorage.removeItem('foodhub_user');
+      window.dispatchEvent(new Event('foodhub:auth-cleared'));
     }
 
     const message =
-      error.response?.data?.message || error.message || 'Something went wrong';
+      responseMessage || error.message || 'Something went wrong';
 
     return Promise.reject(new Error(message));
   },

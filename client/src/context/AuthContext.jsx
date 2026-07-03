@@ -89,6 +89,17 @@ export function AuthProvider({ children }) {
     loadCurrentUser();
   }, [loadCurrentUser]);
 
+  useEffect(() => {
+    const clearExpiredAuth = () => {
+      setToken(null);
+      setUser(null);
+    };
+
+    window.addEventListener('foodhub:auth-cleared', clearExpiredAuth);
+    return () =>
+      window.removeEventListener('foodhub:auth-cleared', clearExpiredAuth);
+  }, []);
+
   const register = async (formData) => {
     const response = await registerUser(formData);
     return saveAuthData(response);

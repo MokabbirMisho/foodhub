@@ -122,6 +122,14 @@ export const registerUser = async (req, res) => {
       return sendErrorResponse(res, 400, 'Name, email, and password are required');
     }
 
+    if (password.length < 6) {
+      return sendErrorResponse(
+        res,
+        400,
+        'Password must be at least 6 characters',
+      );
+    }
+
     // Admin accounts should be created only by trusted internal tools, not public signup.
     const allowedPublicRoles = ['customer', 'restaurant_owner', 'rider'];
 

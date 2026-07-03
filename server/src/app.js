@@ -1,9 +1,10 @@
 import 'dotenv/config';
 import cors from 'cors';
 import express from 'express';
-import rateLimit from 'express-rate-limit';
 import helmet from 'helmet';
 import morgan from 'morgan';
+import { corsOptions } from './config/corsOptions.js';
+import { apiLimiter } from './middleware/rateLimiters.js';
 import adminUserRoutes from './routes/adminUserRoutes.js';
 import adminAnalyticsRoutes from './routes/adminAnalyticsRoutes.js';
 import authRoutes from './routes/authRoutes.js';
@@ -16,41 +17,23 @@ import reviewRoutes from './routes/reviewRoutes.js';
 import uploadRoutes from './routes/uploadRoutes.js';
 
 const app = express();
-const allowedClientOrigins = [
-  process.env.CLIENT_URL,
-  'http://localhost:5173',
-  'https://foodhub-phi-wine.vercel.app',
-].filter(Boolean);
+
+if (process.env.NODE_ENV === 'production') {
+  app.set('trust proxy', 1);
+}
 
 // Add common security headers to every response.
 app.use(helmet());
 
 // Allow only the configured frontend origin to call the API from a browser.
-app.use(
-  cors({
-    origin: allowedClientOrigins,
-    credentials: true,
-  }),
-);
+app.use(cors(corsOptions));
 
 // Keep JSON payloads small. Image files use Multer and have their own limit.
 app.use(express.json({ limit: '1mb' }));
+app.use(express.urlencoded({ extended: false, limit: '1mb' }));
 
 // Protect demo deployments from excessive API traffic.
-app.use(
-  '/api',
-  rateLimit({
-    windowMs: 15 * 60 * 1000,
-    limit: 100,
-    standardHeaders: 'draft-7',
-    legacyHeaders: false,
-    message: {
-      success: false,
-      message: 'Too many requests. Please try again later.',
-      data: null,
-    },
-  }),
-);
+app.use('/api', apiLimiter);
 
 if (process.env.NODE_ENV !== 'production') {
   app.use(morgan('dev'));
@@ -107,11 +90,38 @@ app.use((err, req, res, next) => {
     console.error(err);
   }
 
-  const statusCode = err.statusCode || 500;
+  let statusCode = err.statusCode || 500;
+  let errorMessage = err.message || 'Server error';
+
+  if (err.name === 'MulterError') {
+    statusCode = 400;
+    errorMessage =
+      err.code === 'LIMIT_FILE_SIZE'
+        ? 'Image must be 3MB or smaller'
+        : 'Image upload request is invalid';
+  }
+
+  if (err.name === 'CastError') {
+    statusCode = 400;
+    errorMessage = 'Invalid resource id';
+  }
+
+  if (err.code === 11000) {
+    statusCode = 400;
+    errorMessage = 'A record with this value already exists';
+  }
+
+  if (err.name === 'ValidationError') {
+    statusCode = 400;
+    errorMessage = Object.values(err.errors)
+      .map((validationError) => validationError.message)
+      .join(', ');
+  }
+
   const message =
     statusCode >= 500 && process.env.NODE_ENV === 'production'
       ? 'Server error'
-      : err.message || 'Server error';
+      : errorMessage;
 
   res.status(statusCode).json({
     success: false,
