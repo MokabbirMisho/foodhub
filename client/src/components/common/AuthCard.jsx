@@ -12,7 +12,11 @@ const roleLabels = {
   rider: 'Rider',
 };
 
-function AuthCard({ initialMode = 'signin', initialRole = 'customer' }) {
+function AuthCard({
+  initialMode = 'signin',
+  initialRole = 'customer',
+  onSuccess,
+}) {
   const navigate = useNavigate();
   const { login, register, signInWithGoogle, signUpWithGoogle } = useAuth();
   const safeInitialRole = allowedRoles.includes(initialRole)
@@ -40,6 +44,7 @@ function AuthCard({ initialMode = 'signin', initialRole = 'customer' }) {
   };
 
   const handleAuthSuccess = (authUser) => {
+    onSuccess?.(authUser);
     navigate(getDashboardPath(authUser.role));
   };
 
@@ -89,7 +94,7 @@ function AuthCard({ initialMode = 'signin', initialRole = 'customer' }) {
   };
 
   return (
-    <section className="w-full max-w-md rounded-2xl border border-white/70 bg-white/95 p-6 text-slate-900 shadow-[0_24px_70px_rgba(15,23,42,0.25)] backdrop-blur">
+    <section className="w-full max-w-md rounded-3xl border border-orange-100 bg-white p-4 text-stone-900 shadow-2xl sm:p-6">
       <div className="grid grid-cols-2 rounded-xl bg-orange-50 p-1">
         <button
           className={`rounded-lg px-4 py-2.5 text-sm font-semibold ${
@@ -223,7 +228,7 @@ function AuthCard({ initialMode = 'signin', initialRole = 'customer' }) {
               onError={() => setError('Google authentication failed')}
               onSuccess={handleGoogleSuccess}
               text={isSignIn ? 'signin_with' : 'signup_with'}
-              width={320}
+              width={280}
             />
           </div>
         ) : (
