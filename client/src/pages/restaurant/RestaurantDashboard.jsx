@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import NotificationBell from '../../components/common/NotificationBell';
 import FoodItemForm from '../../components/restaurant/FoodItemForm';
+import RestaurantAnalytics from '../../components/restaurant/RestaurantAnalytics';
 import RestaurantAvailabilityForm from '../../components/restaurant/RestaurantAvailabilityForm';
 import RestaurantForm from '../../components/restaurant/RestaurantForm';
 import { useAuth } from '../../hooks/useAuth';
@@ -27,11 +28,11 @@ import {
 } from '../../services/socketService';
 
 const navItems = [
-  { id: 'dashboard', label: 'Dashboard' },
+  { id: 'dashboard', label: 'Overview' },
   { id: 'profile', label: 'Restaurant Profile' },
-  { id: 'availability', label: 'Availability' },
   { id: 'menu', label: 'Menu Items' },
   { id: 'orders', label: 'Orders' },
+  { id: 'availability', label: 'Availability' },
   { id: 'settings', label: 'Settings' },
 ];
 
@@ -78,22 +79,6 @@ function DetailItem({ label, value }) {
       </p>
       <p className="mt-1 text-slate-900">{value || 'Not provided'}</p>
     </div>
-  );
-}
-
-function OverviewCard({ label, value, tone = 'default' }) {
-  const toneClasses =
-    tone === 'warning'
-      ? 'border-orange-200 bg-orange-50 text-orange-900'
-      : 'border-slate-200 bg-white text-slate-900';
-
-  return (
-    <article className={`rounded-lg border p-5 shadow-sm ${toneClasses}`}>
-      <p className="text-sm font-semibold uppercase tracking-wide opacity-75">
-        {label}
-      </p>
-      <p className="mt-3 text-2xl font-bold">{value}</p>
-    </article>
   );
 }
 
@@ -508,63 +493,40 @@ function RestaurantDashboard() {
     }
   };
 
-  const renderDashboardTab = () => (
-    <div className="space-y-6">
-      <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-        <OverviewCard
-          label="Approval Status"
-          tone={restaurant?.isApproved ? 'default' : 'warning'}
-          value={
-            restaurant
-              ? restaurant.isApproved
-                ? 'Approved'
-                : 'Pending'
-              : 'Profile needed'
-          }
-        />
-        <OverviewCard
-          label="Availability"
-          value={
-            restaurant
-              ? restaurant.isTemporarilyClosed
-                ? 'Temporarily closed'
-                : restaurant.availability?.isAvailableNow
-                  ? 'Open now'
-                  : 'Closed'
-              : 'Profile needed'
-          }
-        />
-        <OverviewCard label="Menu Items" value={foodItems.length || 'None yet'} />
-        <OverviewCard label="Orders" value={orders.length || 'None yet'} />
-      </div>
-
-      {restaurant && !restaurant.isApproved && (
-        <section className="rounded-lg border border-orange-200 bg-orange-50 p-5 text-orange-900 shadow-sm">
-          <h2 className="text-lg font-bold">Pending admin approval</h2>
-          <p className="mt-2 text-sm leading-6">
-            Your restaurant is pending admin approval. It will be visible to
-            customers after approval.
-          </p>
-        </section>
-      )}
-
-      {!restaurant && (
-        <section className="rounded-lg bg-white p-6 shadow-sm">
-          <h2 className="text-2xl font-bold">Create your restaurant profile</h2>
+  const renderDashboardTab = () => {
+    if (!restaurant) {
+      return (
+        <section className="fh-card p-7">
+          <h2 className="text-2xl font-bold">Create your restaurant profile first.</h2>
           <p className="mt-2 text-slate-700">
-            You have not created a restaurant profile yet.
+            Your business overview will appear after your restaurant profile is
+            created.
           </p>
           <button
-            className="mt-5 rounded-md bg-orange-600 px-4 py-2 font-semibold text-white hover:bg-orange-700"
+            className="fh-btn-primary mt-5"
             onClick={() => setActiveTab('profile')}
             type="button"
           >
             Create Restaurant
           </button>
         </section>
-      )}
-    </div>
-  );
+      );
+    }
+
+    return (
+      <div className="space-y-6">
+        {!restaurant.isApproved && (
+          <section className="rounded-lg border border-orange-200 bg-orange-50 p-5 text-orange-900 shadow-sm">
+            <h2 className="text-lg font-bold">Pending admin approval</h2>
+            <p className="mt-2 text-sm leading-6">
+              Your restaurant will become visible to customers after approval.
+            </p>
+          </section>
+        )}
+        <RestaurantAnalytics onViewOrders={() => handleTabChange('orders')} />
+      </div>
+    );
+  };
 
   const renderProfileDetails = () => (
     <section className="rounded-lg bg-white p-6 shadow-sm">

@@ -11,6 +11,7 @@ import {
   updateMyRestaurant,
 } from '../controllers/restaurantController.js';
 import { authorizeRoles, protect } from '../middleware/authMiddleware.js';
+import { getMyRestaurantAnalytics } from '../controllers/restaurantAnalyticsController.js';
 
 const router = express.Router();
 
@@ -26,6 +27,13 @@ router.get(
 );
 
 // Keep this route before /:id so Express does not treat "my-restaurant" as an id.
+router.get(
+  '/my-restaurant/analytics',
+  protect,
+  authorizeRoles('restaurant_owner'),
+  getMyRestaurantAnalytics,
+);
+
 router.get(
   '/my-restaurant',
   protect,
