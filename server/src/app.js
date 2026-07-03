@@ -5,6 +5,7 @@ import rateLimit from 'express-rate-limit';
 import helmet from 'helmet';
 import morgan from 'morgan';
 import adminUserRoutes from './routes/adminUserRoutes.js';
+import adminAnalyticsRoutes from './routes/adminAnalyticsRoutes.js';
 import authRoutes from './routes/authRoutes.js';
 import customerProfileRoutes from './routes/customerProfileRoutes.js';
 import foodRoutes from './routes/foodRoutes.js';
@@ -64,6 +65,7 @@ app.use('/api/auth', authRoutes);
 
 // Admin-only user management routes.
 app.use('/api/admin/users', adminUserRoutes);
+app.use('/api/admin', adminAnalyticsRoutes);
 
 // Customer profile and saved delivery addresses.
 app.use('/api/customer', customerProfileRoutes);

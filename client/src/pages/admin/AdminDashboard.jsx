@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import AdminOverview from '../../components/admin/AdminOverview';
+import AdminRestaurantsPanel from '../../components/admin/AdminRestaurantsPanel';
 import AdminUsersPanel from '../../components/admin/AdminUsersPanel';
 import NotificationBell from '../../components/common/NotificationBell';
 import { useAuth } from '../../hooks/useAuth';
@@ -175,7 +177,8 @@ function AdminOrderCard({ order }) {
 function AdminDashboard() {
   const navigate = useNavigate();
   const { logout, user } = useAuth();
-  const [activeTab, setActiveTab] = useState('orders');
+  const [activeTab, setActiveTab] = useState('overview');
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [orders, setOrders] = useState([]);
   const [filters, setFilters] = useState({
     status: 'all',
@@ -262,17 +265,118 @@ function AdminDashboard() {
     loadOrders(emptyFilters);
   };
 
+  const pageTitles = {
+    overview: 'Overview',
+    restaurants: 'Restaurant Management',
+    orders: 'Order Overview',
+    users: 'User Management',
+    settings: 'Settings',
+  };
+  const navigationItems = [
+    ['overview', 'Overview'],
+    ['restaurants', 'Restaurants'],
+    ['orders', 'Orders'],
+    ['users', 'Users'],
+    ['settings', 'Settings'],
+  ];
+
+  const selectSection = (section) => {
+    setActiveTab(section);
+    setIsSidebarOpen(false);
+  };
+
   return (
-    <main className="fh-page">
-      <section className="fh-container space-y-6">
-        <header className="fh-card flex flex-col gap-4 p-7 md:flex-row md:items-center md:justify-between">
+    <main className="min-h-screen bg-foodhub-cream text-slate-900">
+      <header className="sticky top-0 z-30 flex items-center justify-between border-b border-orange-100 bg-white px-4 py-3 shadow-sm lg:hidden">
+        <div>
+          <p className="text-lg font-black text-orange-600">FoodHub Admin</p>
+          <p className="text-xs font-medium text-slate-500">
+            {pageTitles[activeTab]}
+          </p>
+        </div>
+        <div className="flex items-center gap-2">
+          <NotificationBell />
+          <button
+            aria-expanded={isSidebarOpen}
+            aria-label="Open admin menu"
+            className="rounded-md border border-orange-200 px-3 py-2 text-sm font-semibold text-orange-700 hover:bg-orange-50"
+            onClick={() => setIsSidebarOpen(true)}
+            type="button"
+          >
+            Menu
+          </button>
+        </div>
+      </header>
+
+      {isSidebarOpen && (
+        <button
+          aria-label="Close admin menu"
+          className="fixed inset-0 z-40 bg-slate-950/35 lg:hidden"
+          onClick={() => setIsSidebarOpen(false)}
+          type="button"
+        />
+      )}
+
+      <div className="mx-auto flex max-w-[1600px]">
+        <aside
+          className={`fixed inset-y-0 left-0 z-50 flex w-72 flex-col border-r border-orange-100 bg-white p-5 shadow-xl transition-transform duration-200 lg:sticky lg:top-0 lg:h-screen lg:translate-x-0 lg:shadow-sm ${
+            isSidebarOpen ? 'translate-x-0' : '-translate-x-full'
+          }`}
+        >
+          <div className="flex items-start justify-between border-b border-orange-100 pb-5">
+            <div>
+              <p className="text-xl font-black text-orange-600">FoodHub Admin</p>
+              <p className="mt-1 text-sm text-slate-500">Admin Panel</p>
+            </div>
+            <button
+              aria-label="Close admin menu"
+              className="rounded-md px-2 py-1 text-xl text-slate-500 hover:bg-orange-50 lg:hidden"
+              onClick={() => setIsSidebarOpen(false)}
+              type="button"
+            >
+              ×
+            </button>
+          </div>
+
+          <nav aria-label="Admin sections" className="mt-6 space-y-2">
+            {navigationItems.map(([tabId, label]) => (
+              <button
+                className={`w-full rounded-lg px-4 py-3 text-left text-sm font-semibold transition ${
+                  activeTab === tabId
+                    ? 'bg-orange-600 text-white shadow-sm'
+                    : 'text-slate-700 hover:bg-orange-50 hover:text-orange-700'
+                }`}
+                key={tabId}
+                onClick={() => selectSection(tabId)}
+                type="button"
+              >
+                {label}
+              </button>
+            ))}
+          </nav>
+
+          <div className="mt-auto border-t border-orange-100 pt-5">
+            <p className="truncate text-sm font-semibold text-slate-800">
+              {user?.name || 'Admin'}
+            </p>
+            <p className="text-xs text-slate-500">Administrator</p>
+            <button
+              className="mt-4 w-full rounded-md border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50"
+              onClick={handleLogout}
+              type="button"
+            >
+              Logout
+            </button>
+          </div>
+        </aside>
+
+        <section className="min-w-0 flex-1 space-y-6 px-4 py-6 sm:px-6 lg:px-8">
+          <header className="fh-card hidden items-center justify-between gap-4 p-7 lg:flex">
           <div>
             <p className="text-sm font-semibold uppercase tracking-wide text-orange-600">
-              Admin Dashboard
+              Admin Panel
             </p>
-            <h1 className="mt-2 text-3xl font-black">
-              {activeTab === 'orders' ? 'Order Overview' : 'User Management'}
-            </h1>
+            <h1 className="mt-2 text-3xl font-black">{pageTitles[activeTab]}</h1>
             <p className="mt-2 text-slate-700">
               Signed in as {user?.name || 'Admin'}
             </p>
@@ -280,38 +384,26 @@ function AdminDashboard() {
 
           <div className="flex flex-wrap items-center gap-3">
             <NotificationBell />
-            <button
-              className="rounded-md bg-slate-900 px-4 py-2 font-semibold text-white hover:bg-slate-700"
-              onClick={handleLogout}
-              type="button"
-            >
-              Logout
-            </button>
+            <div className="text-right">
+              <p className="text-sm font-semibold">{user?.name || 'Admin'}</p>
+              <p className="text-xs text-slate-500">Administrator</p>
+            </div>
           </div>
         </header>
 
-        <nav className="fh-card flex w-fit gap-2 p-2">
-          {[
-            ['orders', 'Orders'],
-            ['users', 'Users'],
-          ].map(([tabId, label]) => (
-            <button
-              className={`rounded-lg px-5 py-2 text-sm font-semibold ${
-                activeTab === tabId
-                  ? 'bg-orange-600 text-white'
-                  : 'text-slate-700 hover:bg-orange-50'
-              }`}
-              key={tabId}
-              onClick={() => setActiveTab(tabId)}
-              type="button"
-            >
-              {label}
-            </button>
-          ))}
-        </nav>
-
-        {activeTab === 'users' ? (
+        {activeTab === 'overview' ? (
+          <AdminOverview onSelectTab={selectSection} />
+        ) : activeTab === 'restaurants' ? (
+          <AdminRestaurantsPanel />
+        ) : activeTab === 'users' ? (
           <AdminUsersPanel currentUserId={user?.id || user?._id} />
+        ) : activeTab === 'settings' ? (
+          <section className="fh-card p-7">
+            <h2 className="text-2xl font-bold">Settings</h2>
+            <p className="mt-2 text-slate-600">
+              Platform settings will be added later.
+            </p>
+          </section>
         ) : (
           <>
             <form
@@ -386,7 +478,8 @@ function AdminDashboard() {
             )}
           </>
         )}
-      </section>
+        </section>
+      </div>
     </main>
   );
 }
