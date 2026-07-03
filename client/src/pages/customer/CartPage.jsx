@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import BackButton from '../../components/common/BackButton';
-import { useCart } from '../../context/CartContext';
+import { useCart } from '../../hooks/useCart';
 
 const formatCurrency = (value) => `€${Number(value || 0).toFixed(2)}`;
 

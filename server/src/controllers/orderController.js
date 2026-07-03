@@ -525,24 +525,40 @@ export const acceptDelivery = async (req, res) => {
       return sendErrorResponse(res, 400, 'Invalid order id');
     }
 
-    const order = await Order.findById(id);
+    // The conditional update prevents two riders from accepting simultaneously.
+    const order = await Order.findOneAndUpdate(
+      {
+        _id: id,
+        status: 'ready',
+        $or: [{ rider: null }, { rider: { $exists: false } }],
+      },
+      {
+        rider: req.user._id,
+        status: 'out_for_delivery',
+      },
+      {
+        new: true,
+        runValidators: true,
+      },
+    );
 
     if (!order) {
-      return sendErrorResponse(res, 404, 'Order not found');
-    }
+      const existingOrder = await Order.findById(id).select('status rider');
 
-    if (order.status !== 'ready') {
+      if (!existingOrder) {
+        return sendErrorResponse(res, 404, 'Order not found');
+      }
+
+      if (existingOrder.rider) {
+        return sendErrorResponse(
+          res,
+          400,
+          'Order is already assigned to another rider',
+        );
+      }
+
       return sendErrorResponse(res, 400, 'Only ready orders can be accepted');
     }
-
-    if (order.rider) {
-      return sendErrorResponse(res, 400, 'Order is already assigned to another rider');
-    }
-
-    // Assign this delivery to the logged-in rider and move it into delivery.
-    order.rider = req.user._id;
-    order.status = 'out_for_delivery';
-    await order.save();
 
     const populatedOrder = await populateOrder(Order.findById(order._id));
 

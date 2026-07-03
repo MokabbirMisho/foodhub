@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import BackButton from '../../components/common/BackButton';
-import { useCart } from '../../context/CartContext';
+import { useCart } from '../../hooks/useCart';
 import { getPublicRestaurantFoodItems } from '../../services/foodService';
 import { getRestaurantById } from '../../services/restaurantService';
 import { getRestaurantReviews } from '../../services/reviewService';

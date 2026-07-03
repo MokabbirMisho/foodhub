@@ -16,7 +16,11 @@ import reviewRoutes from './routes/reviewRoutes.js';
 import uploadRoutes from './routes/uploadRoutes.js';
 
 const app = express();
-const clientUrl = process.env.CLIENT_URL || 'http://localhost:5173';
+const allowedClientOrigins = [
+  process.env.CLIENT_URL,
+  'http://localhost:5173',
+  'https://foodhub-phi-wine.vercel.app',
+].filter(Boolean);
 
 // Add common security headers to every response.
 app.use(helmet());
@@ -24,7 +28,7 @@ app.use(helmet());
 // Allow only the configured frontend origin to call the API from a browser.
 app.use(
   cors({
-    origin: clientUrl,
+    origin: allowedClientOrigins,
     credentials: true,
   }),
 );

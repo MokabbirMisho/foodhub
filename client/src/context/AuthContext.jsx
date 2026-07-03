@@ -1,4 +1,5 @@
-import { createContext, useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import { AuthContext } from './authContextValue';
 import {
   getMe,
   googleSignIn,
@@ -7,8 +8,6 @@ import {
   logout as logoutUser,
   registerUser,
 } from '../services/authService';
-
-export const AuthContext = createContext(null);
 
 const getStoredUser = () => {
   const storedUser = localStorage.getItem('foodhub_user');
