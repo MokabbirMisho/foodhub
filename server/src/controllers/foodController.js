@@ -1,6 +1,10 @@
 import mongoose from 'mongoose';
 import FoodItem from '../models/FoodItem.js';
 import Restaurant from '../models/Restaurant.js';
+import { getRestaurantAvailability } from '../utils/restaurantAvailability.js';
+
+const escapeRegex = (value = '') =>
+  value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 
 const sendSuccessResponse = (res, statusCode, message, data) => {
   res.status(statusCode).json({
@@ -134,6 +138,90 @@ export const getPublicRestaurantFoodItems = async (req, res) => {
 
     sendSuccessResponse(res, 200, 'Restaurant menu fetched successfully', {
       foodItems,
+    });
+  } catch (error) {
+    handleFoodError(res, error);
+  }
+};
+
+export const searchPublicFoodItems = async (req, res) => {
+  try {
+    const { category, maxPrice, search, sort = 'newest' } = req.query;
+    const page = Math.max(Number.parseInt(req.query.page, 10) || 1, 1);
+    const limit = Math.min(
+      Math.max(Number.parseInt(req.query.limit, 10) || 8, 1),
+      50,
+    );
+    const publicRestaurants = await Restaurant.find({
+      isApproved: true,
+      isActive: true,
+    });
+    const restaurantIds = publicRestaurants.map((restaurant) => restaurant._id);
+    const restaurantAvailability = new Map(
+      publicRestaurants.map((restaurant) => [
+        String(restaurant._id),
+        getRestaurantAvailability(restaurant),
+      ]),
+    );
+    const filters = {
+      restaurant: { $in: restaurantIds },
+      isAvailable: true,
+    };
+
+    if (search) {
+      const searchRegex = new RegExp(escapeRegex(search.trim()), 'i');
+      filters.$or = [
+        { name: searchRegex },
+        { description: searchRegex },
+        { category: searchRegex },
+        { tags: searchRegex },
+      ];
+    }
+
+    if (category && category !== 'all') {
+      filters.category = new RegExp(escapeRegex(category), 'i');
+    }
+
+    const numericMaxPrice = Number(maxPrice);
+    if (maxPrice && Number.isFinite(numericMaxPrice)) {
+      filters.price = { $lte: numericMaxPrice };
+    }
+
+    const sortOptions = {
+      price_asc: { price: 1 },
+      price_desc: { price: -1 },
+      newest: { createdAt: -1 },
+      name_asc: { name: 1 },
+    };
+    const total = await FoodItem.countDocuments(filters);
+    const pages = Math.max(Math.ceil(total / limit), 1);
+    const safePage = Math.min(page, pages);
+    const foodItems = await FoodItem.find(filters)
+      .populate(
+        'restaurant',
+        'name cuisineTypes deliveryFee estimatedDeliveryTime isApproved isActive',
+      )
+      .sort(sortOptions[sort] || sortOptions.newest)
+      .skip((safePage - 1) * limit)
+      .limit(limit);
+    const results = foodItems.map((foodItem) => {
+      const item = foodItem.toObject();
+      return {
+        ...item,
+        restaurant: {
+          ...item.restaurant,
+          availability: restaurantAvailability.get(
+            String(foodItem.restaurant._id),
+          ),
+        },
+      };
+    });
+
+    sendSuccessResponse(res, 200, 'Food search completed successfully', {
+      foodItems: results,
+      total,
+      page: safePage,
+      pages,
     });
   } catch (error) {
     handleFoodError(res, error);

@@ -15,6 +15,14 @@ export const updateMyRestaurant = async (data) => {
   return response.data;
 };
 
+export const updateMyRestaurantAvailability = async (data) => {
+  const response = await api.patch(
+    '/restaurants/my-restaurant/availability',
+    data,
+  );
+  return response.data;
+};
+
 export const getRestaurants = async (params) => {
   const response = await api.get('/restaurants', { params });
   return response.data;
@@ -24,4 +32,3 @@ export const getRestaurantById = async (id) => {
   const response = await api.get(`/restaurants/${id}`);
   return response.data;
 };
-

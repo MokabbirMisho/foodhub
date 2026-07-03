@@ -1,5 +1,20 @@
 import mongoose from 'mongoose';
 
+const createDaySchedule = (open, close) => ({
+  isClosed: {
+    type: Boolean,
+    default: false,
+  },
+  open: {
+    type: String,
+    default: open,
+  },
+  close: {
+    type: String,
+    default: close,
+  },
+});
+
 const restaurantSchema = new mongoose.Schema(
   {
     owner: {
@@ -79,13 +94,13 @@ const restaurantSchema = new mongoose.Schema(
       trim: true,
     },
     openingHours: {
-      monday: String,
-      tuesday: String,
-      wednesday: String,
-      thursday: String,
-      friday: String,
-      saturday: String,
-      sunday: String,
+      monday: createDaySchedule('10:00', '22:00'),
+      tuesday: createDaySchedule('10:00', '22:00'),
+      wednesday: createDaySchedule('10:00', '22:00'),
+      thursday: createDaySchedule('10:00', '22:00'),
+      friday: createDaySchedule('10:00', '23:00'),
+      saturday: createDaySchedule('11:00', '23:00'),
+      sunday: createDaySchedule('11:00', '22:00'),
     },
     isApproved: {
       type: Boolean,
@@ -94,6 +109,20 @@ const restaurantSchema = new mongoose.Schema(
     isOpen: {
       type: Boolean,
       default: true,
+    },
+    isTemporarilyClosed: {
+      type: Boolean,
+      default: false,
+    },
+    temporaryClosedReason: {
+      type: String,
+      trim: true,
+      default: '',
+    },
+    availabilityNote: {
+      type: String,
+      trim: true,
+      default: '',
     },
     isActive: {
       type: Boolean,
@@ -111,4 +140,3 @@ restaurantSchema.index({ owner: 1 }, { unique: true });
 const Restaurant = mongoose.model('Restaurant', restaurantSchema);
 
 export default Restaurant;
-

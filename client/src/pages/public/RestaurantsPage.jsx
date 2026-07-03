@@ -1,299 +1,478 @@
 import { useEffect, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
-import { useCart } from '../../context/CartContext';
+import { searchFoods } from '../../services/foodService';
 import { getRestaurants } from '../../services/restaurantService';
 
-const formatCurrency = (value) => `€${Number(value || 0).toFixed(2)}`;
-const cuisineShortcuts = [
+const cuisines = [
+  'all',
   'Pizza',
   'Burger',
   'Biryani',
   'Sushi',
   'Pasta',
+  'Desserts',
+  'Drinks',
   'Vegan',
+  'Chicken',
+  'Fast Food',
 ];
+
+const defaultFilters = {
+  search: '',
+  cuisine: 'all',
+  openNow: false,
+  minRating: '',
+  maxDeliveryFee: '',
+  maxDeliveryTime: '',
+  sort: 'relevance',
+  page: 1,
+};
+
+const formatCurrency = (value) => `€${Number(value || 0).toFixed(2)}`;
+
+const readFilters = (searchParams) => ({
+  search: searchParams.get('search') || '',
+  cuisine: searchParams.get('cuisine') || 'all',
+  openNow: searchParams.get('openNow') === 'true',
+  minRating: searchParams.get('minRating') || '',
+  maxDeliveryFee: searchParams.get('maxDeliveryFee') || '',
+  maxDeliveryTime: searchParams.get('maxDeliveryTime') || '',
+  sort: searchParams.get('sort') || 'relevance',
+  page: Math.max(Number(searchParams.get('page')) || 1, 1),
+});
+
+const toSearchParams = (filters) => {
+  const params = {};
+
+  Object.entries(filters).forEach(([key, value]) => {
+    if (
+      value !== '' &&
+      value !== false &&
+      value !== 'all' &&
+      !(key === 'sort' && value === 'relevance') &&
+      !(key === 'page' && value === 1)
+    ) {
+      params[key] = String(value);
+    }
+  });
+
+  return params;
+};
+
+function AvailabilityBadge({ availability }) {
+  const isOpen = availability?.isAvailableNow;
+  const opensLater = availability?.reason?.startsWith('Opens at');
+
+  return (
+    <span
+      className={`rounded-full px-3 py-1 text-xs font-semibold ${
+        isOpen
+          ? 'bg-green-50 text-green-700'
+          : opensLater
+            ? 'bg-orange-50 text-orange-700'
+            : 'bg-red-50 text-red-700'
+      }`}
+    >
+      {availability?.reason || 'Availability unknown'}
+    </span>
+  );
+}
+
+function RestaurantCard({ restaurant }) {
+  return (
+    <article className="fh-card fh-card-hover flex flex-col overflow-hidden">
+      {restaurant.coverImage || restaurant.logo ? (
+        <img
+          alt={restaurant.name}
+          className="h-44 w-full object-cover"
+          src={restaurant.coverImage || restaurant.logo}
+        />
+      ) : (
+        <div className="flex h-44 items-center justify-center bg-orange-100 font-semibold text-orange-700">
+          FoodHub Restaurant
+        </div>
+      )}
+
+      <div className="flex flex-1 flex-col p-5">
+        <div className="flex items-start justify-between gap-3">
+          <div>
+            <h2 className="text-xl font-bold">{restaurant.name}</h2>
+            <p className="mt-1 text-sm text-slate-600">
+              {restaurant.address?.city || 'City not provided'}
+            </p>
+          </div>
+          <AvailabilityBadge availability={restaurant.availability} />
+        </div>
+
+        <p className="mt-4 line-clamp-2 text-sm leading-6 text-slate-700">
+          {restaurant.description || 'No description provided.'}
+        </p>
+
+        <div className="mt-4 flex flex-wrap gap-2">
+          {restaurant.cuisineTypes?.map((cuisine) => (
+            <span
+              className="rounded-full bg-orange-50 px-3 py-1 text-xs font-semibold text-orange-700"
+              key={cuisine}
+            >
+              {cuisine}
+            </span>
+          ))}
+        </div>
+
+        <div className="mt-5 grid grid-cols-2 gap-3 text-sm text-slate-700">
+          <p>
+            {restaurant.ratingCount
+              ? `★ ${restaurant.ratingAverage} (${restaurant.ratingCount})`
+              : 'No ratings yet'}
+          </p>
+          <p>{restaurant.estimatedDeliveryTime || 'Time unavailable'}</p>
+          <p>Delivery {formatCurrency(restaurant.deliveryFee)}</p>
+          <p>Min. {formatCurrency(restaurant.minimumOrderAmount)}</p>
+        </div>
+
+        <Link
+          className="fh-btn-primary mt-5 w-full"
+          to={`/restaurants/${restaurant._id}`}
+        >
+          View restaurant
+        </Link>
+      </div>
+    </article>
+  );
+}
 
 function RestaurantsPage() {
   const [searchParams, setSearchParams] = useSearchParams();
-  const urlSearch = searchParams.get('search') || '';
-  const { getCartCount } = useCart();
+  const urlKey = searchParams.toString();
+  const [filters, setFilters] = useState(() => readFilters(searchParams));
   const [restaurants, setRestaurants] = useState([]);
-  const [filters, setFilters] = useState({
-    search: urlSearch,
-    city: '',
-    cuisine: '',
-  });
+  const [dishes, setDishes] = useState([]);
+  const [resultInfo, setResultInfo] = useState({ total: 0, page: 1, pages: 1 });
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
-
-  const loadRestaurants = async (nextFilters = filters) => {
-    try {
-      setError('');
-      setIsLoading(true);
-
-      const params = Object.fromEntries(
-        Object.entries(nextFilters).filter(([, value]) => value.trim()),
-      );
-      const response = await getRestaurants(params);
-
-      setRestaurants(response.data.restaurants || []);
-    } catch (error) {
-      setError(error.message);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  const [showFilters, setShowFilters] = useState(false);
 
   useEffect(() => {
-    const nextFilters = {
-      ...filters,
-      search: urlSearch,
-    };
-
+    const nextFilters = readFilters(searchParams);
     setFilters(nextFilters);
-    loadRestaurants(nextFilters);
-  }, [urlSearch]);
 
-  const handleChange = (event) => {
-    setFilters({
-      ...filters,
-      [event.target.name]: event.target.value,
-    });
-  };
+    const loadResults = async () => {
+      try {
+        setError('');
+        setIsLoading(true);
+        const params = toSearchParams({ ...nextFilters, limit: 12 });
+        const requests = [getRestaurants(params)];
 
-  const handleSearch = (event) => {
-    event.preventDefault();
-    const nextSearch = filters.search.trim();
+        if (nextFilters.search) {
+          requests.push(
+            searchFoods({
+              search: nextFilters.search,
+              page: 1,
+              limit: 6,
+            }),
+          );
+        }
 
-    if (nextSearch !== urlSearch) {
-      setSearchParams(nextSearch ? { search: nextSearch } : {});
-    } else {
-      loadRestaurants(filters);
-    }
-  };
-
-  const handleClearFilters = () => {
-    const emptyFilters = {
-      search: '',
-      city: '',
-      cuisine: '',
+        const [restaurantResponse, foodResponse] = await Promise.all(requests);
+        setRestaurants(restaurantResponse.data.restaurants || []);
+        setResultInfo({
+          total: restaurantResponse.data.total || 0,
+          page: restaurantResponse.data.page || 1,
+          pages: restaurantResponse.data.pages || 1,
+        });
+        setDishes(foodResponse?.data.foodItems || []);
+      } catch (requestError) {
+        setError(requestError.message);
+        setRestaurants([]);
+        setDishes([]);
+      } finally {
+        setIsLoading(false);
+      }
     };
 
-    setFilters(emptyFilters);
+    loadResults();
+  }, [urlKey]);
+
+  const updateFilter = (name, value) => {
+    setFilters((current) => ({ ...current, [name]: value }));
+  };
+
+  const applyFilters = (event) => {
+    event?.preventDefault();
+    setSearchParams(toSearchParams({ ...filters, page: 1 }));
+    setShowFilters(false);
+  };
+
+  const applyImmediateFilter = (name, value) => {
+    const nextFilters = { ...filters, [name]: value, page: 1 };
+    setFilters(nextFilters);
+    setSearchParams(toSearchParams(nextFilters));
+  };
+
+  const clearFilters = () => {
+    setFilters(defaultFilters);
     setSearchParams({});
-    loadRestaurants(emptyFilters);
   };
 
-  const handleCuisineShortcut = (cuisine) => {
-    const nextFilters = {
-      ...filters,
-      cuisine,
-    };
+  const changePage = (page) => {
+    const nextFilters = { ...filters, page };
     setFilters(nextFilters);
-    loadRestaurants(nextFilters);
+    setSearchParams(toSearchParams(nextFilters));
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   return (
     <main className="fh-page">
       <section className="fh-container space-y-7">
-        <header className="fh-card flex flex-col gap-4 p-7 md:flex-row md:items-end md:justify-between">
-          <div>
-            <p className="text-sm font-semibold uppercase tracking-wide text-orange-600">
-              FoodHub Restaurants
-            </p>
-            <h1 className="mt-2 text-4xl font-black">Browse restaurants</h1>
-            <p className="mt-3 max-w-2xl text-slate-700">
-              Discover approved restaurants that are active on FoodHub.
-            </p>
-          </div>
-
-          <div className="flex flex-wrap gap-3">
-            <Link className="font-semibold text-orange-600" to="/">
-              Back to home
-            </Link>
-            <Link className="font-semibold text-orange-600" to="/cart">
-              Cart ({getCartCount()})
-            </Link>
-          </div>
+        <header className="fh-card p-7">
+          <p className="fh-eyebrow">FoodHub discovery</p>
+          <h1 className="mt-2 text-4xl font-black">Restaurants</h1>
+          <p className="mt-2 text-slate-700">
+            {filters.search
+              ? `Results for: ${filters.search}`
+              : 'Find a restaurant for your next meal.'}
+          </p>
         </header>
 
-        <div className="flex gap-2 overflow-x-auto pb-1">
-          {cuisineShortcuts.map((cuisine) => (
+        <section className="fh-card p-5">
+          <form className="flex gap-3" onSubmit={applyFilters}>
+            <input
+              className="fh-input flex-1"
+              onChange={(event) => updateFilter('search', event.target.value)}
+              placeholder="Search restaurants or food..."
+              value={filters.search}
+            />
+            <button className="fh-btn-primary" type="submit">
+              Search
+            </button>
             <button
-              className={`shrink-0 rounded-full border px-4 py-2 text-sm font-semibold ${
-                filters.cuisine === cuisine
-                  ? 'border-orange-600 bg-orange-600 text-white'
-                  : 'border-orange-200 bg-white text-slate-700 hover:border-orange-400'
-              }`}
-              key={cuisine}
-              onClick={() => handleCuisineShortcut(cuisine)}
+              className="fh-btn-secondary md:hidden"
+              onClick={() => setShowFilters((current) => !current)}
               type="button"
             >
-              {cuisine}
+              Filters
             </button>
-          ))}
+          </form>
+
+          <div className="mt-4 flex gap-2 overflow-x-auto pb-1">
+            {cuisines.map((cuisine) => (
+              <button
+                className={`shrink-0 rounded-full border px-4 py-2 text-sm font-semibold ${
+                  filters.cuisine === cuisine
+                    ? 'border-orange-600 bg-orange-600 text-white'
+                    : 'border-orange-200 bg-white text-slate-700 hover:border-orange-400'
+                }`}
+                key={cuisine}
+                onClick={() => applyImmediateFilter('cuisine', cuisine)}
+                type="button"
+              >
+                {cuisine === 'all' ? 'All cuisines' : cuisine}
+              </button>
+            ))}
+          </div>
+
+          <div
+            className={`${showFilters ? 'grid' : 'hidden'} mt-5 gap-4 border-t border-orange-100 pt-5 md:grid md:grid-cols-5`}
+          >
+            <label className="flex items-center gap-2 rounded-lg bg-orange-50 px-3 py-2">
+              <input
+                checked={filters.openNow}
+                className="accent-orange-600"
+                onChange={(event) =>
+                  updateFilter('openNow', event.target.checked)
+                }
+                type="checkbox"
+              />
+              <span className="text-sm font-medium">Open now</span>
+            </label>
+
+            <label>
+              <span className="text-xs font-semibold text-slate-600">
+                Minimum rating
+              </span>
+              <select
+                className="fh-input mt-1"
+                onChange={(event) =>
+                  updateFilter('minRating', event.target.value)
+                }
+                value={filters.minRating}
+              >
+                <option value="">Any rating</option>
+                <option value="3">3+</option>
+                <option value="4">4+</option>
+                <option value="4.5">4.5+</option>
+              </select>
+            </label>
+
+            <label>
+              <span className="text-xs font-semibold text-slate-600">
+                Max delivery fee
+              </span>
+              <select
+                className="fh-input mt-1"
+                onChange={(event) =>
+                  updateFilter('maxDeliveryFee', event.target.value)
+                }
+                value={filters.maxDeliveryFee}
+              >
+                <option value="">Any fee</option>
+                <option value="0">Free</option>
+                <option value="2">Up to €2</option>
+                <option value="5">Up to €5</option>
+              </select>
+            </label>
+
+            <label>
+              <span className="text-xs font-semibold text-slate-600">
+                Max delivery time
+              </span>
+              <select
+                className="fh-input mt-1"
+                onChange={(event) =>
+                  updateFilter('maxDeliveryTime', event.target.value)
+                }
+                value={filters.maxDeliveryTime}
+              >
+                <option value="">Any time</option>
+                {[20, 30, 45, 60].map((minutes) => (
+                  <option key={minutes} value={minutes}>
+                    Up to {minutes} min
+                  </option>
+                ))}
+              </select>
+            </label>
+
+            <div className="flex items-end gap-2">
+              <button className="fh-btn-primary flex-1" onClick={applyFilters} type="button">
+                Apply
+              </button>
+              <button className="fh-btn-secondary" onClick={clearFilters} type="button">
+                Clear
+              </button>
+            </div>
+          </div>
+        </section>
+
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+          <div>
+            <h2 className="text-2xl font-bold">Restaurant results</h2>
+            <p className="mt-1 text-sm text-slate-600">
+              {resultInfo.total} restaurants found
+            </p>
+          </div>
+          <label className="w-full sm:w-60">
+            <span className="text-xs font-semibold text-slate-600">Sort by</span>
+            <select
+              className="fh-input mt-1"
+              onChange={(event) =>
+                applyImmediateFilter('sort', event.target.value)
+              }
+              value={filters.sort}
+            >
+              <option value="relevance">Recommended</option>
+              <option value="rating_desc">Highest rated</option>
+              <option value="delivery_time_asc">Fastest delivery</option>
+              <option value="delivery_fee_asc">Lowest delivery fee</option>
+              <option value="newest">Newest</option>
+              <option value="min_order_asc">Lowest minimum order</option>
+            </select>
+          </label>
         </div>
 
-        <form
-          className="fh-card grid gap-3 p-5 md:grid-cols-[1fr_1fr_1fr_auto_auto]"
-          onSubmit={handleSearch}
-        >
-          <input
-            className="fh-input"
-            name="search"
-            onChange={handleChange}
-            placeholder="Search by name"
-            value={filters.search}
-          />
-          <input
-            className="fh-input"
-            name="city"
-            onChange={handleChange}
-            placeholder="City"
-            value={filters.city}
-          />
-          <input
-            className="fh-input"
-            name="cuisine"
-            onChange={handleChange}
-            placeholder="Cuisine"
-            value={filters.cuisine}
-          />
-          <button
-            className="fh-btn-primary"
-            type="submit"
-          >
-            Search
-          </button>
-          <button
-            className="fh-btn-secondary"
-            onClick={handleClearFilters}
-            type="button"
-          >
-            Clear
-          </button>
-        </form>
+        {filters.search && dishes.length > 0 && (
+          <section>
+            <h2 className="text-2xl font-bold">Matching dishes</h2>
+            <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              {dishes.map((dish) => (
+                <Link
+                  className="fh-card fh-card-hover flex overflow-hidden"
+                  key={dish._id}
+                  to={`/restaurants/${dish.restaurant._id}`}
+                >
+                  {dish.image ? (
+                    <img
+                      alt={dish.name}
+                      className="h-32 w-32 object-cover"
+                      src={dish.image}
+                    />
+                  ) : (
+                    <div className="flex h-32 w-32 shrink-0 items-center justify-center bg-orange-100 text-xs font-semibold text-orange-700">
+                      FoodHub dish
+                    </div>
+                  )}
+                  <div className="min-w-0 p-4">
+                    <p className="text-xs font-semibold uppercase text-orange-700">
+                      {dish.category}
+                    </p>
+                    <h3 className="mt-1 truncate font-bold">{dish.name}</h3>
+                    <p className="mt-1 truncate text-sm text-slate-600">
+                      {dish.restaurant.name}
+                    </p>
+                    <p className="mt-3 font-semibold">
+                      {formatCurrency(dish.discountPrice ?? dish.price)}
+                    </p>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </section>
+        )}
 
         {isLoading && (
           <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
             {[1, 2, 3, 4, 5, 6].map((item) => (
-              <div
-                className="fh-card h-96 animate-pulse bg-white"
-                key={item}
-              />
+              <div className="fh-card h-96 animate-pulse" key={item} />
             ))}
           </div>
         )}
 
-        {error && (
-          <p className="fh-alert-error">
-            {error}
-          </p>
-        )}
+        {error && <p className="fh-alert-error">{error}</p>}
 
         {!isLoading && !error && restaurants.length === 0 && (
-          <p className="fh-card p-8 text-center text-slate-700">
-            No restaurants found.
-          </p>
+          <div className="fh-card p-8 text-center">
+            <h2 className="text-2xl font-bold">No restaurants found</h2>
+            <p className="mt-2 text-slate-600">
+              Try changing filters or searching another dish.
+            </p>
+            <button className="fh-btn-primary mt-5" onClick={clearFilters} type="button">
+              Clear filters
+            </button>
+          </div>
         )}
 
         {!isLoading && !error && restaurants.length > 0 && (
           <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
             {restaurants.map((restaurant) => (
-              <article
-                className="fh-card fh-card-hover flex flex-col overflow-hidden"
-                key={restaurant._id}
-              >
-                {restaurant.coverImage || restaurant.logo ? (
-                  <img
-                    alt={restaurant.name}
-                    className="h-40 w-full object-cover"
-                    src={restaurant.coverImage || restaurant.logo}
-                  />
-                ) : (
-                  <div className="flex h-40 w-full items-center justify-center bg-orange-100 text-sm font-semibold text-orange-700">
-                    FoodHub Restaurant
-                  </div>
-                )}
-
-                <div className="flex flex-1 flex-col p-5">
-                  <div className="flex items-start justify-between gap-3">
-                  <div>
-                    <div className="flex items-center gap-3">
-                      {restaurant.logo && (
-                        <img
-                          alt={`${restaurant.name} logo`}
-                          className="h-12 w-12 rounded-full object-cover"
-                          src={restaurant.logo}
-                        />
-                      )}
-                      <div>
-                        <h2 className="text-2xl font-bold">{restaurant.name}</h2>
-                        <p className="mt-1 text-sm text-slate-600">
-                          {restaurant.address?.city || 'City not provided'}
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                  <span
-                    className={`rounded-full px-3 py-1 text-xs font-semibold ${
-                      restaurant.isOpen
-                        ? 'bg-green-50 text-green-700'
-                        : 'bg-orange-50 text-slate-600'
-                    }`}
-                  >
-                    {restaurant.isOpen ? 'Open' : 'Closed'}
-                  </span>
-                </div>
-
-                <p className="mt-4 text-sm leading-6 text-slate-700">
-                  {restaurant.description || 'No description provided.'}
-                </p>
-
-                <div className="mt-4 flex flex-wrap gap-2">
-                  {restaurant.cuisineTypes?.length ? (
-                    restaurant.cuisineTypes.map((cuisine) => (
-                      <span
-                        className="rounded-full bg-orange-50 px-3 py-1 text-xs font-semibold text-orange-700"
-                        key={cuisine}
-                      >
-                        {cuisine}
-                      </span>
-                    ))
-                  ) : (
-                    <span className="text-sm text-slate-500">
-                      Cuisine not provided
-                    </span>
-                  )}
-                </div>
-
-                <div className="mt-5 grid gap-3 text-sm text-slate-700">
-                  <p>Delivery fee: {formatCurrency(restaurant.deliveryFee)}</p>
-                  <p>
-                    Minimum order:{' '}
-                    {formatCurrency(restaurant.minimumOrderAmount)}
-                  </p>
-                  <p>
-                    Delivery time:{' '}
-                    {restaurant.estimatedDeliveryTime || 'Not provided'}
-                  </p>
-                  <p>
-                    {restaurant.ratingCount
-                      ? `★ ${restaurant.ratingAverage} (${restaurant.ratingCount} reviews)`
-                      : 'No ratings yet'}
-                  </p>
-                </div>
-
-                <Link
-                  className="fh-btn-primary mt-5 w-full"
-                  to={`/restaurants/${restaurant._id}`}
-                >
-                  View details
-                </Link>
-                </div>
-              </article>
+              <RestaurantCard key={restaurant._id} restaurant={restaurant} />
             ))}
           </div>
+        )}
+
+        {!isLoading && resultInfo.pages > 1 && (
+          <nav
+            aria-label="Restaurant result pages"
+            className="flex items-center justify-center gap-4"
+          >
+            <button
+              className="fh-btn-secondary"
+              disabled={resultInfo.page <= 1}
+              onClick={() => changePage(resultInfo.page - 1)}
+              type="button"
+            >
+              Previous
+            </button>
+            <span className="text-sm font-semibold text-slate-700">
+              Page {resultInfo.page} of {resultInfo.pages}
+            </span>
+            <button
+              className="fh-btn-secondary"
+              disabled={resultInfo.page >= resultInfo.pages}
+              onClick={() => changePage(resultInfo.page + 1)}
+              type="button"
+            >
+              Next
+            </button>
+          </nav>
         )}
       </section>
     </main>

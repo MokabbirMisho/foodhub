@@ -2,6 +2,7 @@ import mongoose from 'mongoose';
 import FoodItem from '../models/FoodItem.js';
 import Order from '../models/Order.js';
 import Restaurant from '../models/Restaurant.js';
+import { getRestaurantAvailability } from '../utils/restaurantAvailability.js';
 import {
   emitToAdmin,
   emitToRestaurantOwner,
@@ -133,6 +134,16 @@ export const createOrder = async (req, res) => {
 
     if (!restaurant) {
       return sendErrorResponse(res, 404, 'Restaurant not found');
+    }
+
+    const availability = getRestaurantAvailability(restaurant);
+
+    if (!availability.isAvailableNow) {
+      return sendErrorResponse(
+        res,
+        400,
+        availability.reason || 'Restaurant is currently closed',
+      );
     }
 
     const orderItems = [];

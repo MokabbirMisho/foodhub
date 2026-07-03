@@ -5,6 +5,7 @@ import {
   getFoodItemById,
   getMyRestaurantFoodItems,
   getPublicRestaurantFoodItems,
+  searchPublicFoodItems,
   toggleFoodAvailability,
   updateFoodItem,
 } from '../controllers/foodController.js';
@@ -23,6 +24,7 @@ router.get(
 );
 
 router.get('/restaurant/:restaurantId', getPublicRestaurantFoodItems);
+router.get('/search', searchPublicFoodItems);
 
 router.patch(
   '/:id/availability',
@@ -36,4 +38,3 @@ router.patch('/:id', protect, authorizeRoles('restaurant_owner'), updateFoodItem
 router.delete('/:id', protect, authorizeRoles('restaurant_owner'), deleteFoodItem);
 
 export default router;
-

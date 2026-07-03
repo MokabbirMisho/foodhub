@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import NotificationBell from '../../components/common/NotificationBell';
 import FoodItemForm from '../../components/restaurant/FoodItemForm';
+import RestaurantAvailabilityForm from '../../components/restaurant/RestaurantAvailabilityForm';
 import RestaurantForm from '../../components/restaurant/RestaurantForm';
 import { useAuth } from '../../hooks/useAuth';
 import {
@@ -28,6 +29,7 @@ import {
 const navItems = [
   { id: 'dashboard', label: 'Dashboard' },
   { id: 'profile', label: 'Restaurant Profile' },
+  { id: 'availability', label: 'Availability' },
   { id: 'menu', label: 'Menu Items' },
   { id: 'orders', label: 'Orders' },
   { id: 'settings', label: 'Settings' },
@@ -521,8 +523,16 @@ function RestaurantDashboard() {
           }
         />
         <OverviewCard
-          label="Restaurant Status"
-          value={restaurant?.isOpen ? 'Open' : 'Closed'}
+          label="Availability"
+          value={
+            restaurant
+              ? restaurant.isTemporarilyClosed
+                ? 'Temporarily closed'
+                : restaurant.availability?.isAvailableNow
+                  ? 'Open now'
+                  : 'Closed'
+              : 'Profile needed'
+          }
         />
         <OverviewCard label="Menu Items" value={foodItems.length || 'None yet'} />
         <OverviewCard label="Orders" value={orders.length || 'None yet'} />
@@ -867,6 +877,17 @@ function RestaurantDashboard() {
 
     if (activeTab === 'menu') {
       return renderMenuTab();
+    }
+
+    if (activeTab === 'availability') {
+      return restaurant ? (
+        <RestaurantAvailabilityForm
+          onUpdated={setRestaurant}
+          restaurant={restaurant}
+        />
+      ) : (
+        <PlaceholderCard message="Create a restaurant profile before managing availability." />
+      );
     }
 
     if (activeTab === 'orders') {

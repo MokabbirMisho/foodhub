@@ -329,7 +329,15 @@ function CheckoutPage() {
       });
     } catch (error) {
       setPaymentMessage('');
-      setError(error.message);
+      const restaurantClosed =
+        /restaurant.*(closed|not available)|opens at|closed for today/i.test(
+          error.message,
+        );
+      setError(
+        restaurantClosed
+          ? 'Restaurant is currently closed. Please choose another restaurant or try later.'
+          : error.message,
+      );
     } finally {
       setIsProcessingPayment(false);
       setIsSubmitting(false);

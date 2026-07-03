@@ -1,5 +1,25 @@
 import mongoose from 'mongoose';
+import FoodItem from '../models/FoodItem.js';
 import Restaurant from '../models/Restaurant.js';
+import {
+  getRestaurantAvailability,
+  restaurantScheduleDays,
+} from '../utils/restaurantAvailability.js';
+
+const timePattern = /^([01]\d|2[0-3]):[0-5]\d$/;
+const escapeRegex = (value = '') =>
+  value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+const getDeliveryMinutes = (value) => {
+  const minutes = String(value || '').match(/\d+/g);
+  return minutes
+    ? Math.max(...minutes.map(Number))
+    : Number.POSITIVE_INFINITY;
+};
+
+const withAvailability = (restaurant) => ({
+  ...restaurant.toObject(),
+  availability: getRestaurantAvailability(restaurant),
+});
 
 const sendSuccessResponse = (res, statusCode, message, data) => {
   res.status(statusCode).json({
@@ -73,7 +93,7 @@ export const getMyRestaurant = async (req, res) => {
     }
 
     sendSuccessResponse(res, 200, 'Restaurant fetched successfully', {
-      restaurant,
+      restaurant: withAvailability(restaurant),
     });
   } catch (error) {
     handleRestaurantError(res, error);
@@ -87,6 +107,11 @@ export const updateMyRestaurant = async (req, res) => {
     // Restaurant owners cannot approve their own restaurant.
     delete updates.owner;
     delete updates.isApproved;
+    delete updates.isOpen;
+    delete updates.isTemporarilyClosed;
+    delete updates.temporaryClosedReason;
+    delete updates.openingHours;
+    delete updates.availabilityNote;
 
     const restaurant = await Restaurant.findOneAndUpdate(
       { owner: req.user._id },
@@ -111,7 +136,21 @@ export const updateMyRestaurant = async (req, res) => {
 
 export const getAllRestaurants = async (req, res) => {
   try {
-    const { city, cuisine, search } = req.query;
+    const {
+      city,
+      cuisine,
+      maxDeliveryFee,
+      maxDeliveryTime,
+      minRating,
+      openNow,
+      search,
+      sort = 'relevance',
+    } = req.query;
+    const requestedPage = Math.max(Number.parseInt(req.query.page, 10) || 1, 1);
+    const limit = Math.min(
+      Math.max(Number.parseInt(req.query.limit, 10) || 12, 1),
+      50,
+    );
 
     const filters = {
       isApproved: true,
@@ -122,18 +161,110 @@ export const getAllRestaurants = async (req, res) => {
       filters['address.city'] = new RegExp(city, 'i');
     }
 
-    if (cuisine) {
-      filters.cuisineTypes = new RegExp(cuisine, 'i');
+    if (cuisine && cuisine !== 'all') {
+      filters.cuisineTypes = new RegExp(escapeRegex(cuisine), 'i');
     }
 
     if (search) {
-      filters.name = new RegExp(search, 'i');
+      const searchRegex = new RegExp(escapeRegex(search.trim()), 'i');
+      const matchingFoodRestaurantIds = await FoodItem.distinct('restaurant', {
+        isAvailable: true,
+        $or: [
+          { name: searchRegex },
+          { description: searchRegex },
+          { category: searchRegex },
+          { tags: searchRegex },
+        ],
+      });
+
+      filters.$or = [
+        { name: searchRegex },
+        { description: searchRegex },
+        { cuisineTypes: searchRegex },
+        { 'address.city': searchRegex },
+        { 'address.street': searchRegex },
+        { _id: { $in: matchingFoodRestaurantIds } },
+      ];
     }
 
-    const restaurants = await Restaurant.find(filters).sort({ createdAt: -1 });
+    const numericMinRating = Number(minRating);
+    if (minRating && Number.isFinite(numericMinRating)) {
+      filters.ratingAverage = { $gte: numericMinRating };
+    }
+
+    const numericMaxDeliveryFee = Number(maxDeliveryFee);
+    if (maxDeliveryFee !== undefined && Number.isFinite(numericMaxDeliveryFee)) {
+      filters.deliveryFee = { $lte: numericMaxDeliveryFee };
+    }
+
+    let restaurants = await Restaurant.find(filters);
+    let restaurantsWithAvailability = restaurants.map(withAvailability);
+
+    if (openNow === 'true') {
+      restaurantsWithAvailability = restaurantsWithAvailability.filter(
+        (restaurant) => restaurant.availability.isAvailableNow,
+      );
+    }
+
+    const numericMaxDeliveryTime = Number(maxDeliveryTime);
+    if (maxDeliveryTime && Number.isFinite(numericMaxDeliveryTime)) {
+      restaurantsWithAvailability = restaurantsWithAvailability.filter(
+        (restaurant) =>
+          getDeliveryMinutes(restaurant.estimatedDeliveryTime) <=
+          numericMaxDeliveryTime,
+      );
+    }
+
+    const sorters = {
+      rating_desc: (a, b) =>
+        b.ratingAverage - a.ratingAverage || b.ratingCount - a.ratingCount,
+      delivery_time_asc: (a, b) =>
+        getDeliveryMinutes(a.estimatedDeliveryTime) -
+        getDeliveryMinutes(b.estimatedDeliveryTime),
+      delivery_fee_asc: (a, b) => a.deliveryFee - b.deliveryFee,
+      newest: (a, b) => new Date(b.createdAt) - new Date(a.createdAt),
+      min_order_asc: (a, b) =>
+        a.minimumOrderAmount - b.minimumOrderAmount,
+    };
+
+    const defaultSorter = search
+      ? (a, b) => {
+          const query = search.trim().toLowerCase();
+          const aDirectMatch =
+            a.name.toLowerCase().includes(query) ||
+            a.cuisineTypes.some((value) => value.toLowerCase().includes(query));
+          const bDirectMatch =
+            b.name.toLowerCase().includes(query) ||
+            b.cuisineTypes.some((value) => value.toLowerCase().includes(query));
+          return Number(bDirectMatch) - Number(aDirectMatch);
+        }
+      : sorters.newest;
+
+    restaurantsWithAvailability.sort(sorters[sort] || defaultSorter);
+
+    const total = restaurantsWithAvailability.length;
+    const pages = Math.max(Math.ceil(total / limit), 1);
+    const page = Math.min(requestedPage, pages);
+    const start = (page - 1) * limit;
+    restaurantsWithAvailability = restaurantsWithAvailability.slice(
+      start,
+      start + limit,
+    );
 
     sendSuccessResponse(res, 200, 'Restaurants fetched successfully', {
-      restaurants,
+      restaurants: restaurantsWithAvailability,
+      total,
+      page,
+      pages,
+      filters: {
+        search: search || '',
+        cuisine: cuisine || 'all',
+        openNow: openNow === 'true',
+        minRating: minRating || '',
+        maxDeliveryFee: maxDeliveryFee ?? '',
+        maxDeliveryTime: maxDeliveryTime || '',
+        sort,
+      },
     });
   } catch (error) {
     handleRestaurantError(res, error);
@@ -199,7 +330,88 @@ export const getRestaurantById = async (req, res) => {
     }
 
     sendSuccessResponse(res, 200, 'Restaurant fetched successfully', {
-      restaurant,
+      restaurant: withAvailability(restaurant),
+    });
+  } catch (error) {
+    handleRestaurantError(res, error);
+  }
+};
+
+export const updateMyRestaurantAvailability = async (req, res) => {
+  try {
+    const restaurant = await Restaurant.findOne({ owner: req.user._id });
+
+    if (!restaurant) {
+      return sendErrorResponse(res, 404, 'Restaurant not found');
+    }
+
+    const {
+      availabilityNote,
+      isTemporarilyClosed,
+      openingHours,
+      temporaryClosedReason,
+    } = req.body;
+
+    if (openingHours !== undefined) {
+      if (!openingHours || typeof openingHours !== 'object') {
+        return sendErrorResponse(res, 400, 'Opening hours must be an object');
+      }
+
+      for (const [day, schedule] of Object.entries(openingHours)) {
+        if (!restaurantScheduleDays.includes(day)) {
+          return sendErrorResponse(res, 400, `Invalid opening hours day: ${day}`);
+        }
+
+        if (!schedule || typeof schedule !== 'object') {
+          return sendErrorResponse(res, 400, `Invalid schedule for ${day}`);
+        }
+
+        if (!schedule.isClosed) {
+          if (
+            !timePattern.test(schedule.open) ||
+            !timePattern.test(schedule.close)
+          ) {
+            return sendErrorResponse(
+              res,
+              400,
+              'Opening hours must use HH:mm format',
+            );
+          }
+
+          if (schedule.open >= schedule.close) {
+            return sendErrorResponse(
+              res,
+              400,
+              'Opening time must be before closing time',
+            );
+          }
+        }
+
+        restaurant.openingHours[day] = {
+          isClosed: Boolean(schedule.isClosed),
+          open: schedule.open || restaurant.openingHours[day]?.open,
+          close: schedule.close || restaurant.openingHours[day]?.close,
+        };
+      }
+    }
+
+    if (typeof isTemporarilyClosed === 'boolean') {
+      restaurant.isTemporarilyClosed = isTemporarilyClosed;
+      restaurant.isOpen = !isTemporarilyClosed;
+    }
+
+    if (temporaryClosedReason !== undefined) {
+      restaurant.temporaryClosedReason = String(temporaryClosedReason).trim();
+    }
+
+    if (availabilityNote !== undefined) {
+      restaurant.availabilityNote = String(availabilityNote).trim();
+    }
+
+    await restaurant.save();
+
+    sendSuccessResponse(res, 200, 'Restaurant availability updated', {
+      restaurant: withAvailability(restaurant),
     });
   } catch (error) {
     handleRestaurantError(res, error);

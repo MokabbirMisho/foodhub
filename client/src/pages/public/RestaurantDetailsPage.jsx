@@ -7,6 +7,17 @@ import { getRestaurantById } from '../../services/restaurantService';
 import { getRestaurantReviews } from '../../services/reviewService';
 
 const formatCurrency = (value) => `€${Number(value || 0).toFixed(2)}`;
+const formatOpeningHours = (hours) => {
+  if (typeof hours === 'string') {
+    return hours || 'Not provided';
+  }
+
+  if (!hours) {
+    return 'Not provided';
+  }
+
+  return hours.isClosed ? 'Closed' : `${hours.open} - ${hours.close}`;
+};
 
 const renderStars = (rating) => {
   return '★'.repeat(Number(rating || 0)) + '☆'.repeat(5 - Number(rating || 0));
@@ -191,14 +202,28 @@ function RestaurantDetailsPage() {
 
                 <span
                   className={`rounded-full px-3 py-1 text-sm font-semibold ${
-                    restaurant.isOpen
+                    restaurant.availability?.isAvailableNow
                       ? 'bg-green-50 text-green-700'
-                      : 'bg-orange-50 text-slate-600'
+                      : 'bg-red-50 text-red-700'
                   }`}
                 >
-                  {restaurant.isOpen ? 'Open' : 'Closed'}
+                  {restaurant.availability?.reason ||
+                    (restaurant.isOpen ? 'Open now' : 'Closed')}
                 </span>
               </div>
+              {restaurant.availability?.todayHours && (
+                <p className="mt-4 text-sm capitalize text-slate-600">
+                  Today ({restaurant.availability.todayHours.day}):{' '}
+                  {restaurant.availability.todayHours.isClosed
+                    ? 'Closed'
+                    : `${restaurant.availability.todayHours.open} - ${restaurant.availability.todayHours.close}`}
+                </p>
+              )}
+              {restaurant.availabilityNote && (
+                <p className="mt-2 text-sm text-slate-600">
+                  {restaurant.availabilityNote}
+                </p>
+              )}
             </header>
 
             <section className="fh-card p-6">
@@ -256,7 +281,7 @@ function RestaurantDetailsPage() {
                   <DetailItem
                     key={day}
                     label={day}
-                    value={restaurant.openingHours?.[day]}
+                    value={formatOpeningHours(restaurant.openingHours?.[day])}
                   />
                 ))}
               </div>
@@ -264,6 +289,13 @@ function RestaurantDetailsPage() {
 
             <section className="fh-card p-6">
               <h2 className="fh-section-title">Menu</h2>
+
+              {!restaurant.availability?.isAvailableNow && (
+                <p className="mt-4 rounded-lg border border-orange-200 bg-orange-50 p-4 text-orange-900">
+                  This restaurant is currently closed. You can browse the menu,
+                  but ordering is unavailable.
+                </p>
+              )}
 
               {foodItems.length > 0 && (
                 <div className="mt-5 flex gap-2 overflow-x-auto pb-2">
@@ -380,6 +412,7 @@ function RestaurantDetailsPage() {
                           </span>
                           <button
                             className="h-9 w-9 rounded-md border border-slate-300 font-bold hover:bg-orange-50"
+                            disabled={!restaurant.availability?.isAvailableNow}
                             onClick={() => increaseQuantity(foodItem._id)}
                             type="button"
                           >
@@ -389,10 +422,13 @@ function RestaurantDetailsPage() {
                       ) : (
                         <button
                           className="fh-btn-primary mt-5 text-sm"
+                          disabled={!restaurant.availability?.isAvailableNow}
                           onClick={() => handleAddToCart(foodItem)}
                           type="button"
                         >
-                          Add to Cart
+                          {restaurant.availability?.isAvailableNow
+                            ? 'Add to Cart'
+                            : 'Restaurant closed'}
                         </button>
                       )}
                       </div>

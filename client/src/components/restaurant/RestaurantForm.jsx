@@ -19,14 +19,6 @@ const emptyForm = {
   minimumOrderAmount: '',
   deliveryFee: '',
   estimatedDeliveryTime: '',
-  monday: '',
-  tuesday: '',
-  wednesday: '',
-  thursday: '',
-  friday: '',
-  saturday: '',
-  sunday: '',
-  isOpen: true,
 };
 
 const getInitialFormData = (restaurant) => {
@@ -49,14 +41,6 @@ const getInitialFormData = (restaurant) => {
     minimumOrderAmount: restaurant.minimumOrderAmount ?? '',
     deliveryFee: restaurant.deliveryFee ?? '',
     estimatedDeliveryTime: restaurant.estimatedDeliveryTime || '',
-    monday: restaurant.openingHours?.monday || '',
-    tuesday: restaurant.openingHours?.tuesday || '',
-    wednesday: restaurant.openingHours?.wednesday || '',
-    thursday: restaurant.openingHours?.thursday || '',
-    friday: restaurant.openingHours?.friday || '',
-    saturday: restaurant.openingHours?.saturday || '',
-    sunday: restaurant.openingHours?.sunday || '',
-    isOpen: restaurant.isOpen ?? true,
   };
 };
 
@@ -80,16 +64,6 @@ const createPayload = (formData) => ({
   minimumOrderAmount: Number(formData.minimumOrderAmount) || 0,
   deliveryFee: Number(formData.deliveryFee) || 0,
   estimatedDeliveryTime: formData.estimatedDeliveryTime.trim(),
-  openingHours: {
-    monday: formData.monday.trim(),
-    tuesday: formData.tuesday.trim(),
-    wednesday: formData.wednesday.trim(),
-    thursday: formData.thursday.trim(),
-    friday: formData.friday.trim(),
-    saturday: formData.saturday.trim(),
-    sunday: formData.sunday.trim(),
-  },
-  isOpen: formData.isOpen,
 });
 
 function RestaurantForm({ mode = 'create', onSubmit, restaurant }) {
@@ -430,49 +404,6 @@ function RestaurantForm({ mode = 'create', onSubmit, restaurant }) {
           />
         </label>
       </div>
-
-      <div>
-        <h3 className="text-sm font-semibold uppercase tracking-wide text-orange-600">
-          Opening hours
-        </h3>
-        <div className="mt-3 grid gap-4 md:grid-cols-2">
-          {[
-            'monday',
-            'tuesday',
-            'wednesday',
-            'thursday',
-            'friday',
-            'saturday',
-            'sunday',
-          ].map((day) => (
-            <label className="block" key={day}>
-              <span className="text-sm font-medium capitalize text-slate-700">
-                {day}
-              </span>
-              <input
-                className="mt-1 w-full rounded-md border border-slate-300 px-3 py-2 outline-none focus:border-orange-500"
-                name={day}
-                onChange={handleChange}
-                placeholder="10:00 - 22:00"
-                value={formData[day]}
-              />
-            </label>
-          ))}
-        </div>
-      </div>
-
-      <label className="flex items-center gap-3 rounded-md bg-orange-50 px-3 py-2">
-        <input
-          checked={formData.isOpen}
-          className="h-4 w-4 accent-orange-600"
-          name="isOpen"
-          onChange={handleChange}
-          type="checkbox"
-        />
-        <span className="text-sm font-medium text-slate-700">
-          Restaurant is currently open
-        </span>
-      </label>
 
       <button
         className="rounded-md bg-orange-600 px-5 py-3 font-semibold text-white hover:bg-orange-700 disabled:cursor-not-allowed disabled:bg-orange-300"

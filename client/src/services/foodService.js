@@ -15,6 +15,11 @@ export const getPublicRestaurantFoodItems = async (restaurantId, params) => {
   return response.data;
 };
 
+export const searchFoods = async (params) => {
+  const response = await api.get('/foods/search', { params });
+  return response.data;
+};
+
 export const getFoodItemById = async (id) => {
   const response = await api.get(`/foods/${id}`);
   return response.data;
@@ -34,4 +39,3 @@ export const toggleFoodAvailability = async (id) => {
   const response = await api.patch(`/foods/${id}/availability`);
   return response.data;
 };
-

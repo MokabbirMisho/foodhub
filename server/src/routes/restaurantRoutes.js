@@ -7,6 +7,7 @@ import {
   getMyRestaurant,
   getRestaurantById,
   rejectRestaurant,
+  updateMyRestaurantAvailability,
   updateMyRestaurant,
 } from '../controllers/restaurantController.js';
 import { authorizeRoles, protect } from '../middleware/authMiddleware.js';
@@ -30,6 +31,13 @@ router.get(
   protect,
   authorizeRoles('restaurant_owner'),
   getMyRestaurant,
+);
+
+router.patch(
+  '/my-restaurant/availability',
+  protect,
+  authorizeRoles('restaurant_owner'),
+  updateMyRestaurantAvailability,
 );
 
 router.patch(
