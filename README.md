@@ -15,27 +15,42 @@ map tracking, analytics, and role-based access.
 
 ## Demo Credentials
 
+### Main Demo Accounts
+
 | Role | Email | Password |
 | --- | --- | --- |
 | Admin | `admin@foodhub.com` | `Admin123` |
-| Restaurant Owner | `owner1@example.com` | `Owner123` |
 | Customer | `customer10@example.com` | `Customer123` |
 | Rider | `rider1@example.com` | `Rider123` |
 
-These accounts are for demonstration and testing only. If the demo customer
-password was changed during testing, create or reset a demo customer and update
-this README accordingly.
+### Restaurant Owner Demo Accounts
 
-**Demo online payment**
+| Restaurant | Owner Email | Password |
+| --- | --- | --- |
+| Pizza Roma | `owner.pizza@example.com` | `Owner123` |
+| Burger House | `owner.burger@example.com` | `Owner123` |
+| Bengal Biryani | `owner.bengal@example.com` | `Owner123` |
+| Sushi Zen | `owner.sushi@example.com` | `Owner123` |
+| Vegan Garden | `owner.vegan@example.com` | `Owner123` |
+
+Each restaurant owner account manages one approved demo restaurant.
+
+Additional legacy owner account: `owner1@example.com` / `Owner123`
+
+These accounts are for demonstration and testing only. If a demo password is
+changed during testing, reset the account or update this README accordingly.
+
+### Demo Payment
+
+Use the following card for demo online payment:
 
 ```text
-Card number: 4242 4242 4242 4242
-Expiry:     12/34
-CVC:        123
+Card Number: 4242 4242 4242 4242
+Expiry: 12/34
+CVC: 123
 ```
 
-This is a frontend demo payment flow only. No real payment is processed and no
-card details are sent to or stored by the backend.
+This is a demo payment flow only. No real payment is processed.
 
 ## Product Highlights
 
