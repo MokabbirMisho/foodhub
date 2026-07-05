@@ -1,77 +1,19 @@
-# FoodHub
+# FoodHub — Full-Stack Food Delivery Platform
 
-A production-deployed, multi-vendor food ordering and delivery platform built
-with the MERN stack. FoodHub provides dedicated workflows for customers,
-restaurant owners, riders, and administrators.
+FoodHub is a full-stack food delivery web application with customer ordering,
+restaurant management, rider delivery, admin control, real-time notifications,
+map tracking, analytics, and role-based access.
 
-[Live Demo](https://foodhub-phi-wine.vercel.app) |
-[Backend API](https://foodhub-zurl.onrender.com) |
-[API Health](https://foodhub-zurl.onrender.com/api/health)
+## Live Demo
 
-## Tech Stack
+- **Frontend:** [foodhub-phi-wine.vercel.app](https://foodhub-phi-wine.vercel.app)
+- **Backend API:** [foodhub-zurl.onrender.com](https://foodhub-zurl.onrender.com)
+- **Health check:** [foodhub-zurl.onrender.com/api/health](https://foodhub-zurl.onrender.com/api/health)
 
-- **Frontend:** React, Vite, Tailwind CSS, React Router, Axios
-- **Backend:** Node.js, Express, MongoDB, Mongoose
-- **Authentication:** JWT, bcryptjs, Google Identity
-- **Media:** Cloudinary, Multer
-- **Deployment:** Vercel, Render, MongoDB Atlas
-
-## Project Highlights
-
-- Role-based authentication and authorization across four account types
-- Complete multi-vendor restaurant approval and management flow
-- Persistent guest cart with authenticated customer checkout
-- Secure backend-side order price and total calculation
-- Restaurant preparation and rider delivery workflows
-- Cloudinary restaurant, cover, and food image uploads
-- Delivered-order restaurant reviews with aggregated ratings
-- Production security middleware, rate limiting, CORS, and environment config
-
-## Features By Role
-
-### Customer
-
-- Browse approved restaurants and available menus
-- Manage a persistent cart and place orders
-- Follow order status, cancel pending orders, and review delivered orders
-
-### Restaurant Owner
-
-- Create and maintain a restaurant profile
-- Upload images and manage food availability
-- View incoming orders and update preparation status
-
-### Rider
-
-- Browse ready, unassigned deliveries
-- Accept deliveries and mark assigned orders as delivered
-
-### Admin
-
-- Review, approve, or reject restaurant applications
-- Search and filter platform-wide orders
-- Access platform review data through the admin API
-
-## Screenshots
-
-> Add the final production screenshots to `docs/screenshots/` using the filenames
-> below.
-
-| Home and authentication | Restaurant discovery |
-| --- | --- |
-| ![FoodHub home](docs/screenshots/home.png) | ![Restaurant listing](docs/screenshots/restaurants.png) |
-
-| Cart and checkout | Restaurant dashboard |
-| --- | --- |
-| ![Cart and checkout](docs/screenshots/cart-checkout.png) | ![Restaurant dashboard](docs/screenshots/restaurant-dashboard.png) |
-
-| Rider dashboard | Admin dashboard |
-| --- | --- |
-| ![Rider dashboard](docs/screenshots/rider-dashboard.png) | ![Admin dashboard](docs/screenshots/admin-dashboard.png) |
+> The Render free-tier service may need a short moment to wake up on the first
+> request.
 
 ## Demo Credentials
-
-These credentials are for demo and testing only.
 
 | Role | Email | Password |
 | --- | --- | --- |
@@ -80,38 +22,194 @@ These credentials are for demo and testing only.
 | Customer | `customer10@example.com` | `Customer123` |
 | Rider | `rider1@example.com` | `Rider123` |
 
-## Local Setup
+These accounts are for demonstration and testing only. If the demo customer
+password was changed during testing, create or reset a demo customer and update
+this README accordingly.
 
-Clone the repository and create local environment files from the supplied
-examples:
+**Demo online payment**
 
-```bash
-cp server/.env.example server/.env
-cp client/.env.example client/.env
+```text
+Card number: 4242 4242 4242 4242
+Expiry:     12/34
+CVC:        123
 ```
 
-Start the backend:
+This is a frontend demo payment flow only. No real payment is processed and no
+card details are sent to or stored by the backend.
+
+## Product Highlights
+
+- Four distinct workflows: customer, restaurant owner, rider, and admin
+- Local email/password authentication plus Google customer authentication
+- Role-based authorization and resource ownership checks
+- Restaurant approval, profiles, images, menus, schedules, and availability
+- Advanced restaurant and food search, filtering, sorting, and pagination
+- Persistent guest cart with authenticated customer checkout
+- Backend-calculated prices, delivery fees, and order totals
+- Cash on delivery and clearly labeled simulated online payment
+- Full order lifecycle from placement through preparation and delivery
+- Rider acceptance, location updates, and OpenStreetMap/Leaflet tracking
+- Real-time Socket.io order and delivery notifications
+- Customer profiles, saved addresses, geocoding, and password changes
+- Delivered-order reviews with aggregate restaurant ratings
+- Restaurant owner performance overview and platform-wide admin overview
+- Cloudinary image uploads with protected, validated upload endpoints
+- Production CORS, Helmet headers, rate limiting, and environment validation
+
+## Features by Role
+
+### Customer
+
+- Discover approved restaurants and available food items
+- Search by restaurant, cuisine, dish, category, and tags
+- Filter by availability, rating, delivery fee, and delivery time
+- Maintain a guest cart and sign in only when placing an order
+- Use saved addresses, current-location lookup, or manual delivery details
+- Place COD or simulated online-payment orders
+- Cancel pending orders and follow status updates in real time
+- Track rider and delivery locations on an OpenStreetMap
+- Review delivered orders and manage account security
+
+### Restaurant Owner
+
+- Create and update one restaurant profile
+- Upload a logo, cover image, and food images
+- Manage menu items, prices, tags, and availability
+- Configure weekly opening hours and temporary closures
+- Receive new-order notifications and update preparation status
+- View revenue, orders, status, payment, and top-item performance
+
+### Rider
+
+- View ready and unassigned deliveries
+- Atomically accept a delivery so it cannot be claimed twice
+- View customer, address, order, and payment details
+- Update rider location and mark assigned deliveries as delivered
+- Receive real-time delivery availability notifications
+
+### Admin
+
+- View platform revenue, users, restaurants, and order performance
+- Approve or reject restaurant applications
+- Search and inspect platform orders
+- Search, filter, block, and unblock users
+- Review recent platform activity from a responsive admin sidebar
+
+## Screenshots
+
+Add final production screenshots using the filenames below.
+
+### Landing Page
+
+![Landing Page](./screenshots/landing-page.png)
+
+### Customer Dashboard
+
+![Customer Dashboard](./screenshots/customer-dashboard.png)
+
+### Restaurant Listing
+
+![Restaurant Listing](./screenshots/restaurant-listing.png)
+
+### Restaurant Detail & Menu
+
+![Restaurant Detail and Menu](./screenshots/restaurant-detail-menu.png)
+
+### Cart & Checkout
+
+![Cart and Checkout](./screenshots/cart-checkout.png)
+
+### Customer Orders & Tracking
+
+![Customer Orders and Tracking](./screenshots/customer-orders-tracking.png)
+
+### Restaurant Owner Dashboard
+
+![Restaurant Owner Dashboard](./screenshots/restaurant-owner-dashboard.png)
+
+### Rider Dashboard
+
+![Rider Dashboard](./screenshots/rider-dashboard.png)
+
+### Admin Dashboard
+
+![Admin Dashboard](./screenshots/admin-dashboard.png)
+
+## Tech Stack
+
+| Area | Technologies |
+| --- | --- |
+| Frontend | React, Vite, Tailwind CSS, React Router, Axios |
+| Backend | Node.js, Express.js |
+| Database | MongoDB Atlas, Mongoose |
+| Authentication | JWT, bcryptjs, Google Identity Services |
+| Real time | Socket.io |
+| Maps | OpenStreetMap, Leaflet, React Leaflet, Nominatim |
+| Images | Cloudinary, Multer |
+| Security | Helmet, CORS allowlist, Express rate limiting |
+| Deployment | Vercel, Render |
+
+## Architecture
+
+```text
+foodhub/
+├── client/                 React + Vite frontend
+│   └── src/
+│       ├── components/     Shared and role-specific UI
+│       ├── context/        Auth, cart, and notification providers
+│       ├── pages/          Public and role-based screens
+│       ├── routes/         Route guards and application routes
+│       └── services/       REST, upload, map, and Socket.io clients
+├── server/                 Express API and Socket.io server
+│   └── src/
+│       ├── config/         Database, Cloudinary, CORS, and environment config
+│       ├── controllers/    Application and analytics logic
+│       ├── middleware/     Authentication, roles, uploads, and rate limits
+│       ├── models/         Mongoose schemas
+│       ├── routes/         Public and protected API routes
+│       ├── socket/         Authenticated room and event handling
+│       └── utils/          Tokens and availability helpers
+└── screenshots/            Portfolio screenshot placeholders
+```
+
+## Local Setup
+
+### Prerequisites
+
+- Node.js 18 or newer
+- npm
+- MongoDB Atlas or a compatible MongoDB connection
+- Cloudinary account for image uploads
+- Google OAuth client ID for Google authentication
+
+### 1. Configure the backend
 
 ```bash
 cd server
 npm install
+cp .env.example .env
 npm run dev
 ```
 
-Start the frontend in a second terminal:
+### 2. Configure the frontend
+
+In a second terminal:
 
 ```bash
 cd client
 npm install
+cp .env.example .env
 npm run dev
 ```
 
-The frontend defaults to `http://localhost:5173` and the API to
-`http://localhost:5001`.
+The frontend runs at `http://localhost:5173`; the API defaults to
+`http://localhost:5001/api`.
 
 ## Environment Variables
 
-Backend (`server/.env`):
+Never commit real environment files or secret values.
+
+### Backend (`server/.env`)
 
 ```env
 PORT=5001
@@ -126,7 +224,7 @@ CLOUDINARY_API_KEY=
 CLOUDINARY_API_SECRET=
 ```
 
-Frontend (`client/.env`):
+### Frontend (`client/.env`)
 
 ```env
 VITE_API_URL=http://localhost:5001/api
@@ -134,69 +232,79 @@ VITE_SOCKET_URL=http://localhost:5001
 VITE_GOOGLE_CLIENT_ID=your_google_client_id_here
 ```
 
-Real credentials and secrets must never be committed.
-
 ## API Overview
 
 | Resource | Base path | Purpose |
 | --- | --- | --- |
+| Health | `/api/health` | Deployment health check |
 | Auth | `/api/auth` | Local and Google authentication |
-| Restaurants | `/api/restaurants` | Profiles, discovery, and approval |
-| Foods | `/api/foods` | Menu management and public menus |
-| Orders | `/api/orders` | Customer, owner, rider, and admin workflows |
-| Uploads | `/api/uploads` | Cloudinary image uploads |
-| Reviews | `/api/reviews` | Customer reviews and public ratings |
+| Customer | `/api/customer` | Profile, addresses, and password management |
+| Restaurants | `/api/restaurants` | Discovery, ownership, approval, and analytics |
+| Foods | `/api/foods` | Menu management and public food search |
+| Orders | `/api/orders` | Customer, owner, rider, and admin order workflows |
+| Uploads | `/api/uploads` | Protected Cloudinary image uploads |
+| Reviews | `/api/reviews` | Customer reviews and restaurant ratings |
+| Geocoding | `/api/geocode` | OpenStreetMap address and coordinate lookup |
+| Admin | `/api/admin` | User management and platform overview |
+
+## Security & Reliability
+
+- JWT-protected API and Socket.io authentication
+- Customer, owner, rider, and admin role guards
+- Ownership checks for restaurants, menus, orders, reviews, and addresses
+- Password hashing with bcryptjs and passwords excluded from responses
+- Blocked-account checks on REST and Socket.io authentication
+- Backend-derived food prices and order totals
+- Atomic rider delivery assignment
+- Production environment validation and strict CORS origins
+- General and authentication-specific rate limits
+- Helmet security headers and one-megabyte JSON body limits
+- Image MIME validation and a three-megabyte upload limit
+
+The demo currently persists JWTs in `localStorage`. A higher-security production
+version should use secure, HTTP-only cookies.
 
 ## Deployment
 
-- **Frontend:** Vercel
-- **Backend API:** Render
-- **Database:** MongoDB Atlas
-- **Image hosting:** Cloudinary
+### Backend — Render
 
-The frontend uses `VITE_API_URL` for the deployed API. Render uses `CLIENT_URL`
-for the allowed Vercel origin. The included `client/vercel.json` handles SPA
-route refreshes, while `render.yaml` documents the backend service setup.
+- Root directory: `server`
+- Build command: `npm install`
+- Start command: `npm start`
+- Set `NODE_ENV=production`
+- Configure MongoDB, JWT, frontend origin, Google, and Cloudinary variables
 
-For the deployed real-time notification connection, configure:
+### Frontend — Vercel
+
+- Root directory: `client`
+- Build command: `npm run build`
+- Output directory: `dist`
+- Set:
 
 ```env
-# Render
-NODE_ENV=production
-CLIENT_URL=https://foodhub-phi-wine.vercel.app
-MONGO_URI=
-JWT_SECRET=
-GOOGLE_CLIENT_ID=
-CLOUDINARY_CLOUD_NAME=
-CLOUDINARY_API_KEY=
-CLOUDINARY_API_SECRET=
-
-# Vercel
 VITE_API_URL=https://foodhub-zurl.onrender.com/api
 VITE_SOCKET_URL=https://foodhub-zurl.onrender.com
 VITE_GOOGLE_CLIENT_ID=your_google_client_id
 ```
 
-Socket.io uses the existing FoodHub JWT for authentication. REST APIs remain
-the source of truth if the socket connection is unavailable.
+`client/vercel.json` provides SPA rewrites for direct route refreshes.
 
-### Security Notes
+## Verification
 
-- Never commit `.env` files or production credentials.
-- Local storage is used for JWT persistence in this demo; production systems
-  should consider secure, HTTP-only cookies.
-- Socket.io connections are authenticated with the FoodHub JWT and scoped to
-  user and role rooms.
-- Backend routes use role and ownership checks for customer, owner, rider, and
-  admin operations.
-- Demo online payment is simulated. It does not process or store card details.
-- Uploads accept JPEG, PNG, and WebP images up to 3 MB.
+```bash
+cd client
+npm run build
+```
+
+The project has also been smoke-tested across public search, role-based login,
+protected API boundaries, analytics endpoints, CORS, and authenticated
+Socket.io connections.
 
 ## Future Improvements
 
-- Stripe payment integration
-- Live rider location tracking
-- Transactional email notifications
-- Admin analytics and reporting
-- Restaurant availability schedules
-- Location-aware search optimization
+- Real Stripe or another production payment provider
+- Live continuous rider GPS updates
+- Transactional email and push notifications
+- Restaurant-specific promotions and coupon management
+- Expanded automated unit, integration, and end-to-end test coverage
+- Search ranking and location optimization at larger scale
