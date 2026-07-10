@@ -1,6 +1,8 @@
 import { GoogleOAuthProvider } from '@react-oauth/google';
 import { BrowserRouter } from 'react-router-dom';
+import AuthModal from './components/auth/AuthModal';
 import { AuthProvider } from './context/AuthContext';
+import { AuthModalProvider } from './context/AuthModalContext';
 import { CartProvider } from './context/CartContext';
 import { NotificationProvider } from './context/NotificationContext';
 import AppRoutes from './routes/AppRoutes';
@@ -12,11 +14,14 @@ function App() {
     <GoogleOAuthProvider clientId={googleClientId}>
       <BrowserRouter>
         <AuthProvider>
-          <NotificationProvider>
-            <CartProvider>
-              <AppRoutes />
-            </CartProvider>
-          </NotificationProvider>
+          <AuthModalProvider>
+            <NotificationProvider>
+              <CartProvider>
+                <AppRoutes />
+                <AuthModal />
+              </CartProvider>
+            </NotificationProvider>
+          </AuthModalProvider>
         </AuthProvider>
       </BrowserRouter>
     </GoogleOAuthProvider>

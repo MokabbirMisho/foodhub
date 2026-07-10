@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import BackButton from '../../components/common/BackButton';
 import { useCart } from '../../hooks/useCart';
 import { useAuth } from '../../hooks/useAuth';
+import { useAuthModal } from '../../hooks/useAuthModal';
 import {
   geocodeAddress,
   reverseGeocodeLocation,
@@ -30,6 +31,7 @@ const getEffectivePrice = (item) => {
 function CheckoutPage() {
   const navigate = useNavigate();
   const { isAuthenticated, user } = useAuth();
+  const { openLogin } = useAuthModal();
   const {
     cartItems,
     clearCart,
@@ -347,16 +349,18 @@ function CheckoutPage() {
   if (cartItems.length === 0) {
     return (
       <main className="min-h-screen bg-stone-50 px-6 py-10 text-zinc-900">
-        <section className="mx-auto max-w-3xl space-y-6">
-          <BackButton />
+        <section className="mx-auto max-w-3xl">
           <div className="rounded-xl bg-white p-6 shadow-sm">
-          <h1 className="text-3xl font-bold">Your cart is empty.</h1>
-          <Link
-            className="mt-5 inline-block rounded-md bg-[#FF4F2E] px-4 py-2 font-semibold text-white hover:bg-[#E63E22]"
-            to="/restaurants"
-          >
-            Browse Restaurants
-          </Link>
+            <div className="mb-4">
+              <BackButton />
+            </div>
+            <h1 className="text-3xl font-bold">Your cart is empty.</h1>
+            <Link
+              className="mt-5 inline-block rounded-md bg-[#FF4F2E] px-4 py-2 font-semibold text-white hover:bg-[#E63E22]"
+              to="/restaurants"
+            >
+              Browse Restaurants
+            </Link>
           </div>
         </section>
       </main>
@@ -366,19 +370,24 @@ function CheckoutPage() {
   if (!isAuthenticated) {
     return (
       <main className="min-h-screen bg-stone-50 px-6 py-10 text-zinc-900">
-        <section className="mx-auto max-w-3xl space-y-6">
-          <BackButton fallbackPath="/" />
+        <section className="mx-auto max-w-3xl">
           <div className="rounded-xl bg-white p-6 shadow-sm">
-          <h1 className="text-3xl font-bold">Please login to place your order.</h1>
-          <p className="mt-3 text-zinc-700">
-            Your cart is saved. Sign in from the landing page to continue checkout.
-          </p>
-          <Link
-            className="mt-5 inline-block rounded-md bg-[#FF4F2E] px-4 py-2 font-semibold text-white hover:bg-[#E63E22]"
-            to="/"
-          >
-            Go to Sign In
-          </Link>
+            <div className="mb-4">
+              <BackButton fallbackPath="/" />
+            </div>
+            <h1 className="text-3xl font-bold">
+              Please login to place your order.
+            </h1>
+            <p className="mt-3 text-zinc-700">
+              Your cart is saved. Sign in to continue checkout.
+            </p>
+            <button
+              className="mt-5 inline-block rounded-md bg-[#FF4F2E] px-4 py-2 font-semibold text-white hover:bg-[#E63E22]"
+              onClick={() => openLogin({ redirectTo: '/checkout' })}
+              type="button"
+            >
+              Go to Sign In
+            </button>
           </div>
         </section>
       </main>
@@ -388,16 +397,20 @@ function CheckoutPage() {
   if (user?.role !== 'customer') {
     return (
       <main className="min-h-screen bg-stone-50 px-6 py-10 text-zinc-900">
-        <section className="mx-auto max-w-3xl space-y-6">
-          <BackButton />
+        <section className="mx-auto max-w-3xl">
           <div className="rounded-xl bg-white p-6 shadow-sm">
-          <h1 className="text-3xl font-bold">Only customers can place orders.</h1>
-          <Link
-            className="mt-5 inline-block rounded-md bg-[#FF4F2E] px-4 py-2 font-semibold text-white hover:bg-[#E63E22]"
-            to="/restaurants"
-          >
-            Browse Restaurants
-          </Link>
+            <div className="mb-4">
+              <BackButton />
+            </div>
+            <h1 className="text-3xl font-bold">
+              Only customers can place orders.
+            </h1>
+            <Link
+              className="mt-5 inline-block rounded-md bg-[#FF4F2E] px-4 py-2 font-semibold text-white hover:bg-[#E63E22]"
+              to="/restaurants"
+            >
+              Browse Restaurants
+            </Link>
           </div>
         </section>
       </main>
@@ -407,13 +420,15 @@ function CheckoutPage() {
   return (
     <main className="fh-page">
       <section className="fh-container">
-        <BackButton />
-        <div className="mt-6 grid gap-6 lg:grid-cols-[1fr_360px]">
-        <form className="fh-card p-7" onSubmit={handleSubmit}>
-          <p className="fh-eyebrow">
-            Step 1 · Checkout
-          </p>
-          <h1 className="mt-2 text-4xl font-black">Delivery details</h1>
+        <div className="grid gap-6 lg:grid-cols-[1fr_360px]">
+          <form className="fh-card p-7" onSubmit={handleSubmit}>
+            <div className="mb-4">
+              <BackButton />
+            </div>
+            <p className="fh-eyebrow">
+              Step 1 · Checkout
+            </p>
+            <h1 className="mt-2 text-4xl font-black">Delivery details</h1>
 
           {error && (
             <p className="fh-alert-error mt-5">

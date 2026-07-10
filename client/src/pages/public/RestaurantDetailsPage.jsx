@@ -485,7 +485,7 @@ function RestaurantDetailsPage() {
             <header className="overflow-hidden rounded-[2rem] border border-stone-200 bg-white shadow-sm">
               <div className="relative h-48 bg-gradient-to-br from-white via-stone-50 to-stone-100 sm:h-56 lg:h-72">
                 <button
-                  className="absolute left-4 top-4 z-10 rounded-full border border-white/60 bg-white/90 px-4 py-2 text-sm font-black text-zinc-800 shadow backdrop-blur hover:bg-white"
+                  className="absolute left-4 top-4 z-20 inline-flex items-center gap-2 rounded-full border border-white/60 bg-white/90 px-4 py-2 text-sm font-medium text-zinc-700 shadow-sm backdrop-blur transition hover:bg-white hover:text-zinc-900"
                   onClick={handleBack}
                   type="button"
                 >

@@ -66,18 +66,6 @@ function OrderTrackingPage() {
   return (
     <main className="fh-page">
       <section className="mx-auto max-w-6xl space-y-6">
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <BackButton fallbackPath="/my-orders" />
-          <button
-            className="fh-btn-primary"
-            disabled={isLoading}
-            onClick={loadTracking}
-            type="button"
-          >
-            {isLoading ? 'Refreshing...' : 'Refresh Location'}
-          </button>
-        </div>
-
         {isLoading && !tracking && (
           <p className="rounded-xl bg-white p-6 text-zinc-700 shadow-sm">
             Loading order tracking...
@@ -93,6 +81,17 @@ function OrderTrackingPage() {
         {tracking && (
           <>
             <header className="fh-card p-7">
+              <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+                <BackButton fallbackPath="/my-orders" />
+                <button
+                  className="fh-btn-primary"
+                  disabled={isLoading}
+                  onClick={loadTracking}
+                  type="button"
+                >
+                  {isLoading ? 'Refreshing...' : 'Refresh Location'}
+                </button>
+              </div>
               <p className="text-sm font-semibold uppercase tracking-wide text-[#FF4F2E]">
                 Order #{String(tracking.orderId).slice(-8)}
               </p>

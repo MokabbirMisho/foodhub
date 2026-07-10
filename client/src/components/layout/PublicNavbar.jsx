@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
+import { useAuthModal } from '../../hooks/useAuthModal';
 import { getDashboardPath } from '../../utils/getDashboardPath';
 
 const dashboardLabels = {
@@ -9,8 +10,9 @@ const dashboardLabels = {
   admin: 'Admin Dashboard',
 };
 
-function PublicNavbar({ onOpenAuth }) {
+function PublicNavbar() {
   const { isAuthenticated, logout, user } = useAuth();
+  const { openLogin } = useAuthModal();
 
   return (
     <header className="sticky top-0 z-50 border-b border-stone-200 bg-white/90 shadow-sm backdrop-blur">
@@ -38,7 +40,7 @@ function PublicNavbar({ onOpenAuth }) {
         ) : (
           <button
             className="inline-flex min-h-11 items-center rounded-full bg-[#FF4F2E] px-5 text-sm font-semibold text-white shadow-sm hover:bg-[#E63E22]"
-            onClick={onOpenAuth}
+            onClick={openLogin}
             type="button"
           >
             Sign in / Sign up

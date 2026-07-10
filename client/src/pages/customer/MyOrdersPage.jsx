@@ -109,9 +109,11 @@ function MyOrdersPage() {
   return (
     <main className="fh-page">
       <section className="mx-auto max-w-6xl space-y-6">
-        <BackButton />
         <header className="fh-card flex flex-col gap-4 p-7 md:flex-row md:items-end md:justify-between">
           <div>
+            <div className="mb-4">
+              <BackButton />
+            </div>
             <p className="text-sm font-semibold uppercase tracking-wide text-[#FF4F2E]">
               FoodHub Orders
             </p>

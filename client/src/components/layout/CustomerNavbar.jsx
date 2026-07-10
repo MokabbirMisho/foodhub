@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useCart } from '../../hooks/useCart';
 import { useAuth } from '../../hooks/useAuth';
+import { useAuthModal } from '../../hooks/useAuthModal';
 import NotificationBell from '../common/NotificationBell';
 
 function CustomerNavbar() {
@@ -10,6 +11,7 @@ function CustomerNavbar() {
   const profileMenuRef = useRef(null);
   const { getCartCount } = useCart();
   const { isAuthenticated, logout, user } = useAuth();
+  const { openLogin } = useAuthModal();
   const [searchTerm, setSearchTerm] = useState('');
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const cartCount = getCartCount();
@@ -163,12 +165,13 @@ function CustomerNavbar() {
               )}
             </div>
           ) : (
-            <Link
+            <button
               className="rounded-md bg-[#FF4F2E] px-3 py-2 text-sm font-semibold text-white hover:bg-[#E63E22]"
-              to="/"
+              onClick={openLogin}
+              type="button"
             >
               Sign In
-            </Link>
+            </button>
           )}
         </div>
       </nav>

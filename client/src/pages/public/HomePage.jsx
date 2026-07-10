@@ -1,6 +1,5 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import AuthModal from '../../components/common/AuthModal';
 import PublicNavbar from '../../components/layout/PublicNavbar';
 import HomeRestaurantCard from '../../components/restaurant/HomeRestaurantCard';
 import { getRestaurants } from '../../services/restaurantService';
@@ -69,7 +68,6 @@ function RestaurantSection({
 
 function HomePage() {
   const navigate = useNavigate();
-  const [isAuthOpen, setIsAuthOpen] = useState(false);
   const [fulfillmentMode, setFulfillmentMode] = useState('delivery');
   const [searchTerm, setSearchTerm] = useState('');
   const [collectionMessage, setCollectionMessage] = useState('');
@@ -77,8 +75,6 @@ function HomePage() {
   const [popularRestaurants, setPopularRestaurants] = useState([]);
   const [highlightRestaurants, setHighlightRestaurants] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
-
-  const closeAuth = useCallback(() => setIsAuthOpen(false), []);
 
   useEffect(() => {
     const loadRestaurantCollections = async () => {
@@ -130,8 +126,7 @@ function HomePage() {
 
   return (
     <main className="min-h-screen bg-[#F8F7F4] text-zinc-900">
-      <PublicNavbar onOpenAuth={() => setIsAuthOpen(true)} />
-      <AuthModal isOpen={isAuthOpen} onClose={closeAuth} />
+      <PublicNavbar />
 
       <section className="px-4 pt-5 sm:px-6 sm:pt-6 lg:px-8">
         <div className="mx-auto flex min-h-[270px] max-w-7xl items-center rounded-3xl border border-stone-200 bg-gradient-to-br from-white via-white to-stone-50 px-5 py-7 shadow-sm sm:min-h-[300px] sm:px-8 sm:py-9 lg:min-h-[330px] lg:px-12 lg:py-10">

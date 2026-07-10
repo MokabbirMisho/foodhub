@@ -218,9 +218,10 @@ function CustomerAccountPage() {
   return (
     <main className="fh-page">
       <section className="mx-auto max-w-6xl space-y-6">
-        <BackButton />
-
         <header className="fh-card p-7">
+          <div className="mb-4">
+            <BackButton />
+          </div>
           <p className="text-sm font-semibold uppercase tracking-wide text-[#FF4F2E]">
             Customer Account
           </p>

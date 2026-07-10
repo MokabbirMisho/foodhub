@@ -16,6 +16,7 @@ function AuthCard({
   initialMode = 'signin',
   initialRole = 'customer',
   onSuccess,
+  redirectAfterLogin,
 }) {
   const navigate = useNavigate();
   const { login, register, signInWithGoogle, signUpWithGoogle } = useAuth();
@@ -45,6 +46,12 @@ function AuthCard({
 
   const handleAuthSuccess = (authUser) => {
     onSuccess?.(authUser);
+
+    if (redirectAfterLogin && authUser.role === 'customer') {
+      navigate(redirectAfterLogin, { replace: true });
+      return;
+    }
+
     navigate(getDashboardPath(authUser.role));
   };
 

@@ -1,44 +1,44 @@
-import { useEffect, useState } from 'react';
-import { Link, useSearchParams } from 'react-router-dom';
-import { searchFoods } from '../../services/foodService';
-import { getRestaurants } from '../../services/restaurantService';
+import { useEffect, useState } from "react";
+import { Link, useSearchParams } from "react-router-dom";
+import { searchFoods } from "../../services/foodService";
+import { getRestaurants } from "../../services/restaurantService";
 
 const cuisines = [
-  'all',
-  'Pizza',
-  'Burger',
-  'Biryani',
-  'Sushi',
-  'Pasta',
-  'Desserts',
-  'Drinks',
-  'Vegan',
-  'Chicken',
-  'Fast Food',
+  "all",
+  "Pizza",
+  "Burger",
+  "Biryani",
+  "Sushi",
+  "Pasta",
+  "Desserts",
+  "Drinks",
+  "Vegan",
+  "Chicken",
+  "Fast Food",
 ];
 
 const defaultFilters = {
-  search: '',
-  cuisine: 'all',
+  search: "",
+  cuisine: "all",
   openNow: false,
-  minRating: '',
-  maxDeliveryFee: '',
-  maxDeliveryTime: '',
-  sort: 'relevance',
+  minRating: "",
+  maxDeliveryFee: "",
+  maxDeliveryTime: "",
+  sort: "relevance",
   page: 1,
 };
 
 const formatCurrency = (value) => `€${Number(value || 0).toFixed(2)}`;
 
 const readFilters = (searchParams) => ({
-  search: searchParams.get('search') || '',
-  cuisine: searchParams.get('cuisine') || 'all',
-  openNow: searchParams.get('openNow') === 'true',
-  minRating: searchParams.get('minRating') || '',
-  maxDeliveryFee: searchParams.get('maxDeliveryFee') || '',
-  maxDeliveryTime: searchParams.get('maxDeliveryTime') || '',
-  sort: searchParams.get('sort') || 'relevance',
-  page: Math.max(Number(searchParams.get('page')) || 1, 1),
+  search: searchParams.get("search") || "",
+  cuisine: searchParams.get("cuisine") || "all",
+  openNow: searchParams.get("openNow") === "true",
+  minRating: searchParams.get("minRating") || "",
+  maxDeliveryFee: searchParams.get("maxDeliveryFee") || "",
+  maxDeliveryTime: searchParams.get("maxDeliveryTime") || "",
+  sort: searchParams.get("sort") || "relevance",
+  page: Math.max(Number(searchParams.get("page")) || 1, 1),
 });
 
 const toSearchParams = (filters) => {
@@ -46,11 +46,11 @@ const toSearchParams = (filters) => {
 
   Object.entries(filters).forEach(([key, value]) => {
     if (
-      value !== '' &&
+      value !== "" &&
       value !== false &&
-      value !== 'all' &&
-      !(key === 'sort' && value === 'relevance') &&
-      !(key === 'page' && value === 1)
+      value !== "all" &&
+      !(key === "sort" && value === "relevance") &&
+      !(key === "page" && value === 1)
     ) {
       params[key] = String(value);
     }
@@ -61,19 +61,19 @@ const toSearchParams = (filters) => {
 
 function AvailabilityBadge({ availability }) {
   const isOpen = availability?.isAvailableNow;
-  const opensLater = availability?.reason?.startsWith('Opens at');
+  const opensLater = availability?.reason?.startsWith("Opens at");
 
   return (
     <span
       className={`rounded-full px-3 py-1 text-xs font-semibold ${
         isOpen
-          ? 'bg-green-50 text-green-700'
+          ? "bg-green-50 text-green-700"
           : opensLater
-            ? 'bg-stone-50 text-[#FF4F2E]'
-            : 'bg-red-50 text-red-700'
+            ? "bg-stone-50 text-[#FF4F2E]"
+            : "bg-red-50 text-red-700"
       }`}
     >
-      {availability?.reason || 'Availability unknown'}
+      {availability?.reason || "Availability unknown"}
     </span>
   );
 }
@@ -98,14 +98,14 @@ function RestaurantCard({ restaurant }) {
           <div>
             <h2 className="text-xl font-bold">{restaurant.name}</h2>
             <p className="mt-1 text-sm text-zinc-600">
-              {restaurant.address?.city || 'City not provided'}
+              {restaurant.address?.city || "City not provided"}
             </p>
           </div>
           <AvailabilityBadge availability={restaurant.availability} />
         </div>
 
         <p className="mt-4 line-clamp-2 text-sm leading-6 text-zinc-700">
-          {restaurant.description || 'No description provided.'}
+          {restaurant.description || "No description provided."}
         </p>
 
         <div className="mt-4 flex flex-wrap gap-2">
@@ -123,9 +123,9 @@ function RestaurantCard({ restaurant }) {
           <p>
             {restaurant.ratingCount
               ? `★ ${restaurant.ratingAverage} (${restaurant.ratingCount})`
-              : 'No ratings yet'}
+              : "No ratings yet"}
           </p>
-          <p>{restaurant.estimatedDeliveryTime || 'Time unavailable'}</p>
+          <p>{restaurant.estimatedDeliveryTime || "Time unavailable"}</p>
           <p>Delivery {formatCurrency(restaurant.deliveryFee)}</p>
           <p>Min. {formatCurrency(restaurant.minimumOrderAmount)}</p>
         </div>
@@ -149,7 +149,7 @@ function RestaurantsPage() {
   const [dishes, setDishes] = useState([]);
   const [resultInfo, setResultInfo] = useState({ total: 0, page: 1, pages: 1 });
   const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
   const [showFilters, setShowFilters] = useState(false);
 
   useEffect(() => {
@@ -158,7 +158,7 @@ function RestaurantsPage() {
 
     const loadResults = async () => {
       try {
-        setError('');
+        setError("");
         setIsLoading(true);
         const params = toSearchParams({ ...nextFilters, limit: 12 });
         const requests = [getRestaurants(params)];
@@ -218,27 +218,26 @@ function RestaurantsPage() {
     const nextFilters = { ...filters, page };
     setFilters(nextFilters);
     setSearchParams(toSearchParams(nextFilters));
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   return (
-    <main className="fh-page">
-      <section className="fh-container space-y-7">
-        <header className="fh-card p-7">
-          <p className="fh-eyebrow">FoodHub discovery</p>
-          <h1 className="mt-2 text-4xl font-black">Restaurants</h1>
-          <p className="mt-2 text-zinc-700">
-            {filters.search
-              ? `Results for: ${filters.search}`
-              : 'Find a restaurant for your next meal.'}
-          </p>
-        </header>
-
+    <main className="min-h-screen bg-[#F8F7F4] px-4 pb-8 pt-4 text-zinc-900 sm:px-6 lg:px-8">
+      <section className="fh-container space-y-6">
         <section className="fh-card p-5">
+          <div className="mb-4">
+            <p className="fh-eyebrow ">FoodHub discovery</p>
+            <p className="mt-1 text-sm text-zinc-600">
+              {filters.search
+                ? `Results for: ${filters.search}`
+                : "Find a restaurant for your next meal."}
+            </p>
+          </div>
+
           <form className="flex gap-3" onSubmit={applyFilters}>
             <input
               className="fh-input flex-1"
-              onChange={(event) => updateFilter('search', event.target.value)}
+              onChange={(event) => updateFilter("search", event.target.value)}
               placeholder="Search restaurants or food..."
               value={filters.search}
             />
@@ -259,27 +258,27 @@ function RestaurantsPage() {
               <button
                 className={`shrink-0 rounded-full border px-4 py-2 text-sm font-semibold ${
                   filters.cuisine === cuisine
-                    ? 'border-[#FF4F2E] bg-[#FF4F2E] text-white'
-                    : 'border-stone-200 bg-white text-zinc-700 hover:border-[#FF4F2E]'
+                    ? "border-[#FF4F2E] bg-[#FF4F2E] text-white"
+                    : "border-stone-200 bg-white text-zinc-700 hover:border-[#FF4F2E]"
                 }`}
                 key={cuisine}
-                onClick={() => applyImmediateFilter('cuisine', cuisine)}
+                onClick={() => applyImmediateFilter("cuisine", cuisine)}
                 type="button"
               >
-                {cuisine === 'all' ? 'All cuisines' : cuisine}
+                {cuisine === "all" ? "All cuisines" : cuisine}
               </button>
             ))}
           </div>
 
           <div
-            className={`${showFilters ? 'grid' : 'hidden'} mt-5 gap-4 border-t border-stone-200 pt-5 md:grid md:grid-cols-5`}
+            className={`${showFilters ? "grid" : "hidden"} mt-5 gap-4 border-t border-stone-200 pt-5 md:grid md:grid-cols-6`}
           >
             <label className="flex items-center gap-2 rounded-lg bg-stone-50 px-3 py-2">
               <input
                 checked={filters.openNow}
                 className="accent-[#FF4F2E]"
                 onChange={(event) =>
-                  updateFilter('openNow', event.target.checked)
+                  updateFilter("openNow", event.target.checked)
                 }
                 type="checkbox"
               />
@@ -293,7 +292,7 @@ function RestaurantsPage() {
               <select
                 className="fh-input mt-1"
                 onChange={(event) =>
-                  updateFilter('minRating', event.target.value)
+                  updateFilter("minRating", event.target.value)
                 }
                 value={filters.minRating}
               >
@@ -311,7 +310,7 @@ function RestaurantsPage() {
               <select
                 className="fh-input mt-1"
                 onChange={(event) =>
-                  updateFilter('maxDeliveryFee', event.target.value)
+                  updateFilter("maxDeliveryFee", event.target.value)
                 }
                 value={filters.maxDeliveryFee}
               >
@@ -329,7 +328,7 @@ function RestaurantsPage() {
               <select
                 className="fh-input mt-1"
                 onChange={(event) =>
-                  updateFilter('maxDeliveryTime', event.target.value)
+                  updateFilter("maxDeliveryTime", event.target.value)
                 }
                 value={filters.maxDeliveryTime}
               >
@@ -342,11 +341,39 @@ function RestaurantsPage() {
               </select>
             </label>
 
+            <label>
+              <span className="text-xs font-semibold text-zinc-600">
+                Sort by
+              </span>
+              <select
+                className="fh-input mt-1"
+                onChange={(event) =>
+                  applyImmediateFilter("sort", event.target.value)
+                }
+                value={filters.sort}
+              >
+                <option value="relevance">Recommended</option>
+                <option value="rating_desc">Highest rated</option>
+                <option value="delivery_time_asc">Fastest delivery</option>
+                <option value="delivery_fee_asc">Lowest delivery fee</option>
+                <option value="newest">Newest</option>
+                <option value="min_order_asc">Lowest minimum order</option>
+              </select>
+            </label>
+
             <div className="flex items-end gap-2">
-              <button className="fh-btn-primary flex-1" onClick={applyFilters} type="button">
+              <button
+                className="fh-btn-primary flex-1"
+                onClick={applyFilters}
+                type="button"
+              >
                 Apply
               </button>
-              <button className="fh-btn-secondary" onClick={clearFilters} type="button">
+              <button
+                className="fh-btn-secondary"
+                onClick={clearFilters}
+                type="button"
+              >
                 Clear
               </button>
             </div>
@@ -360,23 +387,6 @@ function RestaurantsPage() {
               {resultInfo.total} restaurants found
             </p>
           </div>
-          <label className="w-full sm:w-60">
-            <span className="text-xs font-semibold text-zinc-600">Sort by</span>
-            <select
-              className="fh-input mt-1"
-              onChange={(event) =>
-                applyImmediateFilter('sort', event.target.value)
-              }
-              value={filters.sort}
-            >
-              <option value="relevance">Recommended</option>
-              <option value="rating_desc">Highest rated</option>
-              <option value="delivery_time_asc">Fastest delivery</option>
-              <option value="delivery_fee_asc">Lowest delivery fee</option>
-              <option value="newest">Newest</option>
-              <option value="min_order_asc">Lowest minimum order</option>
-            </select>
-          </label>
         </div>
 
         {filters.search && dishes.length > 0 && (
@@ -434,7 +444,11 @@ function RestaurantsPage() {
             <p className="mt-2 text-zinc-600">
               Try changing filters or searching another dish.
             </p>
-            <button className="fh-btn-primary mt-5" onClick={clearFilters} type="button">
+            <button
+              className="fh-btn-primary mt-5"
+              onClick={clearFilters}
+              type="button"
+            >
               Clear filters
             </button>
           </div>
