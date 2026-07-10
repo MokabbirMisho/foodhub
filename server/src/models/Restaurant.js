@@ -116,6 +116,29 @@ const restaurantSchema = new mongoose.Schema(
       enum: ['12h', '24h'],
       default: '24h',
     },
+    bankDetails: {
+      accountHolderName: {
+        type: String,
+        trim: true,
+      },
+      bankName: {
+        type: String,
+        trim: true,
+      },
+      iban: {
+        type: String,
+        trim: true,
+      },
+      bic: {
+        type: String,
+        trim: true,
+      },
+      payoutEmail: {
+        type: String,
+        trim: true,
+        lowercase: true,
+      },
+    },
     openingHours: {
       monday: createDaySchedule('10:00', '22:00'),
       tuesday: createDaySchedule('10:00', '22:00'),

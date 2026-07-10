@@ -5,6 +5,16 @@ export const getAdminRestaurants = async (params) => {
   return response.data;
 };
 
+export const getAdminRestaurantDetails = async (id) => {
+  const response = await api.get(`/restaurants/admin/${id}/details`);
+  return response.data;
+};
+
+export const updateRestaurantForAdmin = async (id, data) => {
+  const response = await api.patch(`/restaurants/admin/${id}`, data);
+  return response.data;
+};
+
 export const approveRestaurant = async (id) => {
   const response = await api.patch(`/restaurants/${id}/approve`);
   return response.data;

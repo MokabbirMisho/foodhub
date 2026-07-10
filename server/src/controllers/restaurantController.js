@@ -1,6 +1,8 @@
 import mongoose from 'mongoose';
 import FoodItem from '../models/FoodItem.js';
+import Order from '../models/Order.js';
 import Restaurant from '../models/Restaurant.js';
+import Review from '../models/Review.js';
 import {
   getRestaurantAvailability,
   restaurantScheduleDays,
@@ -316,6 +318,147 @@ export const getAllRestaurantsForAdmin = async (req, res) => {
 
     sendSuccessResponse(res, 200, 'Admin restaurants fetched successfully', {
       restaurants,
+    });
+  } catch (error) {
+    handleRestaurantError(res, error);
+  }
+};
+
+const getApprovalStatus = (restaurant) => {
+  if (restaurant.isApproved && restaurant.isActive) {
+    return 'approved';
+  }
+
+  if (!restaurant.isApproved && !restaurant.isActive) {
+    return 'rejected';
+  }
+
+  return 'pending';
+};
+
+const buildPerformanceSummary = (orders, reviews) => {
+  const deliveredOrders = orders.filter((order) => order.status === 'delivered');
+  const cancelledOrders = orders.filter((order) => order.status === 'cancelled');
+  const activeOrders = orders.filter((order) =>
+    ['pending', 'accepted', 'preparing', 'ready', 'out_for_delivery'].includes(
+      order.status,
+    ),
+  );
+  const totalRevenue = deliveredOrders.reduce(
+    (sum, order) => sum + Number(order.totalAmount || 0),
+    0,
+  );
+
+  return {
+    totalOrders: orders.length,
+    deliveredOrders: deliveredOrders.length,
+    cancelledOrders: cancelledOrders.length,
+    activeOrders: activeOrders.length,
+    totalRevenue,
+    averageOrderValue: deliveredOrders.length
+      ? totalRevenue / deliveredOrders.length
+      : 0,
+    averageRating: reviews.length
+      ? reviews.reduce((sum, review) => sum + Number(review.rating || 0), 0) /
+        reviews.length
+      : 0,
+    totalReviews: reviews.length,
+    lastOrderAt: orders[0]?.createdAt || null,
+  };
+};
+
+export const getAdminRestaurantDetails = async (req, res) => {
+  try {
+    const { restaurantId } = req.params;
+
+    if (!mongoose.Types.ObjectId.isValid(restaurantId)) {
+      return sendErrorResponse(res, 400, 'Invalid restaurant id');
+    }
+
+    const restaurant = await Restaurant.findById(restaurantId).populate(
+      'owner',
+      'name email phone role createdAt updatedAt',
+    );
+
+    if (!restaurant) {
+      return sendErrorResponse(res, 404, 'Restaurant not found');
+    }
+
+    const [orders, reviews] = await Promise.all([
+      Order.find({ restaurant: restaurant._id })
+        .populate('customer', 'name email phone')
+        .sort({ createdAt: -1 }),
+      Review.find({ restaurant: restaurant._id })
+        .populate('customer', 'name email avatar')
+        .populate('order', 'status totalAmount createdAt')
+        .sort({ createdAt: -1 }),
+    ]);
+
+    sendSuccessResponse(res, 200, 'Restaurant details fetched successfully', {
+      restaurant: {
+        ...withAvailability(restaurant),
+        approvalStatus: getApprovalStatus(restaurant),
+      },
+      owner: restaurant.owner,
+      performance: buildPerformanceSummary(orders, reviews),
+      recentOrders: orders.slice(0, 10),
+      recentReviews: reviews.slice(0, 10),
+    });
+  } catch (error) {
+    handleRestaurantError(res, error);
+  }
+};
+
+export const updateRestaurantForAdmin = async (req, res) => {
+  try {
+    const { restaurantId } = req.params;
+
+    if (!mongoose.Types.ObjectId.isValid(restaurantId)) {
+      return sendErrorResponse(res, 400, 'Invalid restaurant id');
+    }
+
+    const allowedFields = [
+      'name',
+      'description',
+      'phone',
+      'email',
+      'address',
+      'cuisineTypes',
+      'minimumOrderAmount',
+      'deliveryFee',
+      'estimatedDeliveryTime',
+      'isOpen',
+      'isActive',
+      'acceptsOnlineOrders',
+      'autoAcceptOrders',
+      'bankDetails',
+    ];
+    const updates = {};
+
+    allowedFields.forEach((field) => {
+      if (Object.prototype.hasOwnProperty.call(req.body, field)) {
+        updates[field] = req.body[field];
+      }
+    });
+
+    const restaurant = await Restaurant.findByIdAndUpdate(
+      restaurantId,
+      updates,
+      {
+        new: true,
+        runValidators: true,
+      },
+    ).populate('owner', 'name email phone role createdAt updatedAt');
+
+    if (!restaurant) {
+      return sendErrorResponse(res, 404, 'Restaurant not found');
+    }
+
+    sendSuccessResponse(res, 200, 'Restaurant updated successfully', {
+      restaurant: {
+        ...withAvailability(restaurant),
+        approvalStatus: getApprovalStatus(restaurant),
+      },
     });
   } catch (error) {
     handleRestaurantError(res, error);

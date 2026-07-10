@@ -4,9 +4,11 @@ import {
   createRestaurant,
   getAllRestaurants,
   getAllRestaurantsForAdmin,
+  getAdminRestaurantDetails,
   getMyRestaurant,
   getRestaurantById,
   rejectRestaurant,
+  updateRestaurantForAdmin,
   updateMyRestaurantAvailability,
   updateMyRestaurant,
 } from '../controllers/restaurantController.js';
@@ -24,6 +26,20 @@ router.get(
   protect,
   authorizeRoles('admin'),
   getAllRestaurantsForAdmin,
+);
+
+router.get(
+  '/admin/:restaurantId/details',
+  protect,
+  authorizeRoles('admin'),
+  getAdminRestaurantDetails,
+);
+
+router.patch(
+  '/admin/:restaurantId',
+  protect,
+  authorizeRoles('admin'),
+  updateRestaurantForAdmin,
 );
 
 // Keep this route before /:id so Express does not treat "my-restaurant" as an id.
