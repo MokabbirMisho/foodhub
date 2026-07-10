@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import NotificationBell from '../../components/common/NotificationBell';
 import FoodItemForm from '../../components/restaurant/FoodItemForm';
+import OwnerReviews from '../../components/restaurant/OwnerReviews';
 import RestaurantAnalytics from '../../components/restaurant/RestaurantAnalytics';
 import RestaurantAvailabilityForm from '../../components/restaurant/RestaurantAvailabilityForm';
 import RestaurantForm from '../../components/restaurant/RestaurantForm';
@@ -32,6 +33,7 @@ const navItems = [
   { id: 'profile', label: 'Restaurant Profile' },
   { id: 'menu', label: 'Menu Items' },
   { id: 'orders', label: 'Orders' },
+  { id: 'reviews', label: 'Reviews' },
   { id: 'availability', label: 'Availability' },
   { id: 'settings', label: 'Settings' },
 ];
@@ -318,10 +320,14 @@ function RestaurantDashboard() {
   const [error, setError] = useState('');
 
   const pageTitle = restaurant?.name || 'Restaurant Dashboard';
+  const sidebarTitle = isLoading
+    ? 'Loading...'
+    : restaurant?.name || 'Restaurant Setup';
+  const sidebarInitial = sidebarTitle.charAt(0).toUpperCase();
 
   const handleLogout = () => {
-    navigate('/', { replace: true });
     logout();
+    navigate('/', { replace: true });
   };
 
   const loadRestaurant = async () => {
@@ -856,6 +862,14 @@ function RestaurantDashboard() {
       return renderOrdersTab();
     }
 
+    if (activeTab === 'reviews') {
+      return restaurant ? (
+        <OwnerReviews />
+      ) : (
+        <PlaceholderCard message="Create a restaurant profile before viewing reviews." />
+      );
+    }
+
     if (activeTab === 'settings') {
       return <PlaceholderCard message="Restaurant settings will be added later." />;
     }
@@ -873,13 +887,42 @@ function RestaurantDashboard() {
 
   return (
     <main className="min-h-screen bg-[#F8F7F4] text-zinc-900">
+      <header className="sticky top-0 z-40 border-b border-stone-200 bg-white/95 backdrop-blur">
+        <nav className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">
+          <Link
+            className="text-2xl font-black text-[#FF4F2E]"
+            to="/restaurant/dashboard"
+          >
+            FoodHub
+          </Link>
+
+          <div className="flex items-center gap-2">
+            <NotificationBell />
+            <button
+              className="inline-flex min-h-10 items-center justify-center rounded-xl border border-stone-200 bg-white px-4 text-sm font-semibold text-zinc-700 hover:bg-stone-50"
+              onClick={handleLogout}
+              type="button"
+            >
+              Logout
+            </button>
+          </div>
+        </nav>
+      </header>
+
       <div className="mx-auto flex max-w-7xl flex-col gap-6 px-4 py-6 lg:flex-row">
-        <aside className="fh-card p-4 lg:sticky lg:top-6 lg:h-[calc(100vh-3rem)] lg:w-64">
-          <div className="border-b border-stone-200 pb-4">
-            <p className="text-sm font-semibold uppercase tracking-wide text-[#FF4F2E]">
-              FoodHub
-            </p>
-            <h2 className="mt-1 text-xl font-bold">Owner Panel</h2>
+        <aside className="fh-card p-4 lg:sticky lg:top-20 lg:h-[calc(100vh-6rem)] lg:w-64">
+          <div className="flex items-center gap-3 border-b border-stone-200 pb-4">
+            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-[#FF4F2E] text-lg font-black text-white">
+              {sidebarInitial}
+            </div>
+            <div className="min-w-0">
+              <h2 className="truncate text-lg font-black text-zinc-900">
+                {sidebarTitle}
+              </h2>
+              <p className="mt-0.5 text-sm font-medium text-zinc-500">
+                Owner Panel
+              </p>
+            </div>
           </div>
 
           <nav className="mt-4 flex gap-2 overflow-x-auto lg:flex-col lg:overflow-visible">
@@ -915,17 +958,6 @@ function RestaurantDashboard() {
               <p className="mt-2 text-zinc-700">
                 Signed in as {user?.name || 'Restaurant Owner'}
               </p>
-            </div>
-
-            <div className="flex flex-wrap items-center gap-3">
-              <NotificationBell />
-              <button
-                className="rounded-md bg-zinc-900 px-4 py-2 font-semibold text-white hover:bg-zinc-700"
-                onClick={handleLogout}
-                type="button"
-              >
-                Logout
-              </button>
             </div>
           </header>
 

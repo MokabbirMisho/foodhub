@@ -298,3 +298,146 @@ export const getAllReviewsForAdmin = async (req, res) => {
     handleReviewError(res, error);
   }
 };
+
+export const getMyRestaurantReviews = async (req, res) => {
+  try {
+    const { rating, replied, search } = req.query;
+
+    const restaurant = await Restaurant.findOne({ owner: req.user._id });
+
+    if (!restaurant) {
+      return sendErrorResponse(res, 404, 'Restaurant profile not found');
+    }
+
+    const filters = { restaurant: restaurant._id };
+
+    if (rating) {
+      if (!isValidRating(rating)) {
+        return sendErrorResponse(res, 400, 'Rating filter must be between 1 and 5');
+      }
+
+      filters.rating = Number(rating);
+    }
+
+    if (replied === 'true') {
+      filters['ownerReply.message'] = { $exists: true, $ne: '' };
+    }
+
+    if (replied === 'false') {
+      filters.$or = [
+        { 'ownerReply.message': { $exists: false } },
+        { 'ownerReply.message': '' },
+      ];
+    }
+
+    if (search?.trim()) {
+      filters.comment = { $regex: search.trim(), $options: 'i' };
+    }
+
+    const reviews = await Review.find(filters)
+      .populate('customer', 'name email avatar')
+      .populate('order', 'status totalAmount createdAt')
+      .sort({ createdAt: -1 });
+
+    sendSuccessResponse(res, 200, 'Reviews fetched successfully', {
+      reviews,
+      total: reviews.length,
+    });
+  } catch (error) {
+    handleReviewError(res, error);
+  }
+};
+
+export const replyToReview = async (req, res) => {
+  try {
+    const { reviewId } = req.params;
+    const { message = '' } = req.body;
+    const trimmedMessage = message.trim();
+
+    if (!isValidObjectId(reviewId)) {
+      return sendErrorResponse(res, 400, 'Invalid review id');
+    }
+
+    if (!trimmedMessage) {
+      return sendErrorResponse(res, 400, 'Reply message is required');
+    }
+
+    if (trimmedMessage.length > 500) {
+      return sendErrorResponse(res, 400, 'Reply message cannot exceed 500 characters');
+    }
+
+    const restaurant = await Restaurant.findOne({ owner: req.user._id });
+
+    if (!restaurant) {
+      return sendErrorResponse(res, 404, 'Restaurant profile not found');
+    }
+
+    const review = await Review.findOne({
+      _id: reviewId,
+      restaurant: restaurant._id,
+    });
+
+    if (!review) {
+      return sendErrorResponse(res, 404, 'Review not found');
+    }
+
+    review.ownerReply = {
+      message: trimmedMessage,
+      repliedAt: new Date(),
+    };
+
+    await review.save();
+
+    const updatedReview = await Review.findById(review._id)
+      .populate('customer', 'name email avatar')
+      .populate('order', 'status totalAmount createdAt');
+
+    sendSuccessResponse(res, 200, 'Reply saved successfully', {
+      review: updatedReview,
+    });
+  } catch (error) {
+    handleReviewError(res, error);
+  }
+};
+
+export const deleteOwnerReply = async (req, res) => {
+  try {
+    const { reviewId } = req.params;
+
+    if (!isValidObjectId(reviewId)) {
+      return sendErrorResponse(res, 400, 'Invalid review id');
+    }
+
+    const restaurant = await Restaurant.findOne({ owner: req.user._id });
+
+    if (!restaurant) {
+      return sendErrorResponse(res, 404, 'Restaurant profile not found');
+    }
+
+    const review = await Review.findOne({
+      _id: reviewId,
+      restaurant: restaurant._id,
+    });
+
+    if (!review) {
+      return sendErrorResponse(res, 404, 'Review not found');
+    }
+
+    review.ownerReply = {
+      message: '',
+      repliedAt: undefined,
+    };
+
+    await review.save();
+
+    const updatedReview = await Review.findById(review._id)
+      .populate('customer', 'name email avatar')
+      .populate('order', 'status totalAmount createdAt');
+
+    sendSuccessResponse(res, 200, 'Reply removed successfully', {
+      review: updatedReview,
+    });
+  } catch (error) {
+    handleReviewError(res, error);
+  }
+};

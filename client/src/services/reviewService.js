@@ -29,3 +29,20 @@ export const getAllReviewsForAdmin = async (params) => {
   const response = await api.get('/reviews/admin/all', { params });
   return response.data;
 };
+
+export const getMyRestaurantReviews = async (params) => {
+  const response = await api.get('/reviews/owner/my-restaurant', { params });
+  return response.data;
+};
+
+export const replyToReview = async (reviewId, message) => {
+  const response = await api.patch(`/reviews/owner/${reviewId}/reply`, {
+    message,
+  });
+  return response.data;
+};
+
+export const deleteOwnerReply = async (reviewId) => {
+  const response = await api.delete(`/reviews/owner/${reviewId}/reply`);
+  return response.data;
+};

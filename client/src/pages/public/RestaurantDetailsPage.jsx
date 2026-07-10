@@ -814,6 +814,17 @@ function RestaurantDetailsPage() {
                               {review.comment}
                             </p>
                           )}
+
+                          {review.ownerReply?.message && (
+                            <div className="mt-5 rounded-2xl border border-stone-200 bg-white p-4">
+                              <p className="text-xs font-bold uppercase tracking-wide text-[#FF4F2E]">
+                                Response from restaurant
+                              </p>
+                              <p className="mt-2 text-sm leading-6 text-zinc-700">
+                                {review.ownerReply.message}
+                              </p>
+                            </div>
+                          )}
                         </article>
                       ))}
                     </div>
