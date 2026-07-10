@@ -302,7 +302,7 @@ function OrderCard({ onStatusChange, order }) {
 
 function RestaurantDashboard() {
   const navigate = useNavigate();
-  const { logout, user } = useAuth();
+  const { logout } = useAuth();
   const [activeTab, setActiveTab] = useState('dashboard');
   const [restaurant, setRestaurant] = useState(null);
   const [foodItems, setFoodItems] = useState([]);
@@ -320,7 +320,6 @@ function RestaurantDashboard() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
 
-  const pageTitle = restaurant?.name || 'Restaurant Dashboard';
   const sidebarTitle = isLoading
     ? 'Loading...'
     : restaurant?.name || 'Restaurant Setup';
@@ -955,18 +954,6 @@ function RestaurantDashboard() {
         </aside>
 
         <section className="min-w-0 flex-1 space-y-6">
-          <header className="fh-card flex flex-col gap-4 p-7 md:flex-row md:items-center md:justify-between">
-            <div>
-              <p className="text-sm font-semibold uppercase tracking-wide text-[#FF4F2E]">
-                Restaurant Owner Dashboard
-              </p>
-              <h1 className="mt-2 text-3xl font-black">{pageTitle}</h1>
-              <p className="mt-2 text-zinc-700">
-                Signed in as {user?.name || 'Restaurant Owner'}
-              </p>
-            </div>
-          </header>
-
           {error && (
             <p className="rounded-md bg-red-50 px-3 py-2 text-sm text-red-700">
               {error}
