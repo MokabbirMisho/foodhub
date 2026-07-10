@@ -267,9 +267,6 @@ function AdminSidebarContent({
       <div className="flex items-start justify-between gap-3 border-b border-stone-200 pb-5">
         <div>
           <p className="text-xl font-black text-[#FF4F2E]">Admin Panel</p>
-          <p className="mt-1 text-sm text-zinc-500">
-            Manage FoodHub platform
-          </p>
         </div>
 
         {onClose && (
@@ -437,14 +434,9 @@ function AdminDashboard() {
             >
               ☰
             </button>
-            <div className="min-w-0">
-              <p className="truncate text-lg font-black text-[#FF4F2E] sm:text-xl">
-                FoodHub Admin
-              </p>
-              <p className="truncate text-xs font-medium text-zinc-500">
-                {pageTitles[activeTab]}
-              </p>
-            </div>
+            <p className="truncate text-lg font-black text-[#FF4F2E] sm:text-xl">
+              FoodHub
+            </p>
           </div>
 
           <div className="flex shrink-0 items-center gap-2">
