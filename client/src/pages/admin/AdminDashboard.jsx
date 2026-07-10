@@ -47,6 +47,36 @@ const getCustomerName = (order) =>
   order.customer?.email ||
   order.customerEmail ||
   'Customer';
+const getFirstItemLabel = (order) => {
+  const firstItemName = order.items?.[0]?.name || 'Order items';
+  const extraCount = Math.max((order.items?.length || 0) - 1, 0);
+
+  return extraCount > 0 ? `${firstItemName} + ${extraCount} more` : firstItemName;
+};
+const getShortAddress = (order) => {
+  const address = order.deliveryAddress;
+
+  return (
+    [address?.city, address?.postalCode].filter(Boolean).join(', ') ||
+    'Address not provided'
+  );
+};
+const formatOrderDateTime = (order) => {
+  const rawDate =
+    order.deliveredAt ||
+    order.deliveryDate ||
+    order.createdAt ||
+    order.updatedAt;
+
+  if (!rawDate) {
+    return 'Date not available';
+  }
+
+  return new Date(rawDate).toLocaleString(undefined, {
+    dateStyle: 'short',
+    timeStyle: 'short',
+  });
+};
 const matchesOrderSearch = (order, search) => {
   const searchTerm = search.trim().toLowerCase();
 
@@ -77,78 +107,93 @@ const matchesOrderSearch = (order, search) => {
 function AdminOrderCard({ order }) {
   const [isExpanded, setIsExpanded] = useState(false);
   const address = order.deliveryAddress;
+  const toggleDetails = () => setIsExpanded((currentValue) => !currentValue);
 
   return (
-    <article className="fh-card p-6">
-      <div className="flex flex-col gap-4 xl:flex-row xl:items-start xl:justify-between">
-        <div>
-          <p className="text-sm font-semibold uppercase tracking-wide text-[#FF4F2E]">
+    <article
+      className="cursor-pointer rounded-2xl border border-stone-200 bg-white p-4 shadow-sm transition hover:shadow-md"
+      onClick={toggleDetails}
+      onKeyDown={(event) => {
+        if (event.key === 'Enter' || event.key === ' ') {
+          event.preventDefault();
+          toggleDetails();
+        }
+      }}
+      role="button"
+      tabIndex={0}
+    >
+      <div className="grid grid-cols-2 items-start gap-3 sm:grid-cols-[1fr_auto_1fr]">
+        <p className="text-sm font-semibold uppercase tracking-wide text-[#FF4F2E]">
             Order #{getOrderNumber(order)}
-          </p>
-          <h3 className="mt-2 text-2xl font-bold">
-            {order.restaurant?.name || 'Restaurant not available'}
-          </h3>
-          <p className="mt-1 text-sm text-zinc-600">
-            {new Date(order.createdAt).toLocaleString()}
-          </p>
-        </div>
-
-        <div className="flex flex-wrap gap-2">
+        </p>
+        <p className="text-right text-lg font-bold text-[#FF4F2E] sm:text-center">
+          {formatCurrency(order.totalAmount)}
+        </p>
+        <div className="col-span-2 flex justify-start sm:col-span-1 sm:justify-end">
           <span
-            className={`rounded-full px-3 py-1 text-xs font-semibold ${
+            className={`rounded-full px-2.5 py-1 text-xs font-semibold ${
               statusClasses[order.status] || 'bg-zinc-100 text-zinc-700'
             }`}
           >
             {order.status}
           </span>
-          <span className="rounded-full bg-zinc-100 px-3 py-1 text-xs font-semibold text-zinc-700">
-            {formatPaymentStatus(order.paymentStatus)}
-          </span>
         </div>
       </div>
 
-      <div className="mt-5 grid gap-4 text-sm text-zinc-700 md:grid-cols-2 xl:grid-cols-4">
-        <div>
-          <p className="font-semibold text-zinc-900">Customer</p>
-          <p>{getCustomerName(order)}</p>
-          <p>{order.customer?.email || 'Email not available'}</p>
-        </div>
-        <div>
-          <p className="font-semibold text-zinc-900">Delivery area</p>
-          <p>
-            {[address?.city, address?.postalCode].filter(Boolean).join(', ') ||
-              'Not provided'}
-          </p>
-        </div>
-        <div>
-          <p className="font-semibold text-zinc-900">Payment</p>
-          <p>{formatPaymentMethod(order.paymentMethod)}</p>
-          <p>{formatPaymentStatus(order.paymentStatus)}</p>
-        </div>
-        <div>
-          <p className="font-semibold text-zinc-900">Items</p>
-          <p>{order.items?.length || 0} item types</p>
-        </div>
-      </div>
-
-      <div className="mt-5 grid gap-3 text-sm text-zinc-700 md:grid-cols-3">
-        <p>Subtotal: {formatCurrency(order.subtotal)}</p>
-        <p>Delivery fee: {formatCurrency(order.deliveryFee)}</p>
-        <p className="font-bold text-zinc-900">
-          Total: {formatCurrency(order.totalAmount)}
+      <div className="mt-2 space-y-0.5">
+        <p className="line-clamp-1 text-sm font-medium text-zinc-900">
+          {getFirstItemLabel(order)}
+        </p>
+        <p className="line-clamp-1 text-xs text-zinc-500">
+          {formatOrderDateTime(order)}
+        </p>
+        <p className="line-clamp-1 text-sm text-zinc-700">
+          {getCustomerName(order)}
+        </p>
+        <p className="line-clamp-1 text-xs text-zinc-500">
+          {getShortAddress(order)}
         </p>
       </div>
 
-      <button
-        className="mt-5 rounded-md border border-stone-200 px-4 py-2 font-semibold text-[#FF4F2E] hover:bg-stone-50"
-        onClick={() => setIsExpanded((currentValue) => !currentValue)}
-        type="button"
-      >
-        {isExpanded ? 'Hide Details' : 'View Details'}
-      </button>
-
       {isExpanded && (
-        <div className="mt-5 space-y-5 rounded-xl bg-stone-50 p-5">
+        <div
+          className="mt-4 space-y-5 rounded-xl bg-stone-50 p-5"
+          onClick={(event) => event.stopPropagation()}
+          onKeyDown={(event) => event.stopPropagation()}
+          role="presentation"
+        >
+          <div className="grid gap-4 text-sm md:grid-cols-2">
+            <div>
+              <p className="font-semibold text-zinc-900">Restaurant</p>
+              <p className="mt-1 text-zinc-700">
+                {order.restaurant?.name || 'Restaurant not available'}
+              </p>
+            </div>
+            <div>
+              <p className="font-semibold text-zinc-900">Customer email</p>
+              <p className="mt-1 text-zinc-700">
+                {order.customer?.email ||
+                  order.customerEmail ||
+                  'Email not available'}
+              </p>
+            </div>
+            <div>
+              <p className="font-semibold text-zinc-900">Payment</p>
+              <p className="mt-1 text-zinc-700">
+                {formatPaymentMethod(order.paymentMethod)} ·{' '}
+                {formatPaymentStatus(order.paymentStatus)}
+              </p>
+            </div>
+            <div>
+              <p className="font-semibold text-zinc-900">Totals</p>
+              <p className="mt-1 text-zinc-700">
+                Subtotal {formatCurrency(order.subtotal)} · Delivery{' '}
+                {formatCurrency(order.deliveryFee)} · Total{' '}
+                {formatCurrency(order.totalAmount)}
+              </p>
+            </div>
+          </div>
+
           <div className="grid gap-4 text-sm md:grid-cols-2">
             <div>
               <p className="font-semibold text-zinc-900">Full delivery address</p>
