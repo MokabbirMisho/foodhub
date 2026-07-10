@@ -7,24 +7,10 @@ import {
 
 const emptyFilters = {
   search: "",
-  role: "all",
   status: "all",
 };
 
 const itemsPerPage = 10;
-
-const roleClasses = {
-  customer: "bg-blue-50 text-blue-700",
-  restaurant_owner: "bg-stone-50 text-[#FF4F2E]",
-  rider: "bg-indigo-50 text-indigo-700",
-  admin: "bg-purple-50 text-purple-700",
-};
-
-const formatRole = (role) =>
-  role
-    ?.split("_")
-    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-    .join(" ") || "Unknown";
 
 function UserDetails({ user }) {
   return (
@@ -77,14 +63,12 @@ function AdminUsersPanel({ currentUserId }) {
   const [successMessage, setSuccessMessage] = useState("");
 
   const buildParams = (nextFilters) => {
-    const params = {};
+    const params = {
+      role: "customer",
+    };
 
     if (nextFilters.search.trim()) {
       params.search = nextFilters.search.trim();
-    }
-
-    if (nextFilters.role !== "all") {
-      params.role = nextFilters.role;
     }
 
     if (nextFilters.status !== "all") {
@@ -212,37 +196,25 @@ function AdminUsersPanel({ currentUserId }) {
   return (
     <section className="space-y-6">
       <form
-        className="fh-card grid gap-3 p-5 lg:grid-cols-[1fr_200px_180px_auto_auto]"
+        className="fh-card grid gap-3 p-5 lg:grid-cols-[1fr_180px_auto_auto]"
         onSubmit={handleApplyFilters}
       >
-        <div className="mb-1 lg:col-span-5">
+        <div className="mb-1 lg:col-span-4">
           <p className="text-xs font-semibold uppercase tracking-wide text-[#FF4F2E]">
             Admin Panel
           </p>
           <h2 className="mt-1 text-2xl font-bold text-zinc-900">Users</h2>
           <p className="mt-1 text-sm text-zinc-600">
-            Manage platform users, roles, and account status.
+            Manage customer accounts and account status.
           </p>
         </div>
         <input
           className="rounded-xl border border-stone-300 px-3 py-2 outline-none focus:border-[#FF4F2E] focus:ring-4 focus:ring-[#FF4F2E]/20"
           name="search"
           onChange={handleFilterChange}
-          placeholder="Search by name or email"
+          placeholder="Search customer name or email..."
           value={filters.search}
         />
-        <select
-          className="rounded-xl border border-stone-300 px-3 py-2 outline-none focus:border-[#FF4F2E] focus:ring-4 focus:ring-[#FF4F2E]/20"
-          name="role"
-          onChange={handleFilterChange}
-          value={filters.role}
-        >
-          <option value="all">All roles</option>
-          <option value="customer">Customer</option>
-          <option value="restaurant_owner">Restaurant Owner</option>
-          <option value="rider">Rider</option>
-          <option value="admin">Admin</option>
-        </select>
         <select
           className="rounded-xl border border-stone-300 px-3 py-2 outline-none focus:border-[#FF4F2E] focus:ring-4 focus:ring-[#FF4F2E]/20"
           name="status"
@@ -266,7 +238,7 @@ function AdminUsersPanel({ currentUserId }) {
       </form>
 
       <div className="flex items-center justify-end">
-        <p className="text-sm text-zinc-600">{total} total</p>
+        <p className="text-sm text-zinc-600">{total} customers</p>
       </div>
 
       {error && <p className="fh-alert-error">{error}</p>}
@@ -302,12 +274,8 @@ function AdminUsersPanel({ currentUserId }) {
                   </div>
 
                   <div className="flex flex-wrap items-center gap-2">
-                    <span
-                      className={`rounded-full px-3 py-1 text-xs font-semibold ${
-                        roleClasses[user.role] || "bg-zinc-100 text-zinc-700"
-                      }`}
-                    >
-                      {formatRole(user.role)}
+                    <span className="rounded-full bg-blue-50 px-3 py-1 text-xs font-semibold text-blue-700">
+                      Customer
                     </span>
                     <span
                       className={`rounded-full px-3 py-1 text-xs font-semibold ${
@@ -374,7 +342,7 @@ function AdminUsersPanel({ currentUserId }) {
           {totalUsers > itemsPerPage && (
             <div className="flex flex-col gap-3 rounded-2xl border border-stone-200 bg-white px-4 py-4 shadow-sm sm:flex-row sm:items-center sm:justify-between">
               <p className="text-sm text-zinc-600">
-                Showing {startIndex + 1}-{endIndex} of {totalUsers} users
+                Showing {startIndex + 1}-{endIndex} of {totalUsers} customers
               </p>
 
               <div className="flex flex-wrap items-center gap-2">

@@ -53,6 +53,11 @@ export const getAdminOverviewAnalytics = async (req, res) => {
       temporarilyClosedRestaurants,
       totalFoodItems,
       totalReviews,
+      totalRiders,
+      activeRiders,
+      ridersWithActiveDeliveries,
+      completedDeliveries,
+      availableDeliveries,
       todayOrders,
       recentUsers,
       recentRestaurants,
@@ -66,6 +71,24 @@ export const getAdminOverviewAnalytics = async (req, res) => {
       Restaurant.countDocuments({ isTemporarilyClosed: true }),
       FoodItem.countDocuments(),
       Review.countDocuments(),
+      User.countDocuments({ role: 'rider' }),
+      User.countDocuments({
+        role: 'rider',
+        isBlocked: { $ne: true },
+        isActive: { $ne: false },
+      }),
+      Order.distinct('rider', {
+        status: 'out_for_delivery',
+        rider: { $ne: null },
+      }),
+      Order.countDocuments({
+        status: 'delivered',
+        rider: { $ne: null },
+      }),
+      Order.countDocuments({
+        status: 'ready',
+        $or: [{ rider: null }, { rider: { $exists: false } }],
+      }),
       Order.countDocuments({
         createdAt: {
           $gte: new Date(new Date().setHours(0, 0, 0, 0)),
@@ -196,6 +219,14 @@ export const getAdminOverviewAnalytics = async (req, res) => {
           .sort((a, b) => b.spent - a.spent)
           .slice(0, 5)
           .map((item) => ({ ...item, spent: roundMoney(item.spent) })),
+        riders: {
+          totalRiders,
+          activeRiders,
+          inactiveRiders: totalRiders - activeRiders,
+          ridersWithActiveDeliveries: ridersWithActiveDeliveries.length,
+          completedDeliveries,
+          availableDeliveries,
+        },
         recentOrders: orders.slice(0, 10),
         recentUsers,
         recentRestaurants,

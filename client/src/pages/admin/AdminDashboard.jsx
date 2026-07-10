@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import AdminOverview from '../../components/admin/AdminOverview';
 import AdminRestaurantsPanel from '../../components/admin/AdminRestaurantsPanel';
+import AdminRidersPanel from '../../components/admin/AdminRidersPanel';
 import AdminUsersPanel from '../../components/admin/AdminUsersPanel';
 import NotificationBell from '../../components/common/NotificationBell';
 import { useAuth } from '../../hooks/useAuth';
@@ -405,13 +406,15 @@ function AdminDashboard() {
     restaurants: 'Restaurant Management',
     orders: 'Order Overview',
     users: 'User Management',
+    riders: 'Rider Management',
     settings: 'Settings',
   };
   const navigationItems = [
     ['overview', 'Overview'],
     ['restaurants', 'Restaurants'],
-    ['orders', 'Orders'],
     ['users', 'Users'],
+    ['riders', 'Riders'],
+    ['orders', 'Orders'],
     ['settings', 'Settings'],
   ];
 
@@ -494,6 +497,8 @@ function AdminDashboard() {
           <AdminRestaurantsPanel />
         ) : activeTab === 'users' ? (
           <AdminUsersPanel currentUserId={user?.id || user?._id} />
+        ) : activeTab === 'riders' ? (
+          <AdminRidersPanel />
         ) : activeTab === 'settings' ? (
           <section className="fh-card p-7">
             <h2 className="text-2xl font-bold">Settings</h2>

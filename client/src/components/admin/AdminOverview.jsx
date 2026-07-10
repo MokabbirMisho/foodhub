@@ -92,6 +92,14 @@ function AdminOverview({ onSelectTab }) {
   }
 
   const { metrics } = data;
+  const riders = data.riders || {
+    totalRiders: metrics.totalRiders || 0,
+    activeRiders: 0,
+    inactiveRiders: 0,
+    ridersWithActiveDeliveries: 0,
+    completedDeliveries: 0,
+    availableDeliveries: 0,
+  };
   const maxRevenue = Math.max(
     ...data.revenueTrend.map((item) => item.revenue),
     1,
@@ -149,6 +157,35 @@ function AdminOverview({ onSelectTab }) {
           ]}
         />
       </div>
+
+      <section className="space-y-4">
+        <div>
+          <h3 className="text-xl font-bold">Rider Overview</h3>
+          <p className="mt-1 text-sm text-zinc-600">
+            Monitor rider accounts and delivery activity.
+          </p>
+        </div>
+
+        {riders.totalRiders === 0 ? (
+          <p className="fh-card p-5 text-zinc-600">
+            No riders registered yet.
+          </p>
+        ) : (
+          <MetricGroup
+            metrics={[
+              ['Total Riders', number(riders.totalRiders)],
+              ['Active Riders', number(riders.activeRiders)],
+              ['Blocked / Inactive Riders', number(riders.inactiveRiders)],
+              [
+                'Riders with Active Deliveries',
+                number(riders.ridersWithActiveDeliveries),
+              ],
+              ['Completed Deliveries', number(riders.completedDeliveries)],
+              ['Available Deliveries', number(riders.availableDeliveries)],
+            ]}
+          />
+        )}
+      </section>
 
       <div>
         <h3 className="mb-4 text-xl font-bold">Restaurants</h3>
