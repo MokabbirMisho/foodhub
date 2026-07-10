@@ -376,8 +376,9 @@ function RestaurantDashboard() {
   const [restaurant, setRestaurant] = useState(null);
   const [foodItems, setFoodItems] = useState([]);
   const [foodError, setFoodError] = useState('');
+  const [foodSuccess, setFoodSuccess] = useState('');
   const [editingFoodItem, setEditingFoodItem] = useState(null);
-  const [isAddingFood, setIsAddingFood] = useState(false);
+  const [isFoodModalOpen, setIsFoodModalOpen] = useState(false);
   const [isFoodLoading, setIsFoodLoading] = useState(false);
   const [orders, setOrders] = useState([]);
   const [orderError, setOrderError] = useState('');
@@ -502,8 +503,10 @@ function RestaurantDashboard() {
     }
 
     if (tabId !== 'menu') {
-      setIsAddingFood(false);
       setEditingFoodItem(null);
+      setIsFoodModalOpen(false);
+      setFoodError('');
+      setFoodSuccess('');
     }
 
     if (tabId !== 'orders') {
@@ -517,16 +520,37 @@ function RestaurantDashboard() {
     setIsSidebarOpen(false);
   };
 
+  const handleOpenAddFoodModal = () => {
+    setFoodError('');
+    setFoodSuccess('');
+    setEditingFoodItem(null);
+    setIsFoodModalOpen(true);
+  };
+
+  const handleOpenEditFoodModal = (foodItem) => {
+    setFoodError('');
+    setFoodSuccess('');
+    setEditingFoodItem(foodItem);
+    setIsFoodModalOpen(true);
+  };
+
+  const handleCloseFoodModal = () => {
+    setIsFoodModalOpen(false);
+    setEditingFoodItem(null);
+  };
+
   const handleCreateFoodItem = async (data) => {
     await createFoodItem(data);
     await loadFoodItems();
-    setIsAddingFood(false);
+    setFoodSuccess('Food item created successfully');
+    handleCloseFoodModal();
   };
 
   const handleUpdateFoodItem = async (data) => {
     await updateFoodItem(editingFoodItem._id, data);
     await loadFoodItems();
-    setEditingFoodItem(null);
+    setFoodSuccess('Food item updated successfully');
+    handleCloseFoodModal();
   };
 
   const handleDeleteFoodItem = async (id) => {
@@ -548,12 +572,28 @@ function RestaurantDashboard() {
   const handleToggleFoodAvailability = async (id) => {
     try {
       setFoodError('');
+      setFoodSuccess('');
       await toggleFoodAvailability(id);
       await loadFoodItems();
     } catch (error) {
       setFoodError(error.message);
     }
   };
+
+  useEffect(() => {
+    if (!isFoodModalOpen) {
+      return undefined;
+    }
+
+    const handleKeyDown = (event) => {
+      if (event.key === 'Escape') {
+        handleCloseFoodModal();
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isFoodModalOpen]);
 
   const handleOrderStatusChange = async (orderId, status) => {
     try {
@@ -739,6 +779,63 @@ function RestaurantDashboard() {
     return renderProfileDetails();
   };
 
+  const renderFoodItemModal = () => {
+    if (!isFoodModalOpen) {
+      return null;
+    }
+
+    const isEditMode = Boolean(editingFoodItem);
+
+    return (
+      <div
+        aria-labelledby="food-item-modal-title"
+        aria-modal="true"
+        className="fixed inset-0 z-50 flex items-center justify-center p-4"
+        role="dialog"
+      >
+        <button
+          aria-label="Close food item form"
+          className="absolute inset-0 bg-black/40 backdrop-blur-sm"
+          onClick={handleCloseFoodModal}
+          type="button"
+        />
+
+        <section className="relative z-10 max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-3xl border border-stone-200 bg-white p-6 shadow-xl">
+          <header className="mb-5 flex items-start justify-between gap-4">
+            <div>
+              <h2
+                className="text-2xl font-black text-zinc-900"
+                id="food-item-modal-title"
+              >
+                {isEditMode ? 'Edit Food Item' : 'Add Food Item'}
+              </h2>
+              <p className="mt-1 text-sm text-zinc-600">
+                Add menu details, price, category, and image.
+              </p>
+            </div>
+
+            <button
+              aria-label="Close food item form"
+              className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-stone-200 bg-white text-xl font-semibold text-zinc-700 transition hover:bg-stone-50"
+              onClick={handleCloseFoodModal}
+              type="button"
+            >
+              ×
+            </button>
+          </header>
+
+          <FoodItemForm
+            foodItem={editingFoodItem}
+            key={editingFoodItem?._id || 'new-food-item'}
+            mode={isEditMode ? 'edit' : 'create'}
+            onCancel={handleCloseFoodModal}
+            onSubmit={isEditMode ? handleUpdateFoodItem : handleCreateFoodItem}
+          />
+        </section>
+      </div>
+    );
+  };
+
   const renderMenuTab = () => {
     if (!restaurant) {
       return (
@@ -761,15 +858,13 @@ function RestaurantDashboard() {
               </p>
               <h2 className="mt-2 text-2xl font-bold">Manage your menu</h2>
             </div>
-            {!isAddingFood && !editingFoodItem && (
-              <button
-                className="rounded-xl bg-[#FF4F2E] px-4 py-2 font-semibold text-white hover:bg-[#E63E22]"
-                onClick={() => setIsAddingFood(true)}
-                type="button"
-              >
-                Add Food Item
-              </button>
-            )}
+            <button
+              className="rounded-xl bg-[#FF4F2E] px-4 py-2 font-semibold text-white hover:bg-[#E63E22]"
+              onClick={handleOpenAddFoodModal}
+              type="button"
+            >
+              Add Food Item
+            </button>
           </div>
 
           {foodError && (
@@ -778,24 +873,10 @@ function RestaurantDashboard() {
             </p>
           )}
 
-          {isAddingFood && (
-            <div className="mt-6 rounded-xl border border-stone-200 bg-stone-50 p-4">
-              <FoodItemForm
-                onCancel={() => setIsAddingFood(false)}
-                onSubmit={handleCreateFoodItem}
-              />
-            </div>
-          )}
-
-          {editingFoodItem && (
-            <div className="mt-6 rounded-xl border border-stone-200 bg-stone-50 p-4">
-              <FoodItemForm
-                foodItem={editingFoodItem}
-                mode="edit"
-                onCancel={() => setEditingFoodItem(null)}
-                onSubmit={handleUpdateFoodItem}
-              />
-            </div>
+          {foodSuccess && (
+            <p className="mt-4 rounded-md bg-green-50 px-3 py-2 text-sm text-green-700">
+              {foodSuccess}
+            </p>
           )}
         </section>
 
@@ -818,10 +899,7 @@ function RestaurantDashboard() {
                 foodItem={foodItem}
                 key={foodItem._id}
                 onDelete={handleDeleteFoodItem}
-                onEdit={(nextFoodItem) => {
-                  setIsAddingFood(false);
-                  setEditingFoodItem(nextFoodItem);
-                }}
+                onEdit={handleOpenEditFoodModal}
                 onToggleAvailability={handleToggleFoodAvailability}
               />
             ))}
@@ -1042,6 +1120,8 @@ function RestaurantDashboard() {
           {renderActiveTab()}
         </section>
       </div>
+
+      {renderFoodItemModal()}
     </main>
   );
 }
