@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import AdminOverview from '../../components/admin/AdminOverview';
 import AdminRestaurantsPanel from '../../components/admin/AdminRestaurantsPanel';
@@ -37,6 +37,42 @@ const formatPaymentMethod = (method) =>
   method === 'demo_online' ? 'Demo Online Payment' : 'Cash on Delivery';
 const formatPaymentStatus = (status) =>
   status ? status.charAt(0).toUpperCase() + status.slice(1) : 'Unpaid';
+const getOrderNumber = (order) =>
+  order.orderNumber || order._id?.slice(-6) || order.id?.slice(-6) || 'Order';
+const getCustomerName = (order) =>
+  order.customer?.name ||
+  order.customer?.fullName ||
+  order.customerName ||
+  order.deliveryAddress?.fullName ||
+  order.customer?.email ||
+  order.customerEmail ||
+  'Customer';
+const matchesOrderSearch = (order, search) => {
+  const searchTerm = search.trim().toLowerCase();
+
+  if (!searchTerm) {
+    return true;
+  }
+
+  const searchableFields = [
+    order.orderNumber,
+    order._id,
+    order.id,
+    getOrderNumber(order),
+    order.customer?.name,
+    order.customer?.fullName,
+    order.customerName,
+    order.deliveryAddress?.fullName,
+    order.customer?.email,
+    order.customerEmail,
+    order.restaurant?.name,
+    order.restaurantName,
+  ];
+
+  return searchableFields
+    .filter(Boolean)
+    .some((value) => String(value).toLowerCase().includes(searchTerm));
+};
 
 function AdminOrderCard({ order }) {
   const [isExpanded, setIsExpanded] = useState(false);
@@ -47,7 +83,7 @@ function AdminOrderCard({ order }) {
       <div className="flex flex-col gap-4 xl:flex-row xl:items-start xl:justify-between">
         <div>
           <p className="text-sm font-semibold uppercase tracking-wide text-[#FF4F2E]">
-            Order #{order._id.slice(-8)}
+            Order #{getOrderNumber(order)}
           </p>
           <h3 className="mt-2 text-2xl font-bold">
             {order.restaurant?.name || 'Restaurant not available'}
@@ -74,7 +110,7 @@ function AdminOrderCard({ order }) {
       <div className="mt-5 grid gap-4 text-sm text-zinc-700 md:grid-cols-2 xl:grid-cols-4">
         <div>
           <p className="font-semibold text-zinc-900">Customer</p>
-          <p>{order.customer?.name || 'Not available'}</p>
+          <p>{getCustomerName(order)}</p>
           <p>{order.customer?.email || 'Email not available'}</p>
         </div>
         <div>
@@ -229,6 +265,7 @@ function AdminDashboard() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [orders, setOrders] = useState([]);
   const [filters, setFilters] = useState({
+    search: '',
     status: 'all',
     restaurantId: '',
     customerId: '',
@@ -304,6 +341,7 @@ function AdminDashboard() {
 
   const handleClearFilters = () => {
     const emptyFilters = {
+      search: '',
       status: 'all',
       restaurantId: '',
       customerId: '',
@@ -312,6 +350,10 @@ function AdminDashboard() {
     setFilters(emptyFilters);
     loadOrders(emptyFilters);
   };
+
+  const filteredOrders = useMemo(() => {
+    return orders.filter((order) => matchesOrderSearch(order, filters.search));
+  }, [orders, filters.search]);
 
   const pageTitles = {
     overview: 'Overview',
@@ -417,10 +459,10 @@ function AdminDashboard() {
         ) : (
           <>
             <form
-              className="fh-card grid gap-3 p-5 lg:grid-cols-[180px_1fr_1fr_auto_auto]"
+              className="fh-card grid gap-3 p-5 lg:grid-cols-[1fr_180px_1fr_1fr_auto_auto]"
               onSubmit={handleApplyFilters}
             >
-              <div className="mb-1 lg:col-span-5">
+              <div className="mb-1 lg:col-span-6">
                 <p className="text-xs font-semibold uppercase tracking-wide text-[#FF4F2E]">
                   Admin Panel
                 </p>
@@ -431,6 +473,13 @@ function AdminDashboard() {
                   Track and manage customer orders across restaurants.
                 </p>
               </div>
+              <input
+                className="rounded-xl border border-stone-300 px-3 py-2 outline-none focus:border-[#FF4F2E] focus:ring-4 focus:ring-[#FF4F2E]/20"
+                name="search"
+                onChange={handleFilterChange}
+                placeholder="Search order number, customer, or restaurant..."
+                value={filters.search}
+              />
               <select
                 className="rounded-xl border border-stone-300 px-3 py-2 outline-none focus:border-[#FF4F2E] focus:ring-4 focus:ring-[#FF4F2E]/20"
                 name="status"
@@ -490,9 +539,15 @@ function AdminDashboard() {
               </p>
             )}
 
-            {!isLoading && !error && orders.length > 0 && (
+            {!isLoading && !error && orders.length > 0 && filteredOrders.length === 0 && (
+              <p className="rounded-xl bg-white p-6 text-zinc-700 shadow-sm">
+                No orders found for this search.
+              </p>
+            )}
+
+            {!isLoading && !error && filteredOrders.length > 0 && (
               <div className="space-y-5">
-                {orders.map((order) => (
+                {filteredOrders.map((order) => (
                   <AdminOrderCard key={order._id} order={order} />
                 ))}
               </div>
