@@ -1,28 +1,30 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState } from "react";
 import {
   getAllUsersForAdmin,
   getUserByIdForAdmin,
   toggleUserBlockStatus,
-} from '../../services/adminUserService';
+} from "../../services/adminUserService";
 
 const emptyFilters = {
-  search: '',
-  role: 'all',
-  status: 'all',
+  search: "",
+  role: "all",
+  status: "all",
 };
 
+const itemsPerPage = 10;
+
 const roleClasses = {
-  customer: 'bg-blue-50 text-blue-700',
-  restaurant_owner: 'bg-stone-50 text-[#FF4F2E]',
-  rider: 'bg-indigo-50 text-indigo-700',
-  admin: 'bg-purple-50 text-purple-700',
+  customer: "bg-blue-50 text-blue-700",
+  restaurant_owner: "bg-stone-50 text-[#FF4F2E]",
+  rider: "bg-indigo-50 text-indigo-700",
+  admin: "bg-purple-50 text-purple-700",
 };
 
 const formatRole = (role) =>
   role
-    ?.split('_')
+    ?.split("_")
     .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-    .join(' ') || 'Unknown';
+    .join(" ") || "Unknown";
 
 function UserDetails({ user }) {
   return (
@@ -33,7 +35,7 @@ function UserDetails({ user }) {
       </div>
       <div>
         <p className="font-semibold text-zinc-900">Phone</p>
-        <p className="mt-1 text-zinc-600">{user.phone || 'Not provided'}</p>
+        <p className="mt-1 text-zinc-600">{user.phone || "Not provided"}</p>
       </div>
       <div>
         <p className="font-semibold text-zinc-900">Authentication</p>
@@ -42,7 +44,7 @@ function UserDetails({ user }) {
       <div>
         <p className="font-semibold text-zinc-900">Status</p>
         <p className="mt-1 text-zinc-600">
-          {user.isBlocked ? 'Blocked' : 'Active'}
+          {user.isBlocked ? "Blocked" : "Active"}
         </p>
       </div>
       <div>
@@ -65,13 +67,14 @@ function AdminUsersPanel({ currentUserId }) {
   const [users, setUsers] = useState([]);
   const [total, setTotal] = useState(0);
   const [filters, setFilters] = useState(emptyFilters);
+  const [currentPage, setCurrentPage] = useState(1);
   const [expandedUserId, setExpandedUserId] = useState(null);
   const [userDetails, setUserDetails] = useState({});
   const [detailsLoadingId, setDetailsLoadingId] = useState(null);
   const [actionUserId, setActionUserId] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState('');
-  const [successMessage, setSuccessMessage] = useState('');
+  const [error, setError] = useState("");
+  const [successMessage, setSuccessMessage] = useState("");
 
   const buildParams = (nextFilters) => {
     const params = {};
@@ -80,11 +83,11 @@ function AdminUsersPanel({ currentUserId }) {
       params.search = nextFilters.search.trim();
     }
 
-    if (nextFilters.role !== 'all') {
+    if (nextFilters.role !== "all") {
       params.role = nextFilters.role;
     }
 
-    if (nextFilters.status !== 'all') {
+    if (nextFilters.status !== "all") {
       params.status = nextFilters.status;
     }
 
@@ -93,11 +96,12 @@ function AdminUsersPanel({ currentUserId }) {
 
   const loadUsers = async (nextFilters = filters) => {
     try {
-      setError('');
+      setError("");
       setIsLoading(true);
       const response = await getAllUsersForAdmin(buildParams(nextFilters));
       setUsers(response.data.users || []);
       setTotal(response.data.total || 0);
+      setCurrentPage(1);
     } catch (requestError) {
       setError(requestError.message);
     } finally {
@@ -114,6 +118,7 @@ function AdminUsersPanel({ currentUserId }) {
       ...current,
       [event.target.name]: event.target.value,
     }));
+    setCurrentPage(1);
   };
 
   const handleApplyFilters = (event) => {
@@ -139,7 +144,7 @@ function AdminUsersPanel({ currentUserId }) {
     }
 
     try {
-      setError('');
+      setError("");
       setDetailsLoadingId(userId);
       const response = await getUserByIdForAdmin(userId);
       setUserDetails((current) => ({
@@ -156,7 +161,7 @@ function AdminUsersPanel({ currentUserId }) {
 
   const handleToggleBlock = async (user) => {
     const nextBlockedStatus = !user.isBlocked;
-    const action = nextBlockedStatus ? 'block' : 'unblock';
+    const action = nextBlockedStatus ? "block" : "unblock";
     const confirmed = window.confirm(
       `Are you sure you want to ${action} this user?`,
     );
@@ -166,13 +171,10 @@ function AdminUsersPanel({ currentUserId }) {
     }
 
     try {
-      setError('');
-      setSuccessMessage('');
+      setError("");
+      setSuccessMessage("");
       setActionUserId(user._id);
-      const response = await toggleUserBlockStatus(
-        user._id,
-        nextBlockedStatus,
-      );
+      const response = await toggleUserBlockStatus(user._id, nextBlockedStatus);
       const updatedUser = response.data.user;
 
       setUsers((current) =>
@@ -190,12 +192,38 @@ function AdminUsersPanel({ currentUserId }) {
     }
   };
 
+  const totalUsers = users.length;
+  const totalPages = Math.max(Math.ceil(totalUsers / itemsPerPage), 1);
+  const safeCurrentPage = Math.min(currentPage, totalPages);
+  const startIndex = (safeCurrentPage - 1) * itemsPerPage;
+  const endIndex = Math.min(startIndex + itemsPerPage, totalUsers);
+  const currentUsers = users.slice(startIndex, endIndex);
+  const pageNumbers = Array.from(
+    { length: totalPages },
+    (_, index) => index + 1,
+  );
+
+  useEffect(() => {
+    if (currentPage > totalPages) {
+      setCurrentPage(totalPages);
+    }
+  }, [currentPage, totalPages]);
+
   return (
     <section className="space-y-6">
       <form
         className="fh-card grid gap-3 p-5 lg:grid-cols-[1fr_200px_180px_auto_auto]"
         onSubmit={handleApplyFilters}
       >
+        <div className="mb-1 lg:col-span-5">
+          <p className="text-xs font-semibold uppercase tracking-wide text-[#FF4F2E]">
+            Admin Panel
+          </p>
+          <h2 className="mt-1 text-2xl font-bold text-zinc-900">Users</h2>
+          <p className="mt-1 text-sm text-zinc-600">
+            Manage platform users, roles, and account status.
+          </p>
+        </div>
         <input
           className="rounded-xl border border-stone-300 px-3 py-2 outline-none focus:border-[#FF4F2E] focus:ring-4 focus:ring-[#FF4F2E]/20"
           name="search"
@@ -225,10 +253,7 @@ function AdminUsersPanel({ currentUserId }) {
           <option value="active">Active</option>
           <option value="blocked">Blocked</option>
         </select>
-        <button
-          className="fh-btn-primary"
-          type="submit"
-        >
+        <button className="fh-btn-primary" type="submit">
           Apply Filters
         </button>
         <button
@@ -240,19 +265,12 @@ function AdminUsersPanel({ currentUserId }) {
         </button>
       </form>
 
-      <div className="flex items-center justify-between">
-        <h2 className="text-2xl font-bold">Users</h2>
+      <div className="flex items-center justify-end">
         <p className="text-sm text-zinc-600">{total} total</p>
       </div>
 
-      {error && (
-        <p className="fh-alert-error">{error}</p>
-      )}
-      {successMessage && (
-        <p className="fh-alert-success">
-          {successMessage}
-        </p>
-      )}
+      {error && <p className="fh-alert-error">{error}</p>}
+      {successMessage && <p className="fh-alert-success">{successMessage}</p>}
       {isLoading && (
         <p className="rounded-xl bg-white p-6 text-zinc-700 shadow-sm">
           Loading users...
@@ -266,15 +284,12 @@ function AdminUsersPanel({ currentUserId }) {
 
       {!isLoading && users.length > 0 && (
         <div className="space-y-4">
-          {users.map((user) => {
+          {currentUsers.map((user) => {
             const isCurrentAdmin = String(user._id) === String(currentUserId);
             const displayedDetails = userDetails[user._id] || user;
 
             return (
-              <article
-                className="fh-card p-5"
-                key={user._id}
-              >
+              <article className="fh-card p-5" key={user._id}>
                 <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
                   <div className="min-w-0">
                     <h3 className="truncate text-xl font-bold">{user.name}</h3>
@@ -289,7 +304,7 @@ function AdminUsersPanel({ currentUserId }) {
                   <div className="flex flex-wrap items-center gap-2">
                     <span
                       className={`rounded-full px-3 py-1 text-xs font-semibold ${
-                        roleClasses[user.role] || 'bg-zinc-100 text-zinc-700'
+                        roleClasses[user.role] || "bg-zinc-100 text-zinc-700"
                       }`}
                     >
                       {formatRole(user.role)}
@@ -297,11 +312,11 @@ function AdminUsersPanel({ currentUserId }) {
                     <span
                       className={`rounded-full px-3 py-1 text-xs font-semibold ${
                         user.isBlocked
-                          ? 'bg-red-50 text-red-700'
-                          : 'bg-green-50 text-green-700'
+                          ? "bg-red-50 text-red-700"
+                          : "bg-green-50 text-green-700"
                       }`}
                     >
-                      {user.isBlocked ? 'Blocked' : 'Active'}
+                      {user.isBlocked ? "Blocked" : "Active"}
                     </span>
                     <span className="rounded-full bg-zinc-100 px-3 py-1 text-xs font-semibold capitalize text-zinc-700">
                       {user.authProvider}
@@ -315,8 +330,8 @@ function AdminUsersPanel({ currentUserId }) {
                       type="button"
                     >
                       {expandedUserId === user._id
-                        ? 'Hide Details'
-                        : 'View Details'}
+                        ? "Hide Details"
+                        : "View Details"}
                     </button>
 
                     {isCurrentAdmin ? (
@@ -327,18 +342,18 @@ function AdminUsersPanel({ currentUserId }) {
                       <button
                         className={`rounded-md px-3 py-2 text-sm font-semibold ${
                           user.isBlocked
-                            ? 'border border-green-200 text-green-700 hover:bg-green-50'
-                            : 'border border-red-200 text-red-700 hover:bg-red-50'
+                            ? "border border-green-200 text-green-700 hover:bg-green-50"
+                            : "border border-red-200 text-red-700 hover:bg-red-50"
                         }`}
                         disabled={actionUserId === user._id}
                         onClick={() => handleToggleBlock(user)}
                         type="button"
                       >
                         {actionUserId === user._id
-                          ? 'Updating...'
+                          ? "Updating..."
                           : user.isBlocked
-                            ? 'Unblock User'
-                            : 'Block User'}
+                            ? "Unblock User"
+                            : "Block User"}
                       </button>
                     )}
                   </div>
@@ -355,6 +370,53 @@ function AdminUsersPanel({ currentUserId }) {
               </article>
             );
           })}
+
+          {totalUsers > itemsPerPage && (
+            <div className="flex flex-col gap-3 rounded-2xl border border-stone-200 bg-white px-4 py-4 shadow-sm sm:flex-row sm:items-center sm:justify-between">
+              <p className="text-sm text-zinc-600">
+                Showing {startIndex + 1}-{endIndex} of {totalUsers} users
+              </p>
+
+              <div className="flex flex-wrap items-center gap-2">
+                <button
+                  className="rounded-full border border-stone-200 bg-white px-4 py-2 text-sm font-semibold text-zinc-700 hover:bg-stone-50 disabled:cursor-not-allowed disabled:opacity-50"
+                  disabled={safeCurrentPage === 1}
+                  onClick={() =>
+                    setCurrentPage((page) => Math.max(page - 1, 1))
+                  }
+                  type="button"
+                >
+                  Previous
+                </button>
+
+                {pageNumbers.map((pageNumber) => (
+                  <button
+                    className={`rounded-full border px-4 py-2 text-sm font-semibold ${
+                      safeCurrentPage === pageNumber
+                        ? "border-[#FF4F2E] bg-[#FF4F2E] text-white"
+                        : "border-stone-200 bg-white text-zinc-700 hover:bg-stone-50"
+                    }`}
+                    key={pageNumber}
+                    onClick={() => setCurrentPage(pageNumber)}
+                    type="button"
+                  >
+                    {pageNumber}
+                  </button>
+                ))}
+
+                <button
+                  className="rounded-full border border-stone-200 bg-white px-4 py-2 text-sm font-semibold text-zinc-700 hover:bg-stone-50 disabled:cursor-not-allowed disabled:opacity-50"
+                  disabled={safeCurrentPage === totalPages}
+                  onClick={() =>
+                    setCurrentPage((page) => Math.min(page + 1, totalPages))
+                  }
+                  type="button"
+                >
+                  Next
+                </button>
+              </div>
+            </div>
+          )}
         </div>
       )}
     </section>

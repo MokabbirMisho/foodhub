@@ -55,9 +55,14 @@ function AdminRestaurantsPanel() {
     <div className="space-y-5">
       <section className="fh-card flex flex-col gap-4 p-6 sm:flex-row sm:items-end sm:justify-between">
         <div>
-          <h2 className="text-2xl font-bold">Restaurants</h2>
-          <p className="mt-1 text-zinc-600">
-            Review restaurant profiles and manage approval.
+          <p className="text-xs font-semibold uppercase tracking-wide text-[#FF4F2E]">
+            Admin Panel
+          </p>
+          <h2 className="mt-1 text-2xl font-bold text-zinc-900">
+            Restaurants
+          </h2>
+          <p className="mt-1 text-sm text-zinc-600">
+            Review, approve, and manage restaurant partners.
           </p>
         </div>
         <label className="w-full sm:w-56">

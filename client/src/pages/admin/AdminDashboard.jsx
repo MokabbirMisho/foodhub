@@ -174,6 +174,54 @@ function AdminOrderCard({ order }) {
   );
 }
 
+function AdminSidebarContent({
+  activeTab,
+  navigationItems,
+  onClose,
+  onSelectSection,
+}) {
+  return (
+    <div className="flex h-full flex-col p-5">
+      <div className="flex items-start justify-between gap-3 border-b border-stone-200 pb-5">
+        <div>
+          <p className="text-xl font-black text-[#FF4F2E]">Admin Panel</p>
+          <p className="mt-1 text-sm text-zinc-500">
+            Manage FoodHub platform
+          </p>
+        </div>
+
+        {onClose && (
+          <button
+            aria-label="Close admin menu"
+            className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-stone-200 bg-white text-xl font-semibold text-zinc-700 hover:bg-stone-50"
+            onClick={onClose}
+            type="button"
+          >
+            ×
+          </button>
+        )}
+      </div>
+
+      <nav aria-label="Admin sections" className="mt-6 space-y-2">
+        {navigationItems.map(([tabId, label]) => (
+          <button
+            className={`w-full rounded-lg px-4 py-3 text-left text-sm font-semibold transition ${
+              activeTab === tabId
+                ? 'bg-[#FF4F2E] text-white shadow-sm'
+                : 'text-zinc-700 hover:bg-stone-50 hover:text-[#FF4F2E]'
+            }`}
+            key={tabId}
+            onClick={() => onSelectSection(tabId)}
+            type="button"
+          >
+            {label}
+          </button>
+        ))}
+      </nav>
+    </div>
+  );
+}
+
 function AdminDashboard() {
   const navigate = useNavigate();
   const { logout, user } = useAuth();
@@ -287,110 +335,72 @@ function AdminDashboard() {
 
   return (
     <main className="min-h-screen bg-[#F8F7F4] text-zinc-900">
-      <header className="sticky top-0 z-30 flex items-center justify-between border-b border-stone-200 bg-white px-4 py-3 shadow-sm lg:hidden">
-        <div>
-          <p className="text-lg font-black text-[#FF4F2E]">FoodHub Admin</p>
-          <p className="text-xs font-medium text-zinc-500">
-            {pageTitles[activeTab]}
-          </p>
-        </div>
-        <div className="flex items-center gap-2">
-          <NotificationBell />
-          <button
-            aria-expanded={isSidebarOpen}
-            aria-label="Open admin menu"
-            className="rounded-md border border-stone-200 px-3 py-2 text-sm font-semibold text-[#FF4F2E] hover:bg-stone-50"
-            onClick={() => setIsSidebarOpen(true)}
-            type="button"
-          >
-            Menu
-          </button>
-        </div>
-      </header>
-
-      {isSidebarOpen && (
-        <button
-          aria-label="Close admin menu"
-          className="fixed inset-0 z-40 bg-zinc-950/35 lg:hidden"
-          onClick={() => setIsSidebarOpen(false)}
-          type="button"
-        />
-      )}
-
-      <div className="mx-auto flex max-w-[1600px]">
-        <aside
-          className={`fixed inset-y-0 left-0 z-50 flex w-72 flex-col border-r border-stone-200 bg-white p-5 shadow-xl transition-transform duration-200 lg:sticky lg:top-0 lg:h-screen lg:translate-x-0 lg:shadow-sm ${
-            isSidebarOpen ? 'translate-x-0' : '-translate-x-full'
-          }`}
-        >
-          <div className="flex items-start justify-between border-b border-stone-200 pb-5">
-            <div>
-              <p className="text-xl font-black text-[#FF4F2E]">FoodHub Admin</p>
-              <p className="mt-1 text-sm text-zinc-500">Admin Panel</p>
-            </div>
+      <header className="sticky top-0 z-30 border-b border-stone-200 bg-white/95 shadow-sm backdrop-blur">
+        <nav className="mx-auto flex h-16 max-w-[1600px] items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">
+          <div className="flex min-w-0 items-center gap-3">
             <button
-              aria-label="Close admin menu"
-              className="rounded-md px-2 py-1 text-xl text-zinc-500 hover:bg-stone-50 lg:hidden"
-              onClick={() => setIsSidebarOpen(false)}
+              aria-expanded={isSidebarOpen}
+              aria-label="Open admin menu"
+              className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-stone-200 bg-white text-xl font-semibold text-zinc-700 hover:bg-stone-50 lg:hidden"
+              onClick={() => setIsSidebarOpen(true)}
               type="button"
             >
-              ×
+              ☰
             </button>
+            <div className="min-w-0">
+              <p className="truncate text-lg font-black text-[#FF4F2E] sm:text-xl">
+                FoodHub Admin
+              </p>
+              <p className="truncate text-xs font-medium text-zinc-500">
+                {pageTitles[activeTab]}
+              </p>
+            </div>
           </div>
 
-          <nav aria-label="Admin sections" className="mt-6 space-y-2">
-            {navigationItems.map(([tabId, label]) => (
-              <button
-                className={`w-full rounded-lg px-4 py-3 text-left text-sm font-semibold transition ${
-                  activeTab === tabId
-                    ? 'bg-[#FF4F2E] text-white shadow-sm'
-                    : 'text-zinc-700 hover:bg-stone-50 hover:text-[#FF4F2E]'
-                }`}
-                key={tabId}
-                onClick={() => selectSection(tabId)}
-                type="button"
-              >
-                {label}
-              </button>
-            ))}
-          </nav>
-
-          <div className="mt-auto border-t border-stone-200 pt-5">
-            <p className="truncate text-sm font-semibold text-zinc-800">
-              {user?.name || 'Admin'}
-            </p>
-            <p className="text-xs text-zinc-500">Administrator</p>
+          <div className="flex shrink-0 items-center gap-2">
+            <NotificationBell />
             <button
-              className="mt-4 w-full rounded-xl border border-stone-200 px-4 py-2 text-sm font-semibold text-zinc-700 hover:bg-stone-50"
+              className="inline-flex min-h-10 items-center justify-center rounded-xl border border-stone-200 bg-white px-4 text-sm font-semibold text-zinc-700 hover:bg-stone-50"
               onClick={handleLogout}
               type="button"
             >
               Logout
             </button>
           </div>
+        </nav>
+      </header>
+
+      {isSidebarOpen && (
+        <>
+          <button
+            aria-label="Close admin menu overlay"
+            className="fixed inset-0 z-40 bg-black/40 lg:hidden"
+            onClick={() => setIsSidebarOpen(false)}
+            type="button"
+          />
+          <aside className="fixed inset-y-0 left-0 z-50 w-72 max-w-[80vw] border-r border-stone-200 bg-white shadow-xl lg:hidden">
+            <AdminSidebarContent
+              activeTab={activeTab}
+              navigationItems={navigationItems}
+              onClose={() => setIsSidebarOpen(false)}
+              onSelectSection={selectSection}
+            />
+          </aside>
+        </>
+      )}
+
+      <div className="mx-auto flex max-w-[1600px] gap-6 px-4 py-4 lg:px-6 lg:py-6">
+        <aside className="hidden lg:sticky lg:top-20 lg:block lg:h-[calc(100vh-6rem)] lg:w-72 lg:shrink-0">
+          <div className="fh-card h-full overflow-y-auto">
+            <AdminSidebarContent
+              activeTab={activeTab}
+              navigationItems={navigationItems}
+              onSelectSection={selectSection}
+            />
+          </div>
         </aside>
 
-        <section className="min-w-0 flex-1 space-y-6 px-4 py-6 sm:px-6 lg:px-8">
-          <header className="fh-card hidden items-center justify-between gap-4 p-7 lg:flex">
-          <div>
-            <p className="text-sm font-semibold uppercase tracking-wide text-[#FF4F2E]">
-              Admin Panel
-            </p>
-            <h1 className="mt-2 text-3xl font-black">{pageTitles[activeTab]}</h1>
-            <p className="mt-2 text-zinc-700">
-              Signed in as {user?.name || 'Admin'}
-            </p>
-          </div>
-
-          <div className="flex flex-wrap items-center gap-3">
-            <NotificationBell />
-            <div className="text-right">
-              <p className="text-sm font-semibold">{user?.name || 'Admin'}</p>
-              <p className="text-xs text-zinc-500">Administrator</p>
-            </div>
-          </div>
-        </header>
-
+        <section className="min-w-0 flex-1 space-y-6">
         {activeTab === 'overview' ? (
           <AdminOverview onSelectTab={selectSection} />
         ) : activeTab === 'restaurants' ? (
@@ -410,6 +420,17 @@ function AdminDashboard() {
               className="fh-card grid gap-3 p-5 lg:grid-cols-[180px_1fr_1fr_auto_auto]"
               onSubmit={handleApplyFilters}
             >
+              <div className="mb-1 lg:col-span-5">
+                <p className="text-xs font-semibold uppercase tracking-wide text-[#FF4F2E]">
+                  Admin Panel
+                </p>
+                <h2 className="mt-1 text-2xl font-bold text-zinc-900">
+                  Orders
+                </h2>
+                <p className="mt-1 text-sm text-zinc-600">
+                  Track and manage customer orders across restaurants.
+                </p>
+              </div>
               <select
                 className="rounded-xl border border-stone-300 px-3 py-2 outline-none focus:border-[#FF4F2E] focus:ring-4 focus:ring-[#FF4F2E]/20"
                 name="status"
