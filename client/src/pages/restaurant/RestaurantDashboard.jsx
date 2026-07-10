@@ -300,10 +300,79 @@ function OrderCard({ onStatusChange, order }) {
   );
 }
 
+function OwnerSidebarContent({
+  activeTab,
+  newOrderCount,
+  onClose,
+  onSelectTab,
+  sidebarInitial,
+  sidebarTitle,
+}) {
+  return (
+    <div className="flex h-full flex-col p-4">
+      <div className="flex items-start justify-between gap-3 border-b border-stone-200 pb-4">
+        <div className="flex min-w-0 items-center gap-3">
+          <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-[#FF4F2E] text-lg font-black text-white">
+            {sidebarInitial}
+          </div>
+          <div className="min-w-0">
+            <h2 className="truncate text-lg font-black text-zinc-900">
+              {sidebarTitle}
+            </h2>
+            <p className="mt-0.5 text-sm font-medium text-zinc-500">
+              Owner Panel
+            </p>
+          </div>
+        </div>
+
+        {onClose && (
+          <button
+            aria-label="Close owner menu"
+            className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-stone-200 bg-white text-xl font-semibold text-zinc-700 hover:bg-stone-50"
+            onClick={onClose}
+            type="button"
+          >
+            ×
+          </button>
+        )}
+      </div>
+
+      <nav className="mt-4 flex flex-col gap-2">
+        {navItems.map((item) => (
+          <button
+            className={`rounded-lg px-4 py-2 text-left text-sm font-semibold ${
+              activeTab === item.id
+                ? 'bg-[#FF4F2E] text-white'
+                : 'text-zinc-700 hover:bg-stone-50 hover:text-[#FF4F2E]'
+            }`}
+            key={item.id}
+            onClick={() => onSelectTab(item.id)}
+            type="button"
+          >
+            {item.label}
+            {item.id === 'orders' && newOrderCount > 0 && (
+              <span
+                className={`ml-2 rounded-full px-2 py-0.5 text-xs ${
+                  activeTab === item.id
+                    ? 'bg-white text-[#FF4F2E]'
+                    : 'bg-[#FF4F2E] text-white'
+                }`}
+              >
+                {newOrderCount}
+              </span>
+            )}
+          </button>
+        ))}
+      </nav>
+    </div>
+  );
+}
+
 function RestaurantDashboard() {
   const navigate = useNavigate();
   const { logout } = useAuth();
   const [activeTab, setActiveTab] = useState('dashboard');
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [restaurant, setRestaurant] = useState(null);
   const [foodItems, setFoodItems] = useState([]);
   const [foodError, setFoodError] = useState('');
@@ -441,6 +510,11 @@ function RestaurantDashboard() {
       setOrderError('');
       setOrderSuccess('');
     }
+  };
+
+  const handleSidebarTabChange = (tabId) => {
+    handleTabChange(tabId);
+    setIsSidebarOpen(false);
   };
 
   const handleCreateFoodItem = async (data) => {
@@ -894,12 +968,22 @@ function RestaurantDashboard() {
     <main className="min-h-screen bg-[#F8F7F4] text-zinc-900">
       <header className="sticky top-0 z-40 border-b border-stone-200 bg-white/95 backdrop-blur">
         <nav className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">
-          <Link
-            className="text-2xl font-black text-[#FF4F2E]"
-            to="/restaurant/dashboard"
-          >
-            FoodHub
-          </Link>
+          <div className="flex min-w-0 items-center gap-3">
+            <button
+              aria-label="Open owner menu"
+              className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-stone-200 bg-white text-xl font-semibold text-zinc-700 hover:bg-stone-50 lg:hidden"
+              onClick={() => setIsSidebarOpen(true)}
+              type="button"
+            >
+              ☰
+            </button>
+            <Link
+              className="truncate text-2xl font-black text-[#FF4F2E]"
+              to="/restaurant/dashboard"
+            >
+              FoodHub
+            </Link>
+          </div>
 
           <div className="flex items-center gap-2">
             <NotificationBell />
@@ -914,43 +998,38 @@ function RestaurantDashboard() {
         </nav>
       </header>
 
-      <div className="mx-auto flex max-w-7xl flex-col gap-6 px-4 py-6 lg:flex-row">
-        <aside className="fh-card p-4 lg:sticky lg:top-20 lg:h-[calc(100vh-6rem)] lg:w-64">
-          <div className="flex items-center gap-3 border-b border-stone-200 pb-4">
-            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-[#FF4F2E] text-lg font-black text-white">
-              {sidebarInitial}
-            </div>
-            <div className="min-w-0">
-              <h2 className="truncate text-lg font-black text-zinc-900">
-                {sidebarTitle}
-              </h2>
-              <p className="mt-0.5 text-sm font-medium text-zinc-500">
-                Owner Panel
-              </p>
-            </div>
-          </div>
+      {isSidebarOpen && (
+        <>
+          <button
+            aria-label="Close owner menu overlay"
+            className="fixed inset-0 z-40 bg-black/40 lg:hidden"
+            onClick={() => setIsSidebarOpen(false)}
+            type="button"
+          />
+          <aside className="fixed inset-y-0 left-0 z-50 w-72 max-w-[80vw] border-r border-stone-200 bg-white shadow-xl lg:hidden">
+            <OwnerSidebarContent
+              activeTab={activeTab}
+              newOrderCount={newOrderCount}
+              onClose={() => setIsSidebarOpen(false)}
+              onSelectTab={handleSidebarTabChange}
+              sidebarInitial={sidebarInitial}
+              sidebarTitle={sidebarTitle}
+            />
+          </aside>
+        </>
+      )}
 
-          <nav className="mt-4 flex gap-2 overflow-x-auto lg:flex-col lg:overflow-visible">
-            {navItems.map((item) => (
-              <button
-                className={`whitespace-nowrap rounded-lg px-4 py-2 text-left text-sm font-semibold ${
-                  activeTab === item.id
-                    ? 'bg-[#FF4F2E] text-white'
-                    : 'text-zinc-700 hover:bg-stone-50 hover:text-[#FF4F2E]'
-                }`}
-                key={item.id}
-                onClick={() => handleTabChange(item.id)}
-                type="button"
-              >
-                {item.label}
-                {item.id === 'orders' && newOrderCount > 0 && (
-                  <span className="ml-2 rounded-full bg-white px-2 py-0.5 text-xs text-[#FF4F2E]">
-                    {newOrderCount}
-                  </span>
-                )}
-              </button>
-            ))}
-          </nav>
+      <div className="mx-auto flex max-w-7xl gap-6 px-4 py-4 lg:px-6 lg:py-6">
+        <aside className="hidden lg:sticky lg:top-20 lg:block lg:h-[calc(100vh-6rem)] lg:w-64 lg:shrink-0">
+          <div className="fh-card h-full overflow-y-auto">
+            <OwnerSidebarContent
+              activeTab={activeTab}
+              newOrderCount={newOrderCount}
+              onSelectTab={handleTabChange}
+              sidebarInitial={sidebarInitial}
+              sidebarTitle={sidebarTitle}
+            />
+          </div>
         </aside>
 
         <section className="min-w-0 flex-1 space-y-6">

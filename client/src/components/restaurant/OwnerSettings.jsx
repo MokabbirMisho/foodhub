@@ -6,9 +6,6 @@ import { updateMyRestaurant } from "../../services/restaurantService";
 const defaultOrderPreferences = {
   acceptsOnlineOrders: true,
   autoAcceptOrders: false,
-  defaultPreparationTime: 30,
-  minimumOrderAmount: 0,
-  deliveryFee: 0,
 };
 
 const defaultRestaurantPreferences = {
@@ -39,10 +36,17 @@ function Field({ children, label }) {
   );
 }
 
-function Toggle({ checked, disabled, label, name, onChange }) {
+function Toggle({ checked, description, disabled, label, name, onChange }) {
   return (
     <label className="flex items-center justify-between gap-4 rounded-2xl border border-stone-200 bg-white p-4">
-      <span className="font-semibold text-zinc-800">{label}</span>
+      <span>
+        <span className="block font-semibold text-zinc-800">{label}</span>
+        {description && (
+          <span className="mt-1 block text-sm text-zinc-500">
+            {description}
+          </span>
+        )}
+      </span>
       <input
         checked={checked}
         className="h-5 w-5 accent-[#FF4F2E]"
@@ -55,12 +59,55 @@ function Toggle({ checked, disabled, label, name, onChange }) {
   );
 }
 
+function SegmentedToggle({ description, disabled, label, onChange, value }) {
+  const getOptionClassName = (isSelected) =>
+    `rounded-full border px-4 py-2 text-sm font-medium transition ${
+      isSelected
+        ? "border-[#FF4F2E] bg-[#FF4F2E] text-white"
+        : "border-stone-200 bg-white text-zinc-700 hover:bg-stone-50"
+    } ${disabled ? "cursor-not-allowed opacity-60" : ""}`;
+
+  return (
+    <div className="rounded-2xl border border-stone-200 bg-white p-4">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <h3 className="font-semibold text-zinc-800">{label}</h3>
+          {description && (
+            <p className="mt-1 text-sm text-zinc-500">{description}</p>
+          )}
+        </div>
+
+        <div
+          aria-label={label}
+          className="inline-flex w-fit rounded-full border border-stone-200 bg-stone-50 p-1"
+          role="group"
+        >
+          <button
+            aria-pressed={value === true}
+            className={getOptionClassName(value === true)}
+            disabled={disabled}
+            onClick={() => onChange(true)}
+            type="button"
+          >
+            On
+          </button>
+          <button
+            aria-pressed={value === false}
+            className={getOptionClassName(value === false)}
+            disabled={disabled}
+            onClick={() => onChange(false)}
+            type="button"
+          >
+            Off
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function OwnerSettings({ onRestaurantUpdated, restaurant }) {
-  const { updateAccount, user } = useAuth();
-  const [accountForm, setAccountForm] = useState({
-    name: user?.name || "",
-    phone: user?.phone || "",
-  });
+  const { user } = useAuth();
   const [passwordForm, setPasswordForm] = useState({
     currentPassword: "",
     newPassword: "",
@@ -82,13 +129,6 @@ function OwnerSettings({ onRestaurantUpdated, restaurant }) {
   const [savingKey, setSavingKey] = useState("");
 
   useEffect(() => {
-    setAccountForm({
-      name: user?.name || "",
-      phone: user?.phone || "",
-    });
-  }, [user?.name, user?.phone]);
-
-  useEffect(() => {
     if (!restaurant) {
       return;
     }
@@ -96,9 +136,6 @@ function OwnerSettings({ onRestaurantUpdated, restaurant }) {
     setOrderPreferences({
       acceptsOnlineOrders: restaurant.acceptsOnlineOrders ?? true,
       autoAcceptOrders: restaurant.autoAcceptOrders ?? false,
-      defaultPreparationTime: restaurant.defaultPreparationTime || 30,
-      minimumOrderAmount: restaurant.minimumOrderAmount ?? 0,
-      deliveryFee: restaurant.deliveryFee ?? 0,
     });
     setRestaurantPreferences({
       ownerPreferenceLanguage: restaurant.ownerPreferenceLanguage || "en",
@@ -133,25 +170,6 @@ function OwnerSettings({ onRestaurantUpdated, restaurant }) {
       const response = await updateMyRestaurant(payload);
       onRestaurantUpdated(response.data.restaurant);
       showSuccess(successMessage);
-    } catch (requestError) {
-      showError(requestError);
-    } finally {
-      setSavingKey("");
-    }
-  };
-
-  const handleAccountSubmit = async (event) => {
-    event.preventDefault();
-
-    if (!accountForm.name.trim()) {
-      setError("Name is required");
-      return;
-    }
-
-    try {
-      setSavingKey("account");
-      await updateAccount(accountForm);
-      showSuccess("Account information updated successfully");
     } catch (requestError) {
       showError(requestError);
     } finally {
@@ -201,10 +219,8 @@ function OwnerSettings({ onRestaurantUpdated, restaurant }) {
     event.preventDefault();
     saveRestaurantSettings(
       {
-        ...orderPreferences,
-        defaultPreparationTime: Number(orderPreferences.defaultPreparationTime),
-        deliveryFee: Number(orderPreferences.deliveryFee),
-        minimumOrderAmount: Number(orderPreferences.minimumOrderAmount),
+        acceptsOnlineOrders: orderPreferences.acceptsOnlineOrders,
+        autoAcceptOrders: orderPreferences.autoAcceptOrders,
       },
       "Order preferences updated successfully",
       "orders",
@@ -261,65 +277,23 @@ function OwnerSettings({ onRestaurantUpdated, restaurant }) {
 
   return (
     <div className="space-y-6">
+      <header className="fh-card p-6">
+        <p className="text-sm font-semibold uppercase tracking-wide text-[#FF4F2E]">
+          Settings
+        </p>
+        <h1 className="mt-2 text-2xl font-black text-zinc-900">
+          Restaurant settings
+        </h1>
+        <p className="mt-2 text-sm text-zinc-600">
+          Manage your restaurant preferences, security, and controls.
+        </p>
+      </header>
+
       {(message || error) && (
         <p className={error ? "fh-alert-error" : "fh-alert-success"}>
           {error || message}
         </p>
       )}
-
-      <SectionCard
-        description="Keep the owner contact details tidy for operations and support."
-        title="Account Information"
-      >
-        <form
-          className="grid gap-4 md:grid-cols-2"
-          onSubmit={handleAccountSubmit}
-        >
-          <Field label="Name">
-            <input
-              className="fh-input"
-              name="name"
-              onChange={(event) =>
-                setAccountForm((current) => ({
-                  ...current,
-                  name: event.target.value,
-                }))
-              }
-              value={accountForm.name}
-            />
-          </Field>
-          <Field label="Email">
-            <input
-              className="fh-input bg-stone-50 text-zinc-500"
-              readOnly
-              value={user?.email || ""}
-            />
-          </Field>
-          <Field label="Phone">
-            <input
-              className="fh-input"
-              name="phone"
-              onChange={(event) =>
-                setAccountForm((current) => ({
-                  ...current,
-                  phone: event.target.value,
-                }))
-              }
-              placeholder="Optional phone number"
-              value={accountForm.phone}
-            />
-          </Field>
-          <div className="flex items-end">
-            <button
-              className="fh-btn-primary w-full md:w-auto"
-              disabled={savingKey === "account"}
-              type="submit"
-            >
-              {savingKey === "account" ? "Saving..." : "Save"}
-            </button>
-          </div>
-        </form>
-      </SectionCard>
 
       <SectionCard
         description="Change the password for this local FoodHub owner account."
@@ -413,81 +387,30 @@ function OwnerSettings({ onRestaurantUpdated, restaurant }) {
         )}
         <form className="space-y-4" onSubmit={handleOrderPreferenceSubmit}>
           <div className="grid gap-4 md:grid-cols-2">
-            <Toggle
-              checked={orderPreferences.acceptsOnlineOrders}
+            <SegmentedToggle
+              description="Allow customers to place orders from your restaurant."
               disabled={!restaurant}
               label="Accept online orders"
-              name="acceptsOnlineOrders"
-              onChange={(event) =>
+              onChange={(nextValue) =>
                 setOrderPreferences((current) => ({
                   ...current,
-                  acceptsOnlineOrders: event.target.checked,
+                  acceptsOnlineOrders: nextValue,
                 }))
               }
+              value={orderPreferences.acceptsOnlineOrders}
             />
-            <Toggle
-              checked={orderPreferences.autoAcceptOrders}
+            <SegmentedToggle
+              description="Automatically accept new customer orders."
               disabled={!restaurant}
               label="Auto-accept orders"
-              name="autoAcceptOrders"
-              onChange={(event) =>
+              onChange={(nextValue) =>
                 setOrderPreferences((current) => ({
                   ...current,
-                  autoAcceptOrders: event.target.checked,
+                  autoAcceptOrders: nextValue,
                 }))
               }
+              value={orderPreferences.autoAcceptOrders}
             />
-          </div>
-          <div className="grid gap-4 md:grid-cols-3">
-            <Field label="Default preparation time">
-              <select
-                className="fh-input"
-                disabled={!restaurant}
-                onChange={(event) =>
-                  setOrderPreferences((current) => ({
-                    ...current,
-                    defaultPreparationTime: event.target.value,
-                  }))
-                }
-                value={orderPreferences.defaultPreparationTime}
-              >
-                <option value="20">20 minutes</option>
-                <option value="30">30 minutes</option>
-                <option value="45">45 minutes</option>
-              </select>
-            </Field>
-            <Field label="Minimum order amount">
-              <input
-                className="fh-input"
-                disabled={!restaurant}
-                min="0"
-                onChange={(event) =>
-                  setOrderPreferences((current) => ({
-                    ...current,
-                    minimumOrderAmount: event.target.value,
-                  }))
-                }
-                step="0.01"
-                type="number"
-                value={orderPreferences.minimumOrderAmount}
-              />
-            </Field>
-            <Field label="Delivery fee">
-              <input
-                className="fh-input"
-                disabled={!restaurant}
-                min="0"
-                onChange={(event) =>
-                  setOrderPreferences((current) => ({
-                    ...current,
-                    deliveryFee: event.target.value,
-                  }))
-                }
-                step="0.01"
-                type="number"
-                value={orderPreferences.deliveryFee}
-              />
-            </Field>
           </div>
           <button
             className="fh-btn-primary"
