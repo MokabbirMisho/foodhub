@@ -36,7 +36,7 @@ function DeliveryMap({
   if (!availableLocations.length) {
     return (
       <div
-        className="flex items-center justify-center rounded-xl bg-orange-50 p-6 text-center text-slate-700"
+        className="flex items-center justify-center rounded-xl bg-stone-50 p-6 text-center text-zinc-700"
         style={{ minHeight: height }}
       >
         Location is not available yet.

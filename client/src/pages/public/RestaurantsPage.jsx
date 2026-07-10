@@ -69,7 +69,7 @@ function AvailabilityBadge({ availability }) {
         isOpen
           ? 'bg-green-50 text-green-700'
           : opensLater
-            ? 'bg-orange-50 text-orange-700'
+            ? 'bg-stone-50 text-[#FF4F2E]'
             : 'bg-red-50 text-red-700'
       }`}
     >
@@ -88,7 +88,7 @@ function RestaurantCard({ restaurant }) {
           src={restaurant.coverImage || restaurant.logo}
         />
       ) : (
-        <div className="flex h-44 items-center justify-center bg-orange-100 font-semibold text-orange-700">
+        <div className="flex h-44 items-center justify-center bg-stone-100 font-semibold text-[#FF4F2E]">
           FoodHub Restaurant
         </div>
       )}
@@ -97,21 +97,21 @@ function RestaurantCard({ restaurant }) {
         <div className="flex items-start justify-between gap-3">
           <div>
             <h2 className="text-xl font-bold">{restaurant.name}</h2>
-            <p className="mt-1 text-sm text-slate-600">
+            <p className="mt-1 text-sm text-zinc-600">
               {restaurant.address?.city || 'City not provided'}
             </p>
           </div>
           <AvailabilityBadge availability={restaurant.availability} />
         </div>
 
-        <p className="mt-4 line-clamp-2 text-sm leading-6 text-slate-700">
+        <p className="mt-4 line-clamp-2 text-sm leading-6 text-zinc-700">
           {restaurant.description || 'No description provided.'}
         </p>
 
         <div className="mt-4 flex flex-wrap gap-2">
           {restaurant.cuisineTypes?.map((cuisine) => (
             <span
-              className="rounded-full bg-orange-50 px-3 py-1 text-xs font-semibold text-orange-700"
+              className="rounded-full bg-stone-50 px-3 py-1 text-xs font-semibold text-[#FF4F2E]"
               key={cuisine}
             >
               {cuisine}
@@ -119,7 +119,7 @@ function RestaurantCard({ restaurant }) {
           ))}
         </div>
 
-        <div className="mt-5 grid grid-cols-2 gap-3 text-sm text-slate-700">
+        <div className="mt-5 grid grid-cols-2 gap-3 text-sm text-zinc-700">
           <p>
             {restaurant.ratingCount
               ? `★ ${restaurant.ratingAverage} (${restaurant.ratingCount})`
@@ -227,7 +227,7 @@ function RestaurantsPage() {
         <header className="fh-card p-7">
           <p className="fh-eyebrow">FoodHub discovery</p>
           <h1 className="mt-2 text-4xl font-black">Restaurants</h1>
-          <p className="mt-2 text-slate-700">
+          <p className="mt-2 text-zinc-700">
             {filters.search
               ? `Results for: ${filters.search}`
               : 'Find a restaurant for your next meal.'}
@@ -259,8 +259,8 @@ function RestaurantsPage() {
               <button
                 className={`shrink-0 rounded-full border px-4 py-2 text-sm font-semibold ${
                   filters.cuisine === cuisine
-                    ? 'border-orange-600 bg-orange-600 text-white'
-                    : 'border-orange-200 bg-white text-slate-700 hover:border-orange-400'
+                    ? 'border-[#FF4F2E] bg-[#FF4F2E] text-white'
+                    : 'border-stone-200 bg-white text-zinc-700 hover:border-[#FF4F2E]'
                 }`}
                 key={cuisine}
                 onClick={() => applyImmediateFilter('cuisine', cuisine)}
@@ -272,12 +272,12 @@ function RestaurantsPage() {
           </div>
 
           <div
-            className={`${showFilters ? 'grid' : 'hidden'} mt-5 gap-4 border-t border-orange-100 pt-5 md:grid md:grid-cols-5`}
+            className={`${showFilters ? 'grid' : 'hidden'} mt-5 gap-4 border-t border-stone-200 pt-5 md:grid md:grid-cols-5`}
           >
-            <label className="flex items-center gap-2 rounded-lg bg-orange-50 px-3 py-2">
+            <label className="flex items-center gap-2 rounded-lg bg-stone-50 px-3 py-2">
               <input
                 checked={filters.openNow}
-                className="accent-orange-600"
+                className="accent-[#FF4F2E]"
                 onChange={(event) =>
                   updateFilter('openNow', event.target.checked)
                 }
@@ -287,7 +287,7 @@ function RestaurantsPage() {
             </label>
 
             <label>
-              <span className="text-xs font-semibold text-slate-600">
+              <span className="text-xs font-semibold text-zinc-600">
                 Minimum rating
               </span>
               <select
@@ -305,7 +305,7 @@ function RestaurantsPage() {
             </label>
 
             <label>
-              <span className="text-xs font-semibold text-slate-600">
+              <span className="text-xs font-semibold text-zinc-600">
                 Max delivery fee
               </span>
               <select
@@ -323,7 +323,7 @@ function RestaurantsPage() {
             </label>
 
             <label>
-              <span className="text-xs font-semibold text-slate-600">
+              <span className="text-xs font-semibold text-zinc-600">
                 Max delivery time
               </span>
               <select
@@ -356,12 +356,12 @@ function RestaurantsPage() {
         <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
           <div>
             <h2 className="text-2xl font-bold">Restaurant results</h2>
-            <p className="mt-1 text-sm text-slate-600">
+            <p className="mt-1 text-sm text-zinc-600">
               {resultInfo.total} restaurants found
             </p>
           </div>
           <label className="w-full sm:w-60">
-            <span className="text-xs font-semibold text-slate-600">Sort by</span>
+            <span className="text-xs font-semibold text-zinc-600">Sort by</span>
             <select
               className="fh-input mt-1"
               onChange={(event) =>
@@ -396,16 +396,16 @@ function RestaurantsPage() {
                       src={dish.image}
                     />
                   ) : (
-                    <div className="flex h-32 w-32 shrink-0 items-center justify-center bg-orange-100 text-xs font-semibold text-orange-700">
+                    <div className="flex h-32 w-32 shrink-0 items-center justify-center bg-stone-100 text-xs font-semibold text-[#FF4F2E]">
                       FoodHub dish
                     </div>
                   )}
                   <div className="min-w-0 p-4">
-                    <p className="text-xs font-semibold uppercase text-orange-700">
+                    <p className="text-xs font-semibold uppercase text-[#FF4F2E]">
                       {dish.category}
                     </p>
                     <h3 className="mt-1 truncate font-bold">{dish.name}</h3>
-                    <p className="mt-1 truncate text-sm text-slate-600">
+                    <p className="mt-1 truncate text-sm text-zinc-600">
                       {dish.restaurant.name}
                     </p>
                     <p className="mt-3 font-semibold">
@@ -431,7 +431,7 @@ function RestaurantsPage() {
         {!isLoading && !error && restaurants.length === 0 && (
           <div className="fh-card p-8 text-center">
             <h2 className="text-2xl font-bold">No restaurants found</h2>
-            <p className="mt-2 text-slate-600">
+            <p className="mt-2 text-zinc-600">
               Try changing filters or searching another dish.
             </p>
             <button className="fh-btn-primary mt-5" onClick={clearFilters} type="button">
@@ -461,7 +461,7 @@ function RestaurantsPage() {
             >
               Previous
             </button>
-            <span className="text-sm font-semibold text-slate-700">
+            <span className="text-sm font-semibold text-zinc-700">
               Page {resultInfo.page} of {resultInfo.pages}
             </span>
             <button

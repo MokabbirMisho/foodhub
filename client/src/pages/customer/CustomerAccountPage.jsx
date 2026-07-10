@@ -209,7 +209,7 @@ function CustomerAccountPage() {
 
   if (isLoading) {
     return (
-      <main className="min-h-screen bg-orange-50 p-6 text-slate-700">
+      <main className="min-h-screen bg-stone-50 p-6 text-zinc-700">
         Loading customer profile...
       </main>
     );
@@ -221,13 +221,13 @@ function CustomerAccountPage() {
         <BackButton />
 
         <header className="fh-card p-7">
-          <p className="text-sm font-semibold uppercase tracking-wide text-orange-600">
+          <p className="text-sm font-semibold uppercase tracking-wide text-[#FF4F2E]">
             Customer Account
           </p>
           <h1 className="mt-2 text-4xl font-black">
             Welcome, {profile?.name || user?.name}
           </h1>
-          <p className="mt-3 text-slate-700">
+          <p className="mt-3 text-zinc-700">
             Manage your profile and delivery addresses.
           </p>
         </header>
@@ -238,8 +238,8 @@ function CustomerAccountPage() {
             <button
               className={`rounded-lg px-5 py-2 text-sm font-semibold capitalize ${
                 activeTab === tab
-                  ? 'bg-orange-600 text-white'
-                  : 'text-slate-700 hover:bg-orange-50'
+                  ? 'bg-[#FF4F2E] text-white'
+                  : 'text-zinc-700 hover:bg-stone-50'
               }`}
               key={tab}
               onClick={() => setActiveTab(tab)}
@@ -274,7 +274,7 @@ function CustomerAccountPage() {
                       ? ` (${getCartCount()})`
                       : ''}
                   </h2>
-                  <p className="mt-2 min-h-12 text-sm leading-6 text-slate-600">
+                  <p className="mt-2 min-h-12 text-sm leading-6 text-zinc-600">
                     {action.description}
                   </p>
                   <Link
@@ -293,7 +293,7 @@ function CustomerAccountPage() {
               type="button"
             >
               <span className="text-xl font-bold">Saved Addresses</span>
-              <span className="mt-2 block text-sm text-slate-600">
+              <span className="mt-2 block text-sm text-zinc-600">
                 {addresses.length} saved delivery address
                 {addresses.length === 1 ? '' : 'es'}
               </span>
@@ -309,9 +309,9 @@ function CustomerAccountPage() {
             <h2 className="text-2xl font-bold">Profile Information</h2>
             <div className="mt-5 grid gap-4 md:grid-cols-2">
               <label>
-                <span className="text-sm font-medium text-slate-700">Name</span>
+                <span className="text-sm font-medium text-zinc-700">Name</span>
                 <input
-                  className="mt-1 w-full rounded-md border border-slate-300 px-3 py-2 outline-none focus:border-orange-500"
+                  className="mt-1 w-full rounded-md border border-zinc-300 px-3 py-2 outline-none focus:border-[#FF4F2E]"
                   name="name"
                   onChange={handleProfileChange}
                   required
@@ -319,37 +319,37 @@ function CustomerAccountPage() {
                 />
               </label>
               <label>
-                <span className="text-sm font-medium text-slate-700">Phone</span>
+                <span className="text-sm font-medium text-zinc-700">Phone</span>
                 <input
-                  className="mt-1 w-full rounded-md border border-slate-300 px-3 py-2 outline-none focus:border-orange-500"
+                  className="mt-1 w-full rounded-md border border-zinc-300 px-3 py-2 outline-none focus:border-[#FF4F2E]"
                   name="phone"
                   onChange={handleProfileChange}
                   value={profileForm.phone}
                 />
               </label>
               <label className="md:col-span-2">
-                <span className="text-sm font-medium text-slate-700">
+                <span className="text-sm font-medium text-zinc-700">
                   Avatar URL
                 </span>
                 <input
-                  className="mt-1 w-full rounded-md border border-slate-300 px-3 py-2 outline-none focus:border-orange-500"
+                  className="mt-1 w-full rounded-md border border-zinc-300 px-3 py-2 outline-none focus:border-[#FF4F2E]"
                   name="avatar"
                   onChange={handleProfileChange}
                   value={profileForm.avatar}
                 />
               </label>
               <label>
-                <span className="text-sm font-medium text-slate-700">Email</span>
+                <span className="text-sm font-medium text-zinc-700">Email</span>
                 <input
-                  className="mt-1 w-full rounded-md border border-slate-200 bg-slate-50 px-3 py-2 text-slate-500"
+                  className="mt-1 w-full rounded-md border border-zinc-200 bg-zinc-50 px-3 py-2 text-zinc-500"
                   readOnly
                   value={profile?.email || ''}
                 />
               </label>
               <label>
-                <span className="text-sm font-medium text-slate-700">Role</span>
+                <span className="text-sm font-medium text-zinc-700">Role</span>
                 <input
-                  className="mt-1 w-full rounded-md border border-slate-200 bg-slate-50 px-3 py-2 text-slate-500"
+                  className="mt-1 w-full rounded-md border border-zinc-200 bg-zinc-50 px-3 py-2 text-zinc-500"
                   readOnly
                   value={profile?.role || ''}
                 />
@@ -368,12 +368,12 @@ function CustomerAccountPage() {
         {activeTab === 'security' && (
           <section className="fh-card p-7">
             <h2 className="text-2xl font-bold">Security</h2>
-            <p className="mt-2 text-sm text-slate-600">
+            <p className="mt-2 text-sm text-zinc-600">
               Change the password used to sign in to your FoodHub account.
             </p>
 
             {profile?.authProvider === 'google' ? (
-              <p className="mt-5 rounded-lg bg-orange-50 p-4 text-orange-800">
+              <p className="mt-5 rounded-lg bg-stone-50 p-4 text-zinc-700">
                 Password change is not available for Google sign-in accounts.
               </p>
             ) : (
@@ -387,7 +387,7 @@ function CustomerAccountPage() {
                   ['confirmPassword', 'Confirm New Password'],
                 ].map(([name, label]) => (
                   <label className="block" key={name}>
-                    <span className="text-sm font-medium text-slate-700">
+                    <span className="text-sm font-medium text-zinc-700">
                       {label}
                     </span>
                     <input
@@ -396,7 +396,7 @@ function CustomerAccountPage() {
                           ? 'current-password'
                           : 'new-password'
                       }
-                      className="mt-1 w-full rounded-md border border-slate-300 px-3 py-2 outline-none focus:border-orange-500"
+                      className="mt-1 w-full rounded-md border border-zinc-300 px-3 py-2 outline-none focus:border-[#FF4F2E]"
                       minLength={name === 'currentPassword' ? undefined : 6}
                       name={name}
                       onChange={handlePasswordChange}
@@ -408,7 +408,7 @@ function CustomerAccountPage() {
                 ))}
 
                 <button
-                  className="rounded-md bg-orange-600 px-5 py-2 font-semibold text-white hover:bg-orange-700 disabled:bg-orange-300"
+                  className="rounded-md bg-[#FF4F2E] px-5 py-2 font-semibold text-white hover:bg-[#E63E22] disabled:bg-stone-300"
                   disabled={isSavingPassword}
                   type="submit"
                 >
@@ -424,7 +424,7 @@ function CustomerAccountPage() {
             <div className="flex flex-wrap items-center justify-between gap-3">
               <div>
                 <h2 className="text-2xl font-bold">Saved Addresses</h2>
-                <p className="mt-1 text-sm text-slate-600">
+                <p className="mt-1 text-sm text-zinc-600">
                   Choose a default address for faster checkout.
                 </p>
               </div>
@@ -454,7 +454,7 @@ function CustomerAccountPage() {
             )}
 
             {!isAddingAddress && !editingAddress && addresses.length === 0 && (
-              <p className="rounded-xl bg-white p-6 text-slate-700 shadow-sm">
+              <p className="rounded-xl bg-white p-6 text-zinc-700 shadow-sm">
                 No saved addresses yet.
               </p>
             )}
@@ -474,7 +474,7 @@ function CustomerAccountPage() {
                         </span>
                       )}
                     </div>
-                    <div className="mt-3 text-sm leading-6 text-slate-700">
+                    <div className="mt-3 text-sm leading-6 text-zinc-700">
                       <p>{address.fullName || profile?.name}</p>
                       <p>{address.phone || profile?.phone}</p>
                       <p>{address.street}</p>
@@ -491,7 +491,7 @@ function CustomerAccountPage() {
                     </p>
                     <div className="mt-5 flex flex-wrap gap-2">
                       <button
-                        className="rounded-md border border-orange-200 px-3 py-2 text-sm font-semibold text-orange-700 hover:bg-orange-50"
+                        className="rounded-md border border-stone-200 px-3 py-2 text-sm font-semibold text-[#FF4F2E] hover:bg-stone-50"
                         onClick={() => setEditingAddress(address)}
                         type="button"
                       >

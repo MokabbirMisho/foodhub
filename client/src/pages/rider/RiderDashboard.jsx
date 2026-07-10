@@ -50,7 +50,7 @@ function StatusBadge({ status }) {
   return (
     <span
       className={`w-fit rounded-full px-3 py-1 text-xs font-semibold ${
-        statusClasses[status] || 'bg-slate-100 text-slate-700'
+        statusClasses[status] || 'bg-zinc-100 text-zinc-700'
       }`}
     >
       {status}
@@ -60,7 +60,7 @@ function StatusBadge({ status }) {
 
 function DeliveryAddress({ address }) {
   return (
-    <p className="mt-2 text-sm leading-6 text-slate-800">
+    <p className="mt-2 text-sm leading-6 text-zinc-800">
       {address?.fullName}
       <br />
       {address?.phone}
@@ -78,13 +78,13 @@ function AvailableDeliveryCard({ onAccept, order }) {
     <article className="fh-card p-6">
       <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
         <div>
-          <p className="text-sm font-semibold uppercase tracking-wide text-orange-600">
+          <p className="text-sm font-semibold uppercase tracking-wide text-[#FF4F2E]">
             Order #{order._id.slice(-8)}
           </p>
           <h3 className="mt-2 text-2xl font-bold">
             {order.restaurant?.name || 'Restaurant'}
           </h3>
-          <p className="mt-1 text-sm text-slate-600">
+          <p className="mt-1 text-sm text-zinc-600">
             {new Date(order.createdAt).toLocaleString()}
           </p>
         </div>
@@ -93,11 +93,11 @@ function AvailableDeliveryCard({ onAccept, order }) {
       </div>
 
       <div className="mt-5 grid gap-4 md:grid-cols-2">
-        <div className="rounded-lg bg-orange-50 p-4">
-          <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+        <div className="rounded-lg bg-stone-50 p-4">
+          <p className="text-xs font-semibold uppercase tracking-wide text-zinc-500">
             Pickup
           </p>
-          <p className="mt-2 text-sm leading-6 text-slate-800">
+          <p className="mt-2 text-sm leading-6 text-zinc-800">
             {order.restaurant?.phone || 'Phone not provided'}
             <br />
             {[restaurantAddress?.street, restaurantAddress?.postalCode, restaurantAddress?.city]
@@ -106,22 +106,22 @@ function AvailableDeliveryCard({ onAccept, order }) {
           </p>
         </div>
 
-        <div className="rounded-lg bg-orange-50 p-4">
-          <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+        <div className="rounded-lg bg-stone-50 p-4">
+          <p className="text-xs font-semibold uppercase tracking-wide text-zinc-500">
             Dropoff
           </p>
           <DeliveryAddress address={deliveryAddress} />
-          <p className="mt-2 text-sm text-slate-700">
+          <p className="mt-2 text-sm text-zinc-700">
             Customer: {order.customer?.name || deliveryAddress?.fullName}
           </p>
-          <p className="text-sm text-slate-700">
+          <p className="text-sm text-zinc-700">
             Phone: {order.customer?.phone || deliveryAddress?.phone || 'Not provided'}
           </p>
         </div>
       </div>
 
       {order.orderNote && (
-        <p className="mt-4 rounded-lg bg-slate-50 p-4 text-sm text-slate-700">
+        <p className="mt-4 rounded-lg bg-zinc-50 p-4 text-sm text-zinc-700">
           Note: {order.orderNote}
         </p>
       )}
@@ -129,7 +129,7 @@ function AvailableDeliveryCard({ onAccept, order }) {
       <div className="mt-5 space-y-3">
         {order.items?.map((item) => (
           <div
-            className="flex justify-between gap-3 border-b border-slate-100 pb-2 text-sm"
+            className="flex justify-between gap-3 border-b border-zinc-100 pb-2 text-sm"
             key={`${order._id}-${item.foodItem || item.name}`}
           >
             <span>
@@ -140,10 +140,10 @@ function AvailableDeliveryCard({ onAccept, order }) {
         ))}
       </div>
 
-      <div className="mt-5 grid gap-3 text-sm text-slate-700 md:grid-cols-3">
+      <div className="mt-5 grid gap-3 text-sm text-zinc-700 md:grid-cols-3">
         <p>{formatPaymentMethod(order.paymentMethod)}</p>
         <p>Payment: {formatPaymentStatus(order.paymentStatus)}</p>
-        <p className="font-bold text-slate-900">
+        <p className="font-bold text-zinc-900">
           Total: {formatCurrency(order.totalAmount)}
         </p>
       </div>
@@ -153,7 +153,7 @@ function AvailableDeliveryCard({ onAccept, order }) {
       </p>
 
       <button
-        className="mt-5 rounded-md bg-orange-600 px-4 py-2 font-semibold text-white hover:bg-orange-700"
+        className="mt-5 rounded-md bg-[#FF4F2E] px-4 py-2 font-semibold text-white hover:bg-[#E63E22]"
         onClick={() => onAccept(order._id)}
         type="button"
       >
@@ -176,18 +176,18 @@ function MyDeliveryCard({
   return (
     <article
       className={`fh-card p-6 ${
-        isHighlighted ? 'ring-2 ring-orange-500' : ''
+        isHighlighted ? 'ring-2 ring-[#FF4F2E]' : ''
       }`}
     >
       <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
         <div>
-          <p className="text-sm font-semibold uppercase tracking-wide text-orange-600">
+          <p className="text-sm font-semibold uppercase tracking-wide text-[#FF4F2E]">
             Delivery #{order._id.slice(-8)}
           </p>
           <h3 className="mt-2 text-2xl font-bold">
             {order.restaurant?.name || 'Restaurant'}
           </h3>
-          <p className="mt-1 text-sm text-slate-600">
+          <p className="mt-1 text-sm text-zinc-600">
             {new Date(order.createdAt).toLocaleString()}
           </p>
         </div>
@@ -196,11 +196,11 @@ function MyDeliveryCard({
       </div>
 
       <div className="mt-5 grid gap-4 md:grid-cols-2">
-        <div className="rounded-lg bg-orange-50 p-4">
-          <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+        <div className="rounded-lg bg-stone-50 p-4">
+          <p className="text-xs font-semibold uppercase tracking-wide text-zinc-500">
             Restaurant
           </p>
-          <p className="mt-2 text-sm leading-6 text-slate-800">
+          <p className="mt-2 text-sm leading-6 text-zinc-800">
             {order.restaurant?.phone || 'Phone not provided'}
             <br />
             {[restaurantAddress?.street, restaurantAddress?.postalCode, restaurantAddress?.city]
@@ -209,22 +209,22 @@ function MyDeliveryCard({
           </p>
         </div>
 
-        <div className="rounded-lg bg-orange-50 p-4">
-          <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+        <div className="rounded-lg bg-stone-50 p-4">
+          <p className="text-xs font-semibold uppercase tracking-wide text-zinc-500">
             Customer delivery address
           </p>
           <DeliveryAddress address={deliveryAddress} />
-          <p className="mt-2 text-sm text-slate-700">
+          <p className="mt-2 text-sm text-zinc-700">
             Customer: {order.customer?.name || deliveryAddress?.fullName}
           </p>
-          <p className="text-sm text-slate-700">
+          <p className="text-sm text-zinc-700">
             Phone: {order.customer?.phone || deliveryAddress?.phone || 'Not provided'}
           </p>
         </div>
       </div>
 
       {order.orderNote && (
-        <p className="mt-4 rounded-lg bg-slate-50 p-4 text-sm text-slate-700">
+        <p className="mt-4 rounded-lg bg-zinc-50 p-4 text-sm text-zinc-700">
           Note: {order.orderNote}
         </p>
       )}
@@ -232,12 +232,12 @@ function MyDeliveryCard({
       <div className="mt-5 space-y-3">
         {order.items?.map((item) => (
           <div
-            className="flex flex-col gap-2 border-b border-slate-100 pb-3 text-sm md:flex-row md:items-center md:justify-between"
+            className="flex flex-col gap-2 border-b border-zinc-100 pb-3 text-sm md:flex-row md:items-center md:justify-between"
             key={`${order._id}-${item.foodItem?._id || item.foodItem || item.name}`}
           >
             <div>
-              <p className="font-semibold text-slate-900">{item.name}</p>
-              <p className="text-slate-600">
+              <p className="font-semibold text-zinc-900">{item.name}</p>
+              <p className="text-zinc-600">
                 Qty {item.quantity} x {formatCurrency(item.price)}
               </p>
             </div>
@@ -248,10 +248,10 @@ function MyDeliveryCard({
         ))}
       </div>
 
-      <div className="mt-5 grid gap-3 text-sm text-slate-700 md:grid-cols-3">
+      <div className="mt-5 grid gap-3 text-sm text-zinc-700 md:grid-cols-3">
         <p>Payment: {formatPaymentMethod(order.paymentMethod)}</p>
         <p>Payment status: {formatPaymentStatus(order.paymentStatus)}</p>
-        <p className="font-bold text-slate-900">
+        <p className="font-bold text-zinc-900">
           Total: {formatCurrency(order.totalAmount)}
         </p>
       </div>
@@ -259,7 +259,7 @@ function MyDeliveryCard({
       {(order.deliveryLocation || order.riderLocation) && (
         <div className="mt-5">
           <Suspense
-            fallback={<p className="text-sm text-slate-600">Loading map...</p>}
+            fallback={<p className="text-sm text-zinc-600">Loading map...</p>}
           >
             <DeliveryMap
               deliveryLocation={order.deliveryLocation}
@@ -280,7 +280,7 @@ function MyDeliveryCard({
       {order.status === 'out_for_delivery' && (
         <div className="mt-5 flex flex-wrap gap-3">
           <button
-            className="rounded-md bg-orange-600 px-4 py-2 font-semibold text-white hover:bg-orange-700 disabled:cursor-not-allowed disabled:bg-orange-300"
+            className="rounded-md bg-[#FF4F2E] px-4 py-2 font-semibold text-white hover:bg-[#E63E22] disabled:cursor-not-allowed disabled:bg-stone-300"
             disabled={isUpdatingLocation}
             onClick={() => onUpdateLocation(order._id)}
             type="button"
@@ -484,11 +484,11 @@ function RiderDashboard() {
       <section className="fh-container space-y-6">
         <header className="fh-card flex flex-col gap-4 p-7 md:flex-row md:items-center md:justify-between">
           <div>
-            <p className="text-sm font-semibold uppercase tracking-wide text-orange-600">
+            <p className="text-sm font-semibold uppercase tracking-wide text-[#FF4F2E]">
               Rider Dashboard
             </p>
             <h1 className="mt-2 text-3xl font-black">Delivery Workspace</h1>
-            <p className="mt-2 text-slate-700">
+            <p className="mt-2 text-zinc-700">
               Signed in as {user?.name || 'Rider'}
             </p>
           </div>
@@ -496,7 +496,7 @@ function RiderDashboard() {
           <div className="flex flex-wrap items-center gap-3">
             <NotificationBell />
             <button
-              className="rounded-md bg-slate-900 px-4 py-2 font-semibold text-white hover:bg-slate-700"
+              className="rounded-md bg-zinc-900 px-4 py-2 font-semibold text-white hover:bg-zinc-700"
               onClick={handleLogout}
               type="button"
             >
@@ -509,15 +509,15 @@ function RiderDashboard() {
           <button
             className={`rounded-lg px-4 py-3 text-sm font-semibold ${
               activeTab === 'available'
-                ? 'bg-orange-600 text-white'
-                : 'text-slate-700 hover:bg-orange-50'
+                ? 'bg-[#FF4F2E] text-white'
+                : 'text-zinc-700 hover:bg-stone-50'
             }`}
             onClick={() => setActiveTab('available')}
             type="button"
           >
             Available Deliveries
             {availableDeliveries.length > 0 && (
-              <span className="ml-2 rounded-full bg-white px-2 py-0.5 text-xs text-orange-700">
+              <span className="ml-2 rounded-full bg-white px-2 py-0.5 text-xs text-[#FF4F2E]">
                 {availableDeliveries.length}
               </span>
             )}
@@ -525,8 +525,8 @@ function RiderDashboard() {
           <button
             className={`rounded-lg px-4 py-3 text-sm font-semibold ${
               activeTab === 'mine'
-                ? 'bg-orange-600 text-white'
-                : 'text-slate-700 hover:bg-orange-50'
+                ? 'bg-[#FF4F2E] text-white'
+                : 'text-zinc-700 hover:bg-stone-50'
             }`}
             onClick={() => setActiveTab('mine')}
             type="button"
@@ -545,13 +545,13 @@ function RiderDashboard() {
           <section className="space-y-5">
             <div className="fh-card p-6">
               <h2 className="text-2xl font-bold">Available Deliveries</h2>
-              <p className="mt-2 text-slate-700">
+              <p className="mt-2 text-zinc-700">
                 Ready orders without an assigned rider appear here.
               </p>
             </div>
 
             {isAvailableLoading && (
-              <p className="rounded-xl bg-white p-6 text-slate-700 shadow-sm">
+              <p className="rounded-xl bg-white p-6 text-zinc-700 shadow-sm">
                 Loading available deliveries...
               </p>
             )}
@@ -563,7 +563,7 @@ function RiderDashboard() {
             )}
 
             {!isAvailableLoading && !availableError && availableDeliveries.length === 0 && (
-              <p className="rounded-xl bg-white p-6 text-slate-700 shadow-sm">
+              <p className="rounded-xl bg-white p-6 text-zinc-700 shadow-sm">
                 No available deliveries right now.
               </p>
             )}
@@ -587,17 +587,17 @@ function RiderDashboard() {
             <div className="fh-card flex flex-col gap-4 p-6 md:flex-row md:items-end md:justify-between">
               <div>
                 <h2 className="text-2xl font-bold">My Deliveries</h2>
-                <p className="mt-2 text-slate-700">
+                <p className="mt-2 text-zinc-700">
                   Track deliveries you accepted and mark them delivered.
                 </p>
               </div>
 
               <label className="block w-full md:w-56">
-                <span className="text-sm font-medium text-slate-700">
+                <span className="text-sm font-medium text-zinc-700">
                   Filter by status
                 </span>
                 <select
-                  className="mt-1 w-full rounded-md border border-slate-300 px-3 py-2 outline-none focus:border-orange-500"
+                  className="mt-1 w-full rounded-md border border-zinc-300 px-3 py-2 outline-none focus:border-[#FF4F2E]"
                   onChange={handleFilterChange}
                   value={deliveryStatusFilter}
                 >
@@ -611,7 +611,7 @@ function RiderDashboard() {
             </div>
 
             {isMyDeliveriesLoading && (
-              <p className="rounded-xl bg-white p-6 text-slate-700 shadow-sm">
+              <p className="rounded-xl bg-white p-6 text-zinc-700 shadow-sm">
                 Loading your deliveries...
               </p>
             )}
@@ -623,7 +623,7 @@ function RiderDashboard() {
             )}
 
             {!isMyDeliveriesLoading && !myDeliveriesError && myDeliveries.length === 0 && (
-              <p className="rounded-xl bg-white p-6 text-slate-700 shadow-sm">
+              <p className="rounded-xl bg-white p-6 text-zinc-700 shadow-sm">
                 You have no deliveries yet.
               </p>
             )}

@@ -127,12 +127,12 @@ function RestaurantAvailabilityForm({ onUpdated, restaurant }) {
           >
             {availability?.isAvailableNow ? 'Open now' : 'Closed'}
           </span>
-          <span className="text-sm text-slate-700">
+          <span className="text-sm text-zinc-700">
             {availability?.reason || 'Availability has not been calculated yet'}
           </span>
         </div>
         {todayHours && (
-          <p className="mt-3 text-sm capitalize text-slate-600">
+          <p className="mt-3 text-sm capitalize text-zinc-600">
             {todayHours.day}:{' '}
             {todayHours.isClosed
               ? 'Closed'
@@ -150,7 +150,7 @@ function RestaurantAvailabilityForm({ onUpdated, restaurant }) {
       <form className="fh-card space-y-4 p-6" onSubmit={handleTemporaryStatusSubmit}>
         <div>
           <h2 className="text-xl font-bold">Temporary closure</h2>
-          <p className="mt-1 text-sm text-slate-600">
+          <p className="mt-1 text-sm text-zinc-600">
             Pause ordering immediately for maintenance, holidays, or kitchen
             closures.
           </p>
@@ -158,14 +158,14 @@ function RestaurantAvailabilityForm({ onUpdated, restaurant }) {
         <label className="flex items-center gap-3">
           <input
             checked={isTemporarilyClosed}
-            className="h-5 w-5 accent-orange-600"
+            className="h-5 w-5 accent-[#FF4F2E]"
             onChange={(event) => setIsTemporarilyClosed(event.target.checked)}
             type="checkbox"
           />
           <span className="font-medium">Temporarily closed</span>
         </label>
         <label className="block">
-          <span className="text-sm font-medium text-slate-700">Reason</span>
+          <span className="text-sm font-medium text-zinc-700">Reason</span>
           <input
             className="fh-input mt-1"
             onChange={(event) => setTemporaryClosedReason(event.target.value)}
@@ -174,7 +174,7 @@ function RestaurantAvailabilityForm({ onUpdated, restaurant }) {
           />
         </label>
         <label className="block">
-          <span className="text-sm font-medium text-slate-700">
+          <span className="text-sm font-medium text-zinc-700">
             Customer availability note
           </span>
           <input
@@ -192,7 +192,7 @@ function RestaurantAvailabilityForm({ onUpdated, restaurant }) {
       <form className="fh-card p-6" onSubmit={handleScheduleSubmit}>
         <div>
           <h2 className="text-xl font-bold">Weekly opening hours</h2>
-          <p className="mt-1 text-sm text-slate-600">
+          <p className="mt-1 text-sm text-zinc-600">
             Ordering is available only inside these hours.
           </p>
         </div>
@@ -202,13 +202,13 @@ function RestaurantAvailabilityForm({ onUpdated, restaurant }) {
 
             return (
               <div
-                className="grid gap-3 rounded-lg border border-orange-100 p-4 sm:grid-cols-[140px_1fr_1fr] sm:items-end"
+                className="grid gap-3 rounded-lg border border-stone-200 p-4 sm:grid-cols-[140px_1fr_1fr] sm:items-end"
                 key={day}
               >
                 <label className="flex items-center gap-2 capitalize sm:self-center">
                   <input
                     checked={schedule.isClosed}
-                    className="accent-orange-600"
+                    className="accent-[#FF4F2E]"
                     onChange={(event) =>
                       updateDay(day, 'isClosed', event.target.checked)
                     }
@@ -217,7 +217,7 @@ function RestaurantAvailabilityForm({ onUpdated, restaurant }) {
                   {day} closed
                 </label>
                 <label>
-                  <span className="text-xs font-semibold text-slate-600">Open</span>
+                  <span className="text-xs font-semibold text-zinc-600">Open</span>
                   <input
                     className="fh-input mt-1"
                     disabled={schedule.isClosed}
@@ -227,7 +227,7 @@ function RestaurantAvailabilityForm({ onUpdated, restaurant }) {
                   />
                 </label>
                 <label>
-                  <span className="text-xs font-semibold text-slate-600">Close</span>
+                  <span className="text-xs font-semibold text-zinc-600">Close</span>
                   <input
                     className="fh-input mt-1"
                     disabled={schedule.isClosed}

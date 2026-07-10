@@ -346,13 +346,13 @@ function CheckoutPage() {
 
   if (cartItems.length === 0) {
     return (
-      <main className="min-h-screen bg-orange-50 px-6 py-10 text-slate-900">
+      <main className="min-h-screen bg-stone-50 px-6 py-10 text-zinc-900">
         <section className="mx-auto max-w-3xl space-y-6">
           <BackButton />
           <div className="rounded-xl bg-white p-6 shadow-sm">
           <h1 className="text-3xl font-bold">Your cart is empty.</h1>
           <Link
-            className="mt-5 inline-block rounded-md bg-orange-600 px-4 py-2 font-semibold text-white hover:bg-orange-700"
+            className="mt-5 inline-block rounded-md bg-[#FF4F2E] px-4 py-2 font-semibold text-white hover:bg-[#E63E22]"
             to="/restaurants"
           >
             Browse Restaurants
@@ -365,16 +365,16 @@ function CheckoutPage() {
 
   if (!isAuthenticated) {
     return (
-      <main className="min-h-screen bg-orange-50 px-6 py-10 text-slate-900">
+      <main className="min-h-screen bg-stone-50 px-6 py-10 text-zinc-900">
         <section className="mx-auto max-w-3xl space-y-6">
           <BackButton fallbackPath="/" />
           <div className="rounded-xl bg-white p-6 shadow-sm">
           <h1 className="text-3xl font-bold">Please login to place your order.</h1>
-          <p className="mt-3 text-slate-700">
+          <p className="mt-3 text-zinc-700">
             Your cart is saved. Sign in from the landing page to continue checkout.
           </p>
           <Link
-            className="mt-5 inline-block rounded-md bg-orange-600 px-4 py-2 font-semibold text-white hover:bg-orange-700"
+            className="mt-5 inline-block rounded-md bg-[#FF4F2E] px-4 py-2 font-semibold text-white hover:bg-[#E63E22]"
             to="/"
           >
             Go to Sign In
@@ -387,13 +387,13 @@ function CheckoutPage() {
 
   if (user?.role !== 'customer') {
     return (
-      <main className="min-h-screen bg-orange-50 px-6 py-10 text-slate-900">
+      <main className="min-h-screen bg-stone-50 px-6 py-10 text-zinc-900">
         <section className="mx-auto max-w-3xl space-y-6">
           <BackButton />
           <div className="rounded-xl bg-white p-6 shadow-sm">
           <h1 className="text-3xl font-bold">Only customers can place orders.</h1>
           <Link
-            className="mt-5 inline-block rounded-md bg-orange-600 px-4 py-2 font-semibold text-white hover:bg-orange-700"
+            className="mt-5 inline-block rounded-md bg-[#FF4F2E] px-4 py-2 font-semibold text-white hover:bg-[#E63E22]"
             to="/restaurants"
           >
             Browse Restaurants
@@ -431,7 +431,7 @@ function CheckoutPage() {
               ['country', 'Country'],
             ].map(([name, label]) => (
               <label className="block" key={name}>
-                <span className="text-sm font-medium text-slate-700">{label}</span>
+                <span className="text-sm font-medium text-zinc-700">{label}</span>
                 <input
                   className="fh-input mt-1"
                   name={name}
@@ -444,9 +444,9 @@ function CheckoutPage() {
           </div>
 
           {savedAddresses.length > 0 && (
-            <section className="mt-6 rounded-xl border border-orange-100 bg-orange-50 p-5">
+            <section className="mt-6 rounded-xl border border-stone-200 bg-stone-50 p-5">
               <label className="block">
-                <span className="text-sm font-semibold text-slate-700">
+                <span className="text-sm font-semibold text-zinc-700">
                   Choose saved address
                 </span>
                 <select
@@ -471,7 +471,7 @@ function CheckoutPage() {
           )}
 
           <label className="mt-4 block">
-            <span className="text-sm font-medium text-slate-700">Order note</span>
+            <span className="text-sm font-medium text-zinc-700">Order note</span>
             <textarea
               className="fh-input mt-1 min-h-24"
               onChange={(event) => setOrderNote(event.target.value)}
@@ -479,9 +479,9 @@ function CheckoutPage() {
             />
           </label>
 
-          <section className="mt-6 rounded-xl border border-orange-200 bg-orange-50 p-5">
+          <section className="mt-6 rounded-xl border border-stone-200 bg-stone-50 p-5">
             <h2 className="text-xl font-bold">Delivery Map Location</h2>
-            <p className="mt-1 text-sm text-slate-600">
+            <p className="mt-1 text-sm text-zinc-600">
               Add a map location so the rider can find you more easily.
             </p>
 
@@ -505,7 +505,7 @@ function CheckoutPage() {
             </div>
 
             {isFindingLocation && (
-              <p className="mt-3 text-sm text-slate-600">Finding location...</p>
+              <p className="mt-3 text-sm text-zinc-600">Finding location...</p>
             )}
             {locationMessage && (
               <p className="mt-3 text-sm font-semibold text-green-700">
@@ -518,13 +518,13 @@ function CheckoutPage() {
 
             {deliveryLocation ? (
               <div className="mt-4 space-y-3">
-                <p className="text-sm text-slate-700">
+                <p className="text-sm text-zinc-700">
                   <span className="font-semibold">Map location added.</span>{' '}
                   {deliveryLocation.displayName}
                 </p>
                 <Suspense
                   fallback={
-                    <p className="text-sm text-slate-600">Loading map preview...</p>
+                    <p className="text-sm text-zinc-600">Loading map preview...</p>
                   }
                 >
                   <DeliveryMap
@@ -534,18 +534,18 @@ function CheckoutPage() {
                 </Suspense>
               </div>
             ) : (
-              <p className="mt-4 text-sm text-slate-600">
+              <p className="mt-4 text-sm text-zinc-600">
                 No map location added yet. Rider will still see your written
                 address.
               </p>
             )}
           </section>
 
-          <section className="mt-5 rounded-xl border border-orange-100 bg-white p-4">
-            <label className="flex items-center gap-2 text-sm font-semibold text-slate-700">
+          <section className="mt-5 rounded-xl border border-stone-200 bg-white p-4">
+            <label className="flex items-center gap-2 text-sm font-semibold text-zinc-700">
               <input
                 checked={saveAddress}
-                className="accent-orange-600"
+                className="accent-[#FF4F2E]"
                 onChange={(event) => setSaveAddress(event.target.checked)}
                 type="checkbox"
               />
@@ -553,7 +553,7 @@ function CheckoutPage() {
             </label>
             {saveAddress && (
               <label className="mt-3 block">
-                <span className="text-sm font-medium text-slate-700">
+                <span className="text-sm font-medium text-zinc-700">
                   Address label
                 </span>
                 <input
@@ -565,44 +565,44 @@ function CheckoutPage() {
               </label>
             )}
             {addressSaveWarning && (
-              <p className="mt-3 text-sm text-orange-700">
+              <p className="mt-3 text-sm text-[#FF4F2E]">
                 {addressSaveWarning}
               </p>
             )}
           </section>
 
-          <fieldset className="mt-8 border-t border-orange-100 pt-6">
-            <legend className="text-sm font-semibold text-slate-700">
+          <fieldset className="mt-8 border-t border-stone-200 pt-6">
+            <legend className="text-sm font-semibold text-zinc-700">
               Step 2 · Payment method
             </legend>
             <div className="mt-2 grid gap-3 sm:grid-cols-2">
-              <label className="flex cursor-pointer items-start gap-3 rounded-lg border border-slate-200 p-4">
+              <label className="flex cursor-pointer items-start gap-3 rounded-lg border border-zinc-200 p-4">
                 <input
                   checked={paymentMethod === 'cash_on_delivery'}
-                  className="mt-1 accent-orange-600"
+                  className="mt-1 accent-[#FF4F2E]"
                   name="paymentMethod"
                   onChange={() => setPaymentMethod('cash_on_delivery')}
                   type="radio"
                 />
                 <span>
                   <span className="block font-semibold">Cash on Delivery</span>
-                  <span className="text-sm text-slate-600">
+                  <span className="text-sm text-zinc-600">
                     Pay when your order arrives.
                   </span>
                 </span>
               </label>
 
-              <label className="flex cursor-pointer items-start gap-3 rounded-lg border border-slate-200 p-4">
+              <label className="flex cursor-pointer items-start gap-3 rounded-lg border border-zinc-200 p-4">
                 <input
                   checked={paymentMethod === 'demo_online'}
-                  className="mt-1 accent-orange-600"
+                  className="mt-1 accent-[#FF4F2E]"
                   name="paymentMethod"
                   onChange={() => setPaymentMethod('demo_online')}
                   type="radio"
                 />
                 <span>
                   <span className="block font-semibold">Demo Online Payment</span>
-                  <span className="text-sm font-medium text-orange-700">
+                  <span className="text-sm font-medium text-[#FF4F2E]">
                     Demo payment only
                   </span>
                 </span>
@@ -611,15 +611,15 @@ function CheckoutPage() {
           </fieldset>
 
           {paymentMethod === 'demo_online' && (
-            <section className="mt-5 rounded-xl border border-orange-200 bg-orange-50 p-5">
+            <section className="mt-5 rounded-xl border border-stone-200 bg-stone-50 p-5">
               <h2 className="text-lg font-bold">Demo card details</h2>
-              <p className="mt-1 text-sm text-slate-600">
+              <p className="mt-1 text-sm text-zinc-600">
                 This is a demo payment. No real money will be charged.
               </p>
 
               <div className="mt-4 grid gap-4 sm:grid-cols-2">
                 <label className="sm:col-span-2">
-                  <span className="text-sm font-medium text-slate-700">
+                  <span className="text-sm font-medium text-zinc-700">
                     Cardholder Name
                   </span>
                   <input
@@ -631,7 +631,7 @@ function CheckoutPage() {
                   />
                 </label>
                 <label className="sm:col-span-2">
-                  <span className="text-sm font-medium text-slate-700">
+                  <span className="text-sm font-medium text-zinc-700">
                     Card Number
                   </span>
                   <input
@@ -644,7 +644,7 @@ function CheckoutPage() {
                   />
                 </label>
                 <label>
-                  <span className="text-sm font-medium text-slate-700">
+                  <span className="text-sm font-medium text-zinc-700">
                     Expiry Date
                   </span>
                   <input
@@ -656,7 +656,7 @@ function CheckoutPage() {
                   />
                 </label>
                 <label>
-                  <span className="text-sm font-medium text-slate-700">CVC</span>
+                  <span className="text-sm font-medium text-zinc-700">CVC</span>
                   <input
                     className="fh-input mt-1"
                     inputMode="numeric"
@@ -694,15 +694,15 @@ function CheckoutPage() {
         <aside className="fh-card sticky top-24 h-fit p-6">
           <p className="fh-eyebrow">Step 3 · Review</p>
           <h2 className="mt-2 text-2xl font-bold">Order summary</h2>
-          <p className="mt-2 text-slate-700">{restaurant?.name}</p>
+          <p className="mt-2 text-zinc-700">{restaurant?.name}</p>
 
           <div className="mt-5 space-y-4">
             {cartItems.map((item) => (
-              <div className="border-b border-slate-100 pb-3" key={item._id}>
+              <div className="border-b border-zinc-100 pb-3" key={item._id}>
                 <div className="flex justify-between gap-3">
                   <div>
                     <p className="font-semibold">{item.name}</p>
-                    <p className="text-sm text-slate-600">Qty: {item.quantity}</p>
+                    <p className="text-sm text-zinc-600">Qty: {item.quantity}</p>
                   </div>
                   <p className="font-semibold">
                     {formatCurrency(getEffectivePrice(item) * item.quantity)}
@@ -712,7 +712,7 @@ function CheckoutPage() {
             ))}
           </div>
 
-          <div className="mt-5 space-y-3 text-slate-700">
+          <div className="mt-5 space-y-3 text-zinc-700">
             <div className="flex justify-between">
               <span>Subtotal</span>
               <span>{formatCurrency(getSubtotal())}</span>
@@ -721,8 +721,8 @@ function CheckoutPage() {
               <span>Delivery fee</span>
               <span>{formatCurrency(getDeliveryFee())}</span>
             </div>
-            <div className="border-t border-slate-200 pt-3">
-              <div className="flex justify-between text-lg font-bold text-slate-900">
+            <div className="border-t border-zinc-200 pt-3">
+              <div className="flex justify-between text-lg font-bold text-zinc-900">
                 <span>Total</span>
                 <span>{formatCurrency(getTotal())}</span>
               </div>

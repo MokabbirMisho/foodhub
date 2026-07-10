@@ -35,7 +35,7 @@ function ReviewForm({
   };
 
   return (
-    <form className="space-y-4 rounded-xl bg-orange-50 p-4" onSubmit={handleSubmit}>
+    <form className="space-y-4 rounded-xl bg-stone-50 p-4" onSubmit={handleSubmit}>
       {error && (
         <p className="rounded-md bg-red-50 px-3 py-2 text-sm text-red-700">
           {error}
@@ -43,14 +43,14 @@ function ReviewForm({
       )}
 
       <div>
-        <p className="text-sm font-semibold text-slate-700">Rating</p>
+        <p className="text-sm font-semibold text-zinc-700">Rating</p>
         <div className="mt-2 flex flex-wrap gap-2">
           {[1, 2, 3, 4, 5].map((value) => (
             <button
               className={`rounded-md px-3 py-2 text-sm font-semibold ${
                 rating === value
-                  ? 'bg-orange-600 text-white'
-                  : 'bg-white text-slate-700 hover:bg-orange-100'
+                  ? 'bg-[#FF4F2E] text-white'
+                  : 'bg-white text-zinc-700 hover:bg-stone-100'
               }`}
               key={value}
               onClick={() => setRating(value)}
@@ -63,9 +63,9 @@ function ReviewForm({
       </div>
 
       <label className="block">
-        <span className="text-sm font-semibold text-slate-700">Comment</span>
+        <span className="text-sm font-semibold text-zinc-700">Comment</span>
         <textarea
-          className="mt-1 min-h-24 w-full rounded-md border border-slate-300 px-3 py-2 outline-none focus:border-orange-500"
+          className="mt-1 min-h-24 w-full rounded-md border border-zinc-300 px-3 py-2 outline-none focus:border-[#FF4F2E]"
           maxLength={1000}
           onChange={(event) => setComment(event.target.value)}
           placeholder="Share what you liked about your order"
@@ -75,7 +75,7 @@ function ReviewForm({
 
       <div className="flex flex-wrap gap-2">
         <button
-          className="rounded-md bg-orange-600 px-4 py-2 font-semibold text-white hover:bg-orange-700 disabled:cursor-not-allowed disabled:bg-orange-300"
+          className="rounded-md bg-[#FF4F2E] px-4 py-2 font-semibold text-white hover:bg-[#E63E22] disabled:cursor-not-allowed disabled:bg-stone-300"
           disabled={isSubmitting}
           type="submit"
         >
@@ -88,7 +88,7 @@ function ReviewForm({
 
         {onCancel && (
           <button
-            className="rounded-md border border-slate-300 px-4 py-2 font-semibold text-slate-700 hover:bg-white"
+            className="rounded-md border border-zinc-300 px-4 py-2 font-semibold text-zinc-700 hover:bg-white"
             onClick={onCancel}
             type="button"
           >

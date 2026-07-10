@@ -43,7 +43,7 @@ function AuthModal({ isOpen, onClose }) {
         </h2>
         <button
           aria-label="Close sign in"
-          className="absolute right-3 top-3 z-10 inline-flex h-10 w-10 items-center justify-center rounded-full bg-white text-xl font-bold text-slate-600 shadow hover:bg-orange-50 hover:text-orange-700"
+          className="absolute right-3 top-3 z-10 inline-flex h-10 w-10 items-center justify-center rounded-full bg-white text-xl font-bold text-zinc-600 shadow hover:bg-stone-50 hover:text-[#FF4F2E]"
           onClick={onClose}
           type="button"
         >

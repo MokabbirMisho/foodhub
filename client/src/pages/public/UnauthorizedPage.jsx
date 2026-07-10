@@ -6,7 +6,7 @@ function UnauthorizedPage() {
       <section className="fh-card mx-auto w-full max-w-xl p-10 text-center">
         <p className="fh-eyebrow">Access restricted</p>
         <h1 className="mt-2 text-3xl font-black">Unauthorized</h1>
-        <p className="mt-3 text-slate-700">
+        <p className="mt-3 text-zinc-700">
           You do not have permission to view this page.
         </p>
         <Link className="fh-btn-primary mt-6" to="/">

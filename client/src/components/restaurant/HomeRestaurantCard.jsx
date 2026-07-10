@@ -18,12 +18,12 @@ function HomeRestaurantCard({ badge, restaurant }) {
             src={restaurant.coverImage || restaurant.logo}
           />
         ) : (
-          <div className="flex h-44 items-center justify-center bg-orange-100 font-semibold text-orange-700">
+          <div className="flex h-44 items-center justify-center bg-stone-100 font-semibold text-[#FF4F2E]">
             FoodHub Restaurant
           </div>
         )}
         {badge && (
-          <span className="absolute left-3 top-3 rounded-full bg-white/95 px-3 py-1 text-xs font-bold text-orange-700 shadow-sm">
+          <span className="absolute left-3 top-3 rounded-full bg-white/95 px-3 py-1 text-xs font-bold text-[#FF4F2E] shadow-sm">
             {badge}
           </span>
         )}
@@ -31,23 +31,23 @@ function HomeRestaurantCard({ badge, restaurant }) {
 
       <div className="p-5">
         <div className="flex items-start justify-between gap-3">
-          <h3 className="text-lg font-bold text-stone-900 group-hover:text-orange-700">
+          <h3 className="text-lg font-bold text-zinc-900 group-hover:text-[#FF4F2E]">
             {restaurant.name}
           </h3>
           <span
             className={`shrink-0 rounded-full px-2.5 py-1 text-xs font-semibold ${
               availability?.isAvailableNow
                 ? 'bg-green-50 text-green-700'
-                : 'bg-slate-100 text-slate-600'
+                : 'bg-zinc-100 text-zinc-600'
             }`}
           >
             {availability?.isAvailableNow ? 'Open' : 'Closed'}
           </span>
         </div>
-        <p className="mt-2 line-clamp-1 text-sm text-stone-600">
+        <p className="mt-2 line-clamp-1 text-sm text-zinc-600">
           {restaurant.cuisineTypes?.join(', ') || 'Local restaurant'}
         </p>
-        <div className="mt-4 flex flex-wrap gap-x-4 gap-y-2 text-sm text-stone-500">
+        <div className="mt-4 flex flex-wrap gap-x-4 gap-y-2 text-sm text-zinc-500">
           <span>
             {restaurant.ratingCount
               ? `★ ${restaurant.ratingAverage}`

@@ -165,7 +165,7 @@ function AddressForm({ initialData, onCancel, onSubmit }) {
           ['country', 'Country', 'Germany'],
         ].map(([name, label, placeholder]) => (
           <label className={name === 'street' ? 'md:col-span-2' : ''} key={name}>
-            <span className="text-sm font-medium text-slate-700">{label}</span>
+            <span className="text-sm font-medium text-zinc-700">{label}</span>
             <input
               className="fh-input mt-1"
               name={name}
@@ -178,8 +178,8 @@ function AddressForm({ initialData, onCancel, onSubmit }) {
         ))}
       </div>
 
-      <section className="mt-5 rounded-lg bg-orange-50 p-4">
-        <p className="font-semibold text-slate-900">Map location</p>
+      <section className="mt-5 rounded-lg bg-stone-50 p-4">
+        <p className="font-semibold text-zinc-900">Map location</p>
         <div className="mt-3 flex flex-wrap gap-2">
           <button
             className="fh-btn-primary text-sm"
@@ -212,10 +212,10 @@ function AddressForm({ initialData, onCancel, onSubmit }) {
         )}
       </section>
 
-      <label className="mt-4 flex items-center gap-2 text-sm text-slate-700">
+      <label className="mt-4 flex items-center gap-2 text-sm text-zinc-700">
         <input
           checked={formData.isDefault}
-          className="accent-orange-600"
+          className="accent-[#FF4F2E]"
           name="isDefault"
           onChange={handleChange}
           type="checkbox"
@@ -243,7 +243,7 @@ function AddressForm({ initialData, onCancel, onSubmit }) {
         </button>
         {onCancel && (
           <button
-            className="rounded-md border border-slate-300 px-4 py-2 font-semibold text-slate-700 hover:bg-slate-50"
+            className="rounded-md border border-zinc-300 px-4 py-2 font-semibold text-zinc-700 hover:bg-zinc-50"
             onClick={onCancel}
             type="button"
           >

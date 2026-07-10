@@ -132,9 +132,9 @@ export function NotificationProvider({ children }) {
     <NotificationContext.Provider value={value}>
       {children}
       {toast && (
-        <div className="fixed right-4 top-20 z-50 max-w-sm rounded-lg border border-orange-200 bg-white p-4 shadow-lg">
-          <p className="font-bold text-slate-900">{toast.title}</p>
-          <p className="mt-1 text-sm text-slate-600">{toast.message}</p>
+        <div className="fixed right-4 top-20 z-50 max-w-sm rounded-lg border border-stone-200 bg-white p-4 shadow-lg">
+          <p className="font-bold text-zinc-900">{toast.title}</p>
+          <p className="mt-1 text-sm text-zinc-600">{toast.message}</p>
         </div>
       )}
     </NotificationContext.Provider>

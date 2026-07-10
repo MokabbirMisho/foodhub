@@ -58,7 +58,7 @@ const statusFilterOptions = [
 const statusClasses = {
   pending: 'bg-yellow-50 text-yellow-700',
   accepted: 'bg-blue-50 text-blue-700',
-  preparing: 'bg-orange-50 text-orange-700',
+  preparing: 'bg-stone-50 text-[#FF4F2E]',
   ready: 'bg-purple-50 text-purple-700',
   out_for_delivery: 'bg-indigo-50 text-indigo-700',
   delivered: 'bg-green-50 text-green-700',
@@ -73,11 +73,11 @@ const formatPaymentStatus = (status) =>
 
 function DetailItem({ label, value }) {
   return (
-    <div className="rounded-lg bg-orange-50 p-4">
-      <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+    <div className="rounded-lg bg-stone-50 p-4">
+      <p className="text-xs font-semibold uppercase tracking-wide text-zinc-500">
         {label}
       </p>
-      <p className="mt-1 text-slate-900">{value || 'Not provided'}</p>
+      <p className="mt-1 text-zinc-900">{value || 'Not provided'}</p>
     </div>
   );
 }
@@ -85,7 +85,7 @@ function DetailItem({ label, value }) {
 function PlaceholderCard({ message }) {
   return (
     <section className="rounded-lg bg-white p-6 shadow-sm">
-      <p className="text-sm font-semibold uppercase tracking-wide text-orange-600">
+      <p className="text-sm font-semibold uppercase tracking-wide text-[#FF4F2E]">
         Coming Soon
       </p>
       <h2 className="mt-2 text-2xl font-bold">{message}</h2>
@@ -103,18 +103,18 @@ function FoodItemCard({ foodItem, onDelete, onEdit, onToggleAvailability }) {
           src={foodItem.image}
         />
       ) : (
-        <div className="flex h-44 w-full items-center justify-center bg-orange-50 text-sm font-semibold text-orange-700">
+        <div className="flex h-44 w-full items-center justify-center bg-stone-50 text-sm font-semibold text-[#FF4F2E]">
           No food image
         </div>
       )}
       <div className="p-5">
       <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
         <div>
-          <p className="text-sm font-semibold uppercase tracking-wide text-orange-600">
+          <p className="text-sm font-semibold uppercase tracking-wide text-[#FF4F2E]">
             {foodItem.category}
           </p>
           <h3 className="mt-1 text-2xl font-bold">{foodItem.name}</h3>
-          <p className="mt-2 text-sm leading-6 text-slate-700">
+          <p className="mt-2 text-sm leading-6 text-zinc-700">
             {foodItem.description || 'No description provided.'}
           </p>
         </div>
@@ -122,14 +122,14 @@ function FoodItemCard({ foodItem, onDelete, onEdit, onToggleAvailability }) {
           className={`w-fit rounded-full px-3 py-1 text-xs font-semibold ${
             foodItem.isAvailable
               ? 'bg-green-50 text-green-700'
-              : 'bg-orange-50 text-slate-600'
+              : 'bg-stone-50 text-zinc-600'
           }`}
         >
           {foodItem.isAvailable ? 'Available' : 'Unavailable'}
         </span>
       </div>
 
-      <div className="mt-4 grid gap-3 text-sm text-slate-700 md:grid-cols-2">
+      <div className="mt-4 grid gap-3 text-sm text-zinc-700 md:grid-cols-2">
         <p>Price: {formatCurrency(foodItem.price)}</p>
         <p>
           Discount:{' '}
@@ -145,7 +145,7 @@ function FoodItemCard({ foodItem, onDelete, onEdit, onToggleAvailability }) {
         <div className="mt-4 flex flex-wrap gap-2">
           {foodItem.tags.map((tag) => (
             <span
-              className="rounded-full bg-orange-50 px-3 py-1 text-xs font-semibold text-orange-700"
+              className="rounded-full bg-stone-50 px-3 py-1 text-xs font-semibold text-[#FF4F2E]"
               key={tag}
             >
               {tag}
@@ -156,14 +156,14 @@ function FoodItemCard({ foodItem, onDelete, onEdit, onToggleAvailability }) {
 
       <div className="mt-5 flex flex-wrap gap-2">
         <button
-          className="rounded-md bg-orange-600 px-4 py-2 text-sm font-semibold text-white hover:bg-orange-700"
+          className="rounded-md bg-[#FF4F2E] px-4 py-2 text-sm font-semibold text-white hover:bg-[#E63E22]"
           onClick={() => onEdit(foodItem)}
           type="button"
         >
           Edit
         </button>
         <button
-          className="rounded-md border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-orange-50"
+          className="rounded-md border border-zinc-300 px-4 py-2 text-sm font-semibold text-zinc-700 hover:bg-stone-50"
           onClick={() => onToggleAvailability(foodItem._id)}
           type="button"
         >
@@ -189,23 +189,23 @@ function OrderCard({ onStatusChange, order }) {
     <article className="rounded-xl bg-white p-6 shadow-sm">
       <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
         <div>
-          <p className="text-sm font-semibold uppercase tracking-wide text-orange-600">
+          <p className="text-sm font-semibold uppercase tracking-wide text-[#FF4F2E]">
             Order #{order._id.slice(-8)}
           </p>
           <h3 className="mt-2 text-2xl font-bold">
             {order.customer?.name || address?.fullName || 'Customer'}
           </h3>
-          <p className="mt-1 text-sm text-slate-600">
+          <p className="mt-1 text-sm text-zinc-600">
             {order.customer?.email || 'Email not provided'}
           </p>
-          <p className="mt-1 text-sm text-slate-600">
+          <p className="mt-1 text-sm text-zinc-600">
             {new Date(order.createdAt).toLocaleString()}
           </p>
         </div>
 
         <span
           className={`w-fit rounded-full px-3 py-1 text-xs font-semibold ${
-            statusClasses[order.status] || 'bg-slate-100 text-slate-700'
+            statusClasses[order.status] || 'bg-zinc-100 text-zinc-700'
           }`}
         >
           {order.status}
@@ -213,11 +213,11 @@ function OrderCard({ onStatusChange, order }) {
       </div>
 
       <div className="mt-5 grid gap-4 md:grid-cols-2">
-        <div className="rounded-lg bg-orange-50 p-4">
-          <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+        <div className="rounded-lg bg-stone-50 p-4">
+          <p className="text-xs font-semibold uppercase tracking-wide text-zinc-500">
             Delivery address
           </p>
-          <p className="mt-2 text-sm leading-6 text-slate-800">
+          <p className="mt-2 text-sm leading-6 text-zinc-800">
             {address?.fullName}
             <br />
             {address?.phone}
@@ -228,21 +228,21 @@ function OrderCard({ onStatusChange, order }) {
           </p>
         </div>
 
-        <div className="rounded-lg bg-orange-50 p-4">
-          <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+        <div className="rounded-lg bg-stone-50 p-4">
+          <p className="text-xs font-semibold uppercase tracking-wide text-zinc-500">
             Payment
           </p>
-          <p className="mt-2 text-sm text-slate-800">
+          <p className="mt-2 text-sm text-zinc-800">
             Method: {formatPaymentMethod(order.paymentMethod)}
           </p>
-          <p className="mt-1 text-sm text-slate-800">
+          <p className="mt-1 text-sm text-zinc-800">
             Status: {formatPaymentStatus(order.paymentStatus)}
           </p>
         </div>
       </div>
 
       {order.orderNote && (
-        <p className="mt-4 rounded-lg bg-slate-50 p-4 text-sm text-slate-700">
+        <p className="mt-4 rounded-lg bg-zinc-50 p-4 text-sm text-zinc-700">
           Note: {order.orderNote}
         </p>
       )}
@@ -250,12 +250,12 @@ function OrderCard({ onStatusChange, order }) {
       <div className="mt-5 space-y-3">
         {order.items.map((item) => (
           <div
-            className="flex flex-col gap-2 border-b border-slate-100 pb-3 text-sm md:flex-row md:items-center md:justify-between"
+            className="flex flex-col gap-2 border-b border-zinc-100 pb-3 text-sm md:flex-row md:items-center md:justify-between"
             key={`${order._id}-${item.foodItem?._id || item.name}`}
           >
             <div>
-              <p className="font-semibold text-slate-900">{item.name}</p>
-              <p className="text-slate-600">
+              <p className="font-semibold text-zinc-900">{item.name}</p>
+              <p className="text-zinc-600">
                 Qty {item.quantity} x {formatCurrency(item.price)}
               </p>
             </div>
@@ -266,19 +266,19 @@ function OrderCard({ onStatusChange, order }) {
         ))}
       </div>
 
-      <div className="mt-5 grid gap-3 text-sm text-slate-700 md:grid-cols-3">
+      <div className="mt-5 grid gap-3 text-sm text-zinc-700 md:grid-cols-3">
         <p>Subtotal: {formatCurrency(order.subtotal)}</p>
         <p>Delivery fee: {formatCurrency(order.deliveryFee)}</p>
-        <p className="font-bold text-slate-900">
+        <p className="font-bold text-zinc-900">
           Total: {formatCurrency(order.totalAmount)}
         </p>
       </div>
 
       <div className="mt-5">
         <label className="block max-w-xs">
-          <span className="text-sm font-medium text-slate-700">Update status</span>
+          <span className="text-sm font-medium text-zinc-700">Update status</span>
           <select
-            className="mt-1 w-full rounded-md border border-slate-300 px-3 py-2 outline-none focus:border-orange-500"
+            className="mt-1 w-full rounded-md border border-zinc-300 px-3 py-2 outline-none focus:border-[#FF4F2E]"
             onChange={(event) => onStatusChange(order._id, event.target.value)}
             value=""
           >
@@ -498,7 +498,7 @@ function RestaurantDashboard() {
       return (
         <section className="fh-card p-7">
           <h2 className="text-2xl font-bold">Create your restaurant profile first.</h2>
-          <p className="mt-2 text-slate-700">
+          <p className="mt-2 text-zinc-700">
             Your business overview will appear after your restaurant profile is
             created.
           </p>
@@ -516,7 +516,7 @@ function RestaurantDashboard() {
     return (
       <div className="space-y-6">
         {!restaurant.isApproved && (
-          <section className="rounded-lg border border-orange-200 bg-orange-50 p-5 text-orange-900 shadow-sm">
+          <section className="rounded-lg border border-stone-200 bg-stone-50 p-5 text-zinc-900 shadow-sm">
             <h2 className="text-lg font-bold">Pending admin approval</h2>
             <p className="mt-2 text-sm leading-6">
               Your restaurant will become visible to customers after approval.
@@ -537,7 +537,7 @@ function RestaurantDashboard() {
           src={restaurant.coverImage}
         />
       ) : (
-        <div className="mb-6 flex h-56 w-full items-center justify-center rounded-xl bg-orange-50 text-sm font-semibold text-orange-700">
+        <div className="mb-6 flex h-56 w-full items-center justify-center rounded-xl bg-stone-50 text-sm font-semibold text-[#FF4F2E]">
           No cover image uploaded
         </div>
       )}
@@ -550,23 +550,23 @@ function RestaurantDashboard() {
               src={restaurant.logo}
             />
           ) : (
-            <div className="flex h-20 w-20 items-center justify-center rounded-full bg-orange-50 text-xs font-semibold text-orange-700">
+            <div className="flex h-20 w-20 items-center justify-center rounded-full bg-stone-50 text-xs font-semibold text-[#FF4F2E]">
               No logo
             </div>
           )}
           <div>
-          <p className="text-sm font-semibold uppercase tracking-wide text-orange-600">
+          <p className="text-sm font-semibold uppercase tracking-wide text-[#FF4F2E]">
             Restaurant Profile
           </p>
           <h2 className="mt-2 text-3xl font-bold">{restaurant.name}</h2>
-          <p className="mt-3 max-w-3xl text-slate-700">
+          <p className="mt-3 max-w-3xl text-zinc-700">
             {restaurant.description || 'No description provided.'}
           </p>
           </div>
         </div>
 
         <button
-          className="rounded-md bg-orange-600 px-4 py-2 font-semibold text-white hover:bg-orange-700"
+          className="rounded-md bg-[#FF4F2E] px-4 py-2 font-semibold text-white hover:bg-[#E63E22]"
           onClick={() => setIsEditing(true)}
           type="button"
         >
@@ -602,7 +602,7 @@ function RestaurantDashboard() {
       </div>
 
       {!restaurant.isApproved && (
-        <p className="mt-6 rounded-md bg-orange-50 px-3 py-2 text-sm font-medium text-orange-800">
+        <p className="mt-6 rounded-md bg-stone-50 px-3 py-2 text-sm font-medium text-zinc-700">
           Approval status: Pending admin approval
         </p>
       )}
@@ -614,7 +614,7 @@ function RestaurantDashboard() {
       return (
         <section className="rounded-lg bg-white p-6 shadow-sm">
           <h2 className="text-2xl font-bold">Create restaurant profile</h2>
-          <p className="mt-2 text-slate-700">
+          <p className="mt-2 text-zinc-700">
             You have not created a restaurant profile yet.
           </p>
 
@@ -631,13 +631,13 @@ function RestaurantDashboard() {
           <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
             <div>
               <h2 className="text-2xl font-bold">Edit restaurant profile</h2>
-              <p className="mt-2 text-slate-700">
+              <p className="mt-2 text-zinc-700">
                 Update your restaurant details. Approval status cannot be
                 changed here.
               </p>
             </div>
             <button
-              className="rounded-md border border-slate-300 px-4 py-2 font-semibold text-slate-700 hover:bg-orange-50"
+              className="rounded-md border border-zinc-300 px-4 py-2 font-semibold text-zinc-700 hover:bg-stone-50"
               onClick={() => setIsEditing(false)}
               type="button"
             >
@@ -664,7 +664,7 @@ function RestaurantDashboard() {
       return (
         <section className="rounded-lg bg-white p-6 shadow-sm">
           <h2 className="text-2xl font-bold">Create a restaurant first</h2>
-          <p className="mt-2 text-slate-700">
+          <p className="mt-2 text-zinc-700">
             You need a restaurant profile before adding menu items.
           </p>
         </section>
@@ -676,14 +676,14 @@ function RestaurantDashboard() {
         <section className="rounded-lg bg-white p-6 shadow-sm">
           <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
             <div>
-              <p className="text-sm font-semibold uppercase tracking-wide text-orange-600">
+              <p className="text-sm font-semibold uppercase tracking-wide text-[#FF4F2E]">
                 Menu Items
               </p>
               <h2 className="mt-2 text-2xl font-bold">Manage your menu</h2>
             </div>
             {!isAddingFood && !editingFoodItem && (
               <button
-                className="rounded-md bg-orange-600 px-4 py-2 font-semibold text-white hover:bg-orange-700"
+                className="rounded-md bg-[#FF4F2E] px-4 py-2 font-semibold text-white hover:bg-[#E63E22]"
                 onClick={() => setIsAddingFood(true)}
                 type="button"
               >
@@ -699,7 +699,7 @@ function RestaurantDashboard() {
           )}
 
           {isAddingFood && (
-            <div className="mt-6 rounded-xl border border-orange-100 bg-orange-50 p-4">
+            <div className="mt-6 rounded-xl border border-stone-200 bg-stone-50 p-4">
               <FoodItemForm
                 onCancel={() => setIsAddingFood(false)}
                 onSubmit={handleCreateFoodItem}
@@ -708,7 +708,7 @@ function RestaurantDashboard() {
           )}
 
           {editingFoodItem && (
-            <div className="mt-6 rounded-xl border border-orange-100 bg-orange-50 p-4">
+            <div className="mt-6 rounded-xl border border-stone-200 bg-stone-50 p-4">
               <FoodItemForm
                 foodItem={editingFoodItem}
                 mode="edit"
@@ -720,13 +720,13 @@ function RestaurantDashboard() {
         </section>
 
         {isFoodLoading && (
-          <p className="rounded-lg bg-white p-6 text-slate-700 shadow-sm">
+          <p className="rounded-lg bg-white p-6 text-zinc-700 shadow-sm">
             Loading menu items...
           </p>
         )}
 
         {!isFoodLoading && foodItems.length === 0 && (
-          <p className="rounded-lg bg-white p-6 text-slate-700 shadow-sm">
+          <p className="rounded-lg bg-white p-6 text-zinc-700 shadow-sm">
             No menu items yet.
           </p>
         )}
@@ -756,7 +756,7 @@ function RestaurantDashboard() {
       return (
         <section className="rounded-lg bg-white p-6 shadow-sm">
           <h2 className="text-2xl font-bold">Create a restaurant first</h2>
-          <p className="mt-2 text-slate-700">
+          <p className="mt-2 text-zinc-700">
             Orders will appear here after your restaurant profile exists.
           </p>
         </section>
@@ -768,18 +768,18 @@ function RestaurantDashboard() {
         <section className="rounded-lg bg-white p-6 shadow-sm">
           <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
             <div>
-              <p className="text-sm font-semibold uppercase tracking-wide text-orange-600">
+              <p className="text-sm font-semibold uppercase tracking-wide text-[#FF4F2E]">
                 Orders
               </p>
               <h2 className="mt-2 text-2xl font-bold">Restaurant orders</h2>
             </div>
 
             <label className="block w-full md:w-64">
-              <span className="text-sm font-medium text-slate-700">
+              <span className="text-sm font-medium text-zinc-700">
                 Filter by status
               </span>
               <select
-                className="mt-1 w-full rounded-md border border-slate-300 px-3 py-2 outline-none focus:border-orange-500"
+                className="mt-1 w-full rounded-md border border-zinc-300 px-3 py-2 outline-none focus:border-[#FF4F2E]"
                 onChange={(event) => setOrderStatusFilter(event.target.value)}
                 value={orderStatusFilter}
               >
@@ -806,13 +806,13 @@ function RestaurantDashboard() {
         </section>
 
         {isOrdersLoading && (
-          <p className="rounded-lg bg-white p-6 text-slate-700 shadow-sm">
+          <p className="rounded-lg bg-white p-6 text-zinc-700 shadow-sm">
             Loading orders...
           </p>
         )}
 
         {!isOrdersLoading && !orderError && orders.length === 0 && (
-          <p className="rounded-lg bg-white p-6 text-slate-700 shadow-sm">
+          <p className="rounded-lg bg-white p-6 text-zinc-700 shadow-sm">
             No orders yet.
           </p>
         )}
@@ -865,18 +865,18 @@ function RestaurantDashboard() {
 
   if (isLoading) {
     return (
-      <main className="min-h-screen bg-orange-50 px-6 py-12 text-slate-900">
-        <p className="mx-auto max-w-6xl text-slate-700">Loading restaurant...</p>
+      <main className="min-h-screen bg-stone-50 px-6 py-12 text-zinc-900">
+        <p className="mx-auto max-w-6xl text-zinc-700">Loading restaurant...</p>
       </main>
     );
   }
 
   return (
-    <main className="min-h-screen bg-foodhub-cream text-slate-900">
+    <main className="min-h-screen bg-foodhub-cream text-zinc-900">
       <div className="mx-auto flex max-w-7xl flex-col gap-6 px-4 py-6 lg:flex-row">
         <aside className="fh-card p-4 lg:sticky lg:top-6 lg:h-[calc(100vh-3rem)] lg:w-64">
-          <div className="border-b border-slate-200 pb-4">
-            <p className="text-sm font-semibold uppercase tracking-wide text-orange-600">
+          <div className="border-b border-zinc-200 pb-4">
+            <p className="text-sm font-semibold uppercase tracking-wide text-[#FF4F2E]">
               FoodHub
             </p>
             <h2 className="mt-1 text-xl font-bold">Owner Panel</h2>
@@ -887,8 +887,8 @@ function RestaurantDashboard() {
               <button
                 className={`whitespace-nowrap rounded-lg px-4 py-2 text-left text-sm font-semibold ${
                   activeTab === item.id
-                    ? 'bg-orange-600 text-white'
-                    : 'text-slate-700 hover:bg-orange-50 hover:text-orange-700'
+                    ? 'bg-[#FF4F2E] text-white'
+                    : 'text-zinc-700 hover:bg-stone-50 hover:text-[#FF4F2E]'
                 }`}
                 key={item.id}
                 onClick={() => handleTabChange(item.id)}
@@ -896,7 +896,7 @@ function RestaurantDashboard() {
               >
                 {item.label}
                 {item.id === 'orders' && newOrderCount > 0 && (
-                  <span className="ml-2 rounded-full bg-white px-2 py-0.5 text-xs text-orange-700">
+                  <span className="ml-2 rounded-full bg-white px-2 py-0.5 text-xs text-[#FF4F2E]">
                     {newOrderCount}
                   </span>
                 )}
@@ -908,11 +908,11 @@ function RestaurantDashboard() {
         <section className="min-w-0 flex-1 space-y-6">
           <header className="fh-card flex flex-col gap-4 p-7 md:flex-row md:items-center md:justify-between">
             <div>
-              <p className="text-sm font-semibold uppercase tracking-wide text-orange-600">
+              <p className="text-sm font-semibold uppercase tracking-wide text-[#FF4F2E]">
                 Restaurant Owner Dashboard
               </p>
               <h1 className="mt-2 text-3xl font-black">{pageTitle}</h1>
-              <p className="mt-2 text-slate-700">
+              <p className="mt-2 text-zinc-700">
                 Signed in as {user?.name || 'Restaurant Owner'}
               </p>
             </div>
@@ -920,7 +920,7 @@ function RestaurantDashboard() {
             <div className="flex flex-wrap items-center gap-3">
               <NotificationBell />
               <button
-                className="rounded-md bg-slate-900 px-4 py-2 font-semibold text-white hover:bg-slate-700"
+                className="rounded-md bg-zinc-900 px-4 py-2 font-semibold text-white hover:bg-zinc-700"
                 onClick={handleLogout}
                 type="button"
               >

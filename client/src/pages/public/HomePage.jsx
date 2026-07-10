@@ -43,7 +43,7 @@ function RestaurantSection({
           <p className="fh-eyebrow">Discover FoodHub</p>
           <h2 className="fh-section-title mt-2">{title}</h2>
         </div>
-        <Link className="font-semibold text-orange-700" to="/restaurants">
+        <Link className="font-semibold text-[#FF4F2E]" to="/restaurants">
           View all
         </Link>
       </div>
@@ -61,7 +61,7 @@ function RestaurantSection({
           ))}
         </div>
       ) : (
-        <div className="fh-card mt-6 p-7 text-slate-600">{emptyMessage}</div>
+        <div className="fh-card mt-6 p-7 text-zinc-600">{emptyMessage}</div>
       )}
     </section>
   );
@@ -129,42 +129,42 @@ function HomePage() {
     `/restaurants?search=${encodeURIComponent(category)}`;
 
   return (
-    <main className="min-h-screen bg-[#FFF8F0] text-stone-900">
+    <main className="min-h-screen bg-[#F8F7F4] text-zinc-900">
       <PublicNavbar onOpenAuth={() => setIsAuthOpen(true)} />
       <AuthModal isOpen={isAuthOpen} onClose={closeAuth} />
 
       <section className="px-4 pt-5 sm:px-6 sm:pt-6 lg:px-8">
-        <div className="mx-auto flex min-h-[270px] max-w-7xl items-center rounded-3xl border border-orange-100 bg-gradient-to-br from-orange-50 via-[#FFF8F0] to-amber-50 px-5 py-7 shadow-sm sm:min-h-[300px] sm:px-8 sm:py-9 lg:min-h-[330px] lg:px-12 lg:py-10">
+        <div className="mx-auto flex min-h-[270px] max-w-7xl items-center rounded-3xl border border-stone-200 bg-gradient-to-br from-white via-white to-stone-50 px-5 py-7 shadow-sm sm:min-h-[300px] sm:px-8 sm:py-9 lg:min-h-[330px] lg:px-12 lg:py-10">
           <div className="w-full max-w-3xl">
-            <p className="text-xs font-bold uppercase tracking-wider text-orange-700">
+            <p className="text-xs font-bold uppercase tracking-wider text-[#FF4F2E]">
               FoodHub delivery
             </p>
-            <h1 className="mt-2 text-3xl font-bold leading-tight text-stone-900 md:text-5xl">
+            <h1 className="mt-2 text-3xl font-bold leading-tight text-zinc-900 md:text-5xl">
               Your favorite food, delivered fast
             </h1>
-            <p className="mt-2 text-base text-stone-600 sm:text-lg">
+            <p className="mt-2 text-base text-zinc-600 sm:text-lg">
               Discover local restaurants and order in minutes.
             </p>
 
-            <div className="mt-5 max-w-3xl rounded-2xl border border-orange-100 bg-white p-2.5 text-stone-900 shadow-md">
+            <div className="mt-5 max-w-3xl rounded-2xl border border-stone-200 bg-white p-2.5 text-zinc-900 shadow-md">
               <form
                 className="flex items-center gap-2"
                 onSubmit={goToSearch}
               >
                 <input
                   aria-label="Search area, restaurants, or food"
-                  className="min-w-0 flex-1 rounded-xl border-0 bg-orange-50/70 px-4 py-3 text-sm outline-none placeholder:text-stone-500 focus:ring-2 focus:ring-orange-300 sm:text-base"
+                  className="min-w-0 flex-1 rounded-xl border-0 bg-stone-50 px-4 py-3 text-sm outline-none placeholder:text-zinc-500 focus:ring-2 focus:ring-[#FF4F2E]/20 sm:text-base"
                   onChange={(event) => setSearchTerm(event.target.value)}
                   placeholder="Enter your area, restaurant, or food"
                   value={searchTerm}
                 />
-                <button className="inline-flex min-h-11 shrink-0 items-center justify-center rounded-full bg-orange-500 px-4 font-semibold text-white shadow-sm hover:bg-orange-600 sm:px-6" type="submit">
+                <button className="inline-flex min-h-11 shrink-0 items-center justify-center rounded-full bg-[#FF4F2E] px-4 font-semibold text-white shadow-sm hover:bg-[#E63E22] sm:px-6" type="submit">
                   Search
                 </button>
               </form>
 
               <div className="mt-2 flex items-center gap-3">
-                <div className="flex w-fit rounded-full border border-orange-100 bg-white p-1">
+                <div className="flex w-fit rounded-full border border-stone-200 bg-white p-1">
                 {[
                   ['delivery', 'Delivery'],
                   ['collection', 'Collection'],
@@ -172,8 +172,8 @@ function HomePage() {
                   <button
                     className={`rounded-full px-5 py-2 text-sm font-semibold ${
                       fulfillmentMode === mode
-                        ? 'bg-orange-500 text-white shadow-sm'
-                        : 'text-stone-600 hover:bg-orange-50'
+                        ? 'bg-[#FF4F2E] text-white shadow-sm'
+                        : 'text-zinc-600 hover:bg-stone-50'
                     }`}
                     key={mode}
                     onClick={() => chooseMode(mode)}
@@ -185,7 +185,7 @@ function HomePage() {
                 </div>
 
                 {collectionMessage && (
-                  <p className="text-xs font-medium text-orange-700">
+                  <p className="text-xs font-medium text-[#FF4F2E]">
                     {collectionMessage}
                   </p>
                 )}
@@ -195,23 +195,23 @@ function HomePage() {
         </div>
       </section>
 
-      <section className="mt-5 border-y border-orange-100 bg-white py-6">
+      <section className="mt-5 border-y border-stone-200 bg-white py-6">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <h2 className="text-xl font-bold">What are you craving?</h2>
           <div className="mt-5 flex gap-3 overflow-x-auto pb-2">
             {foodCategories.map(([category, icon]) => (
               <Link
-                className="group flex w-28 shrink-0 flex-col items-center rounded-2xl border border-orange-100 bg-white p-4 text-center shadow-sm transition hover:-translate-y-1 hover:border-orange-200 hover:shadow-md"
+                className="group flex w-28 shrink-0 flex-col items-center rounded-2xl border border-stone-200 bg-white p-4 text-center shadow-sm transition hover:-translate-y-1 hover:border-stone-200 hover:shadow-md"
                 key={category}
                 to={categoryLink(category)}
               >
                 <span
                   aria-hidden="true"
-                  className="inline-flex h-12 w-12 items-center justify-center rounded-full bg-orange-50 text-2xl"
+                  className="inline-flex h-12 w-12 items-center justify-center rounded-full bg-stone-50 text-2xl"
                 >
                   {icon}
                 </span>
-                <span className="mt-3 text-sm font-semibold text-stone-700 group-hover:text-orange-700">
+                <span className="mt-3 text-sm font-semibold text-zinc-700 group-hover:text-[#FF4F2E]">
                   {category}
                 </span>
               </Link>
@@ -224,7 +224,7 @@ function HomePage() {
         <div className="flex gap-2 overflow-x-auto pb-2">
           {cuisineChips.map((cuisine) => (
             <Link
-              className="shrink-0 rounded-full border border-orange-100 bg-white px-5 py-2 text-sm font-semibold text-stone-600 shadow-sm hover:border-orange-300 hover:bg-orange-50 hover:text-orange-700"
+              className="shrink-0 rounded-full border border-stone-200 bg-white px-5 py-2 text-sm font-semibold text-zinc-600 shadow-sm hover:border-stone-300 hover:bg-stone-50 hover:text-[#FF4F2E]"
               key={cuisine}
               to={categoryLink(cuisine)}
             >
@@ -232,7 +232,7 @@ function HomePage() {
             </Link>
           ))}
           <Link
-            className="shrink-0 rounded-full bg-orange-500 px-5 py-2 text-sm font-semibold text-white hover:bg-orange-600"
+            className="shrink-0 rounded-full bg-[#FF4F2E] px-5 py-2 text-sm font-semibold text-white hover:bg-[#E63E22]"
             to="/restaurants"
           >
             Show all
@@ -277,9 +277,9 @@ function HomePage() {
         )}
       </div>
 
-      <footer className="border-t border-orange-100 bg-white px-4 py-7 sm:px-6">
-        <div className="mx-auto flex max-w-7xl flex-col gap-3 text-sm text-slate-600 sm:flex-row sm:items-center sm:justify-between">
-          <p className="font-bold text-orange-600">FoodHub</p>
+      <footer className="border-t border-stone-200 bg-white px-4 py-7 sm:px-6">
+        <div className="mx-auto flex max-w-7xl flex-col gap-3 text-sm text-zinc-600 sm:flex-row sm:items-center sm:justify-between">
+          <p className="font-bold text-[#FF4F2E]">FoodHub</p>
           <p>Local restaurants, one simple delivery platform.</p>
         </div>
       </footer>

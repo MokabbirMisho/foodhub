@@ -161,9 +161,9 @@ function FoodItemForm({ foodItem, mode = 'create', onSubmit, onCancel }) {
 
       <div className="grid gap-4 md:grid-cols-2">
         <label className="block">
-          <span className="text-sm font-medium text-slate-700">Name</span>
+          <span className="text-sm font-medium text-zinc-700">Name</span>
           <input
-            className="mt-1 w-full rounded-md border border-slate-300 px-3 py-2 outline-none focus:border-orange-500"
+            className="mt-1 w-full rounded-md border border-zinc-300 px-3 py-2 outline-none focus:border-[#FF4F2E]"
             name="name"
             onChange={handleChange}
             required
@@ -172,9 +172,9 @@ function FoodItemForm({ foodItem, mode = 'create', onSubmit, onCancel }) {
         </label>
 
         <label className="block">
-          <span className="text-sm font-medium text-slate-700">Category</span>
+          <span className="text-sm font-medium text-zinc-700">Category</span>
           <input
-            className="mt-1 w-full rounded-md border border-slate-300 px-3 py-2 outline-none focus:border-orange-500"
+            className="mt-1 w-full rounded-md border border-zinc-300 px-3 py-2 outline-none focus:border-[#FF4F2E]"
             name="category"
             onChange={handleChange}
             required
@@ -183,9 +183,9 @@ function FoodItemForm({ foodItem, mode = 'create', onSubmit, onCancel }) {
         </label>
 
         <label className="block md:col-span-2">
-          <span className="text-sm font-medium text-slate-700">Description</span>
+          <span className="text-sm font-medium text-zinc-700">Description</span>
           <textarea
-            className="mt-1 min-h-24 w-full rounded-md border border-slate-300 px-3 py-2 outline-none focus:border-orange-500"
+            className="mt-1 min-h-24 w-full rounded-md border border-zinc-300 px-3 py-2 outline-none focus:border-[#FF4F2E]"
             name="description"
             onChange={handleChange}
             value={formData.description}
@@ -193,9 +193,9 @@ function FoodItemForm({ foodItem, mode = 'create', onSubmit, onCancel }) {
         </label>
 
         <label className="block">
-          <span className="text-sm font-medium text-slate-700">Price</span>
+          <span className="text-sm font-medium text-zinc-700">Price</span>
           <input
-            className="mt-1 w-full rounded-md border border-slate-300 px-3 py-2 outline-none focus:border-orange-500"
+            className="mt-1 w-full rounded-md border border-zinc-300 px-3 py-2 outline-none focus:border-[#FF4F2E]"
             min="0"
             name="price"
             onChange={handleChange}
@@ -207,9 +207,9 @@ function FoodItemForm({ foodItem, mode = 'create', onSubmit, onCancel }) {
         </label>
 
         <label className="block">
-          <span className="text-sm font-medium text-slate-700">Discount price</span>
+          <span className="text-sm font-medium text-zinc-700">Discount price</span>
           <input
-            className="mt-1 w-full rounded-md border border-slate-300 px-3 py-2 outline-none focus:border-orange-500"
+            className="mt-1 w-full rounded-md border border-zinc-300 px-3 py-2 outline-none focus:border-[#FF4F2E]"
             min="0"
             name="discountPrice"
             onChange={handleChange}
@@ -220,11 +220,11 @@ function FoodItemForm({ foodItem, mode = 'create', onSubmit, onCancel }) {
         </label>
 
         <label className="block">
-          <span className="text-sm font-medium text-slate-700">
+          <span className="text-sm font-medium text-zinc-700">
             Preparation time
           </span>
           <input
-            className="mt-1 w-full rounded-md border border-slate-300 px-3 py-2 outline-none focus:border-orange-500"
+            className="mt-1 w-full rounded-md border border-zinc-300 px-3 py-2 outline-none focus:border-[#FF4F2E]"
             min="0"
             name="preparationTime"
             onChange={handleChange}
@@ -233,8 +233,8 @@ function FoodItemForm({ foodItem, mode = 'create', onSubmit, onCancel }) {
           />
         </label>
 
-        <div className="rounded-xl border border-orange-100 bg-orange-50 p-4">
-          <span className="text-sm font-medium text-slate-700">Food image</span>
+        <div className="rounded-xl border border-stone-200 bg-stone-50 p-4">
+          <span className="text-sm font-medium text-zinc-700">Food image</span>
           <div className="mt-3 space-y-3">
             {formData.image ? (
               <img
@@ -243,18 +243,18 @@ function FoodItemForm({ foodItem, mode = 'create', onSubmit, onCancel }) {
                 src={formData.image}
               />
             ) : (
-              <div className="flex h-36 w-full items-center justify-center rounded-lg bg-white text-sm font-semibold text-orange-700">
+              <div className="flex h-36 w-full items-center justify-center rounded-lg bg-white text-sm font-semibold text-[#FF4F2E]">
                 No image
               </div>
             )}
             <input
               accept="image/jpeg,image/png,image/webp,image/jpg"
-              className="w-full text-sm text-slate-700"
+              className="w-full text-sm text-zinc-700"
               onChange={handleImageFileChange}
               type="file"
             />
             <button
-              className="rounded-md bg-orange-600 px-4 py-2 text-sm font-semibold text-white hover:bg-orange-700 disabled:cursor-not-allowed disabled:bg-orange-300"
+              className="rounded-md bg-[#FF4F2E] px-4 py-2 text-sm font-semibold text-white hover:bg-[#E63E22] disabled:cursor-not-allowed disabled:bg-stone-300"
               disabled={isImageUploading}
               onClick={handleUploadImage}
               type="button"
@@ -263,7 +263,7 @@ function FoodItemForm({ foodItem, mode = 'create', onSubmit, onCancel }) {
             </button>
           </div>
           <input
-            className="mt-3 w-full rounded-md border border-slate-300 px-3 py-2 outline-none focus:border-orange-500"
+            className="mt-3 w-full rounded-md border border-zinc-300 px-3 py-2 outline-none focus:border-[#FF4F2E]"
             name="image"
             onChange={handleChange}
             placeholder="Image URL"
@@ -272,9 +272,9 @@ function FoodItemForm({ foodItem, mode = 'create', onSubmit, onCancel }) {
         </div>
 
         <label className="block md:col-span-2">
-          <span className="text-sm font-medium text-slate-700">Tags</span>
+          <span className="text-sm font-medium text-zinc-700">Tags</span>
           <input
-            className="mt-1 w-full rounded-md border border-slate-300 px-3 py-2 outline-none focus:border-orange-500"
+            className="mt-1 w-full rounded-md border border-zinc-300 px-3 py-2 outline-none focus:border-[#FF4F2E]"
             name="tags"
             onChange={handleChange}
             placeholder="spicy, popular, lunch"
@@ -283,20 +283,20 @@ function FoodItemForm({ foodItem, mode = 'create', onSubmit, onCancel }) {
         </label>
       </div>
 
-      <label className="flex items-center gap-3 rounded-md bg-orange-50 px-3 py-2">
+      <label className="flex items-center gap-3 rounded-md bg-stone-50 px-3 py-2">
         <input
           checked={formData.isVegetarian}
-          className="h-4 w-4 accent-orange-600"
+          className="h-4 w-4 accent-[#FF4F2E]"
           name="isVegetarian"
           onChange={handleChange}
           type="checkbox"
         />
-        <span className="text-sm font-medium text-slate-700">Vegetarian</span>
+        <span className="text-sm font-medium text-zinc-700">Vegetarian</span>
       </label>
 
       <div className="flex flex-wrap gap-3">
         <button
-          className="rounded-md bg-orange-600 px-5 py-3 font-semibold text-white hover:bg-orange-700 disabled:cursor-not-allowed disabled:bg-orange-300"
+          className="rounded-md bg-[#FF4F2E] px-5 py-3 font-semibold text-white hover:bg-[#E63E22] disabled:cursor-not-allowed disabled:bg-stone-300"
           disabled={isSubmitting}
           type="submit"
         >
@@ -311,7 +311,7 @@ function FoodItemForm({ foodItem, mode = 'create', onSubmit, onCancel }) {
 
         {onCancel && (
           <button
-            className="rounded-md border border-slate-300 px-5 py-3 font-semibold text-slate-700 hover:bg-orange-50"
+            className="rounded-md border border-zinc-300 px-5 py-3 font-semibold text-zinc-700 hover:bg-stone-50"
             onClick={onCancel}
             type="button"
           >

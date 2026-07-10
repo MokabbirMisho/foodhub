@@ -18,7 +18,7 @@ const formatPaymentStatus = (status) =>
 const statusClasses = {
   pending: 'bg-yellow-50 text-yellow-700',
   accepted: 'bg-blue-50 text-blue-700',
-  preparing: 'bg-orange-50 text-orange-700',
+  preparing: 'bg-stone-50 text-[#FF4F2E]',
   ready: 'bg-purple-50 text-purple-700',
   out_for_delivery: 'bg-indigo-50 text-indigo-700',
   delivered: 'bg-green-50 text-green-700',
@@ -112,7 +112,7 @@ function MyOrdersPage() {
         <BackButton />
         <header className="fh-card flex flex-col gap-4 p-7 md:flex-row md:items-end md:justify-between">
           <div>
-            <p className="text-sm font-semibold uppercase tracking-wide text-orange-600">
+            <p className="text-sm font-semibold uppercase tracking-wide text-[#FF4F2E]">
               FoodHub Orders
             </p>
             <h1 className="mt-2 text-4xl font-black">My Orders</h1>
@@ -127,7 +127,7 @@ function MyOrdersPage() {
         </header>
 
         {isLoading && (
-          <p className="rounded-xl bg-white p-6 text-slate-700 shadow-sm">
+          <p className="rounded-xl bg-white p-6 text-zinc-700 shadow-sm">
             Loading orders...
           </p>
         )}
@@ -145,7 +145,7 @@ function MyOrdersPage() {
         )}
 
         {!isLoading && !error && orders.length === 0 && (
-          <section className="rounded-xl bg-white p-6 text-slate-700 shadow-sm">
+          <section className="rounded-xl bg-white p-6 text-zinc-700 shadow-sm">
             <p>You have no orders yet.</p>
           </section>
         )}
@@ -156,13 +156,13 @@ function MyOrdersPage() {
               <article className="fh-card p-6" key={order._id}>
                 <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
                   <div>
-                    <p className="text-sm font-semibold uppercase tracking-wide text-orange-600">
+                    <p className="text-sm font-semibold uppercase tracking-wide text-[#FF4F2E]">
                       Order #{order._id.slice(-8)}
                     </p>
                     <h2 className="mt-2 text-2xl font-bold">
                       {order.restaurant?.name || 'Restaurant'}
                     </h2>
-                    <p className="mt-1 text-sm text-slate-600">
+                    <p className="mt-1 text-sm text-zinc-600">
                       {new Date(order.createdAt).toLocaleString()}
                     </p>
                   </div>
@@ -170,15 +170,15 @@ function MyOrdersPage() {
                   <div className="flex flex-wrap gap-2">
                     <span
                       className={`rounded-full px-3 py-1 text-xs font-semibold ${
-                        statusClasses[order.status] || 'bg-slate-100 text-slate-700'
+                        statusClasses[order.status] || 'bg-zinc-100 text-zinc-700'
                       }`}
                     >
                       {order.status}
                     </span>
-                    <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-700">
+                    <span className="rounded-full bg-zinc-100 px-3 py-1 text-xs font-semibold text-zinc-700">
                       Payment: {formatPaymentStatus(order.paymentStatus)}
                     </span>
-                    <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-700">
+                    <span className="rounded-full bg-zinc-100 px-3 py-1 text-xs font-semibold text-zinc-700">
                       {formatPaymentMethod(order.paymentMethod)}
                     </span>
                   </div>
@@ -187,7 +187,7 @@ function MyOrdersPage() {
                 <div className="mt-5 space-y-3">
                   {order.items.map((item) => (
                     <div
-                      className="flex justify-between gap-3 border-b border-slate-100 pb-2 text-sm"
+                      className="flex justify-between gap-3 border-b border-zinc-100 pb-2 text-sm"
                       key={`${order._id}-${item.foodItem}`}
                     >
                       <span>
@@ -198,10 +198,10 @@ function MyOrdersPage() {
                   ))}
                 </div>
 
-                <div className="mt-5 grid gap-3 text-sm text-slate-700 md:grid-cols-3">
+                <div className="mt-5 grid gap-3 text-sm text-zinc-700 md:grid-cols-3">
                   <p>Subtotal: {formatCurrency(order.subtotal)}</p>
                   <p>Delivery fee: {formatCurrency(order.deliveryFee)}</p>
-                  <p className="font-bold text-slate-900">
+                  <p className="font-bold text-zinc-900">
                     Total: {formatCurrency(order.totalAmount)}
                   </p>
                 </div>
@@ -228,7 +228,7 @@ function MyOrdersPage() {
                 {['pending', 'accepted', 'preparing', 'ready'].includes(
                   order.status,
                 ) && (
-                  <p className="mt-5 text-sm text-slate-600">
+                  <p className="mt-5 text-sm text-zinc-600">
                     Tracking will be available after rider accepts delivery.
                   </p>
                 )}

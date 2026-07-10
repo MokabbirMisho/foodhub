@@ -31,12 +31,12 @@ function CartPage() {
         <BackButton />
         <header className="fh-card flex flex-col gap-4 p-7 md:flex-row md:items-end md:justify-between">
           <div>
-            <p className="text-sm font-semibold uppercase tracking-wide text-orange-600">
+            <p className="text-sm font-semibold uppercase tracking-wide text-[#FF4F2E]">
               FoodHub Cart
             </p>
             <h1 className="mt-2 text-4xl font-black">Your cart</h1>
             {restaurant && (
-              <p className="mt-3 text-slate-700">Restaurant: {restaurant.name}</p>
+              <p className="mt-3 text-zinc-700">Restaurant: {restaurant.name}</p>
             )}
           </div>
 
@@ -49,9 +49,9 @@ function CartPage() {
         </header>
 
         {cartItems.length === 0 ? (
-          <section className="fh-card p-10 text-center text-slate-700">
+          <section className="fh-card p-10 text-center text-zinc-700">
             <p className="text-5xl" aria-hidden="true">🛒</p>
-            <h2 className="mt-4 text-2xl font-bold text-slate-900">
+            <h2 className="mt-4 text-2xl font-bold text-zinc-900">
               Your cart is empty
             </h2>
             <p className="mt-2">Add something delicious from a local restaurant.</p>
@@ -77,24 +77,24 @@ function CartPage() {
                       src={item.image}
                     />
                   ) : (
-                    <div className="flex h-28 w-full items-center justify-center rounded-lg bg-orange-50 text-sm text-orange-700 md:w-36">
+                    <div className="flex h-28 w-full items-center justify-center rounded-lg bg-stone-50 text-sm text-[#FF4F2E] md:w-36">
                       No image
                     </div>
                   )}
 
                   <div className="flex-1">
-                    <p className="text-xs font-semibold uppercase tracking-wide text-orange-600">
+                    <p className="text-xs font-semibold uppercase tracking-wide text-[#FF4F2E]">
                       {item.category}
                     </p>
                     <h2 className="mt-1 text-2xl font-bold">{item.name}</h2>
-                    <p className="mt-2 text-slate-700">
+                    <p className="mt-2 text-zinc-700">
                       Price: {formatCurrency(getEffectivePrice(item))}
                     </p>
 
                     <div className="mt-4 flex flex-wrap items-center gap-2">
                       <button
                         aria-label={`Decrease ${item.name} quantity`}
-                        className="h-10 w-10 rounded-lg border border-slate-300 font-bold hover:border-orange-300 hover:bg-orange-50"
+                        className="h-10 w-10 rounded-lg border border-zinc-300 font-bold hover:border-stone-300 hover:bg-stone-50"
                         onClick={() => decreaseQuantity(item._id)}
                         type="button"
                       >
@@ -105,7 +105,7 @@ function CartPage() {
                       </span>
                       <button
                         aria-label={`Increase ${item.name} quantity`}
-                        className="h-10 w-10 rounded-lg border border-slate-300 font-bold hover:border-orange-300 hover:bg-orange-50"
+                        className="h-10 w-10 rounded-lg border border-zinc-300 font-bold hover:border-stone-300 hover:bg-stone-50"
                         onClick={() => increaseQuantity(item._id)}
                         type="button"
                       >
@@ -126,7 +126,7 @@ function CartPage() {
 
             <aside className="fh-card sticky top-24 h-fit p-6">
               <h2 className="text-2xl font-bold">Summary</h2>
-              <div className="mt-5 space-y-3 text-slate-700">
+              <div className="mt-5 space-y-3 text-zinc-700">
                 <div className="flex justify-between">
                   <span>Subtotal</span>
                   <span>{formatCurrency(getSubtotal())}</span>
@@ -135,8 +135,8 @@ function CartPage() {
                   <span>Delivery fee</span>
                   <span>{formatCurrency(getDeliveryFee())}</span>
                 </div>
-                <div className="border-t border-slate-200 pt-3">
-                  <div className="flex justify-between text-lg font-bold text-slate-900">
+                <div className="border-t border-zinc-200 pt-3">
+                  <div className="flex justify-between text-lg font-bold text-zinc-900">
                     <span>Total</span>
                     <span>{formatCurrency(getTotal())}</span>
                   </div>

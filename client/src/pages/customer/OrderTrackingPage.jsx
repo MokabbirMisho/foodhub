@@ -79,7 +79,7 @@ function OrderTrackingPage() {
         </div>
 
         {isLoading && !tracking && (
-          <p className="rounded-xl bg-white p-6 text-slate-700 shadow-sm">
+          <p className="rounded-xl bg-white p-6 text-zinc-700 shadow-sm">
             Loading order tracking...
           </p>
         )}
@@ -93,7 +93,7 @@ function OrderTrackingPage() {
         {tracking && (
           <>
             <header className="fh-card p-7">
-              <p className="text-sm font-semibold uppercase tracking-wide text-orange-600">
+              <p className="text-sm font-semibold uppercase tracking-wide text-[#FF4F2E]">
                 Order #{String(tracking.orderId).slice(-8)}
               </p>
               <div className="mt-2 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
@@ -111,18 +111,18 @@ function OrderTrackingPage() {
                   riderLocation={tracking.riderLocation}
                 />
                 {!tracking.riderLocation && (
-                  <p className="mt-3 text-sm text-slate-600">
+                  <p className="mt-3 text-sm text-zinc-600">
                     Rider location is not available yet. Please check again later.
                   </p>
                 )}
                 {!tracking.deliveryLocation && (
-                  <p className="mt-3 text-sm text-slate-600">
+                  <p className="mt-3 text-sm text-zinc-600">
                     Delivery map location was not provided. Showing written
                     address only.
                   </p>
                 )}
                 {tracking.riderLocation?.updatedAt && (
-                  <p className="mt-3 text-sm text-slate-600">
+                  <p className="mt-3 text-sm text-zinc-600">
                     Last updated:{' '}
                     {new Date(tracking.riderLocation.updatedAt).toLocaleString()}
                   </p>
@@ -131,64 +131,64 @@ function OrderTrackingPage() {
 
               <aside className="space-y-4">
                 <section className="rounded-xl bg-white p-5 shadow-sm">
-                  <p className="text-xs font-semibold uppercase tracking-wide text-orange-600">
+                  <p className="text-xs font-semibold uppercase tracking-wide text-[#FF4F2E]">
                     Restaurant
                   </p>
                   <h2 className="mt-2 text-xl font-bold">
                     {tracking.restaurant?.name || 'Restaurant'}
                   </h2>
-                  <p className="mt-2 text-sm leading-6 text-slate-600">
+                  <p className="mt-2 text-sm leading-6 text-zinc-600">
                     {formatAddress(tracking.restaurant?.address)}
                   </p>
                 </section>
 
                 {tracking.orderNote && (
                   <section className="rounded-xl bg-white p-5 shadow-sm">
-                    <p className="text-xs font-semibold uppercase tracking-wide text-orange-600">
+                    <p className="text-xs font-semibold uppercase tracking-wide text-[#FF4F2E]">
                       Order Note
                     </p>
-                    <p className="mt-2 text-sm leading-6 text-slate-700">
+                    <p className="mt-2 text-sm leading-6 text-zinc-700">
                       {tracking.orderNote}
                     </p>
                   </section>
                 )}
 
                 <section className="rounded-xl bg-white p-5 shadow-sm">
-                  <p className="text-xs font-semibold uppercase tracking-wide text-orange-600">
+                  <p className="text-xs font-semibold uppercase tracking-wide text-[#FF4F2E]">
                     Delivery Address
                   </p>
-                  <p className="mt-2 text-sm leading-6 text-slate-700">
+                  <p className="mt-2 text-sm leading-6 text-zinc-700">
                     {formatAddress(tracking.deliveryAddress)}
                   </p>
                 </section>
 
                 <section className="rounded-xl bg-white p-5 shadow-sm">
-                  <p className="text-xs font-semibold uppercase tracking-wide text-orange-600">
+                  <p className="text-xs font-semibold uppercase tracking-wide text-[#FF4F2E]">
                     Rider
                   </p>
                   {tracking.rider ? (
-                    <div className="mt-2 space-y-1 text-sm text-slate-700">
-                      <p className="font-semibold text-slate-900">
+                    <div className="mt-2 space-y-1 text-sm text-zinc-700">
+                      <p className="font-semibold text-zinc-900">
                         {tracking.rider.name}
                       </p>
                       {tracking.rider.email && <p>{tracking.rider.email}</p>}
                       {tracking.rider.phone && <p>{tracking.rider.phone}</p>}
                     </div>
                   ) : (
-                    <p className="mt-2 text-sm text-slate-600">
+                    <p className="mt-2 text-sm text-zinc-600">
                       A rider has not been assigned yet.
                     </p>
                   )}
                 </section>
 
                 <section className="rounded-xl bg-white p-5 shadow-sm">
-                  <p className="text-xs font-semibold uppercase tracking-wide text-orange-600">
+                  <p className="text-xs font-semibold uppercase tracking-wide text-[#FF4F2E]">
                     Payment
                   </p>
-                  <p className="mt-2 text-sm font-semibold text-slate-900">
+                  <p className="mt-2 text-sm font-semibold text-zinc-900">
                     {formatPaymentMethod(tracking.paymentMethod)}
                   </p>
-                  <p className="mt-1 text-sm text-slate-600">
+                  <p className="mt-1 text-sm text-zinc-600">
                     {formatPaymentStatus(tracking.paymentStatus)}
                   </p>
                 </section>

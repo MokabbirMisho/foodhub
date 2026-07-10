@@ -11,7 +11,7 @@ function LoginPage() {
   }
 
   return (
-    <main className="flex min-h-screen items-center justify-center bg-orange-50 px-6 py-12">
+    <main className="flex min-h-screen items-center justify-center bg-stone-50 px-6 py-12">
       <AuthCard initialMode="signin" />
     </main>
   );

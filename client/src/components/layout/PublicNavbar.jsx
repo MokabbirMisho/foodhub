@@ -13,22 +13,22 @@ function PublicNavbar({ onOpenAuth }) {
   const { isAuthenticated, logout, user } = useAuth();
 
   return (
-    <header className="sticky top-0 z-50 border-b border-orange-100 bg-white/90 shadow-sm backdrop-blur">
+    <header className="sticky top-0 z-50 border-b border-stone-200 bg-white/90 shadow-sm backdrop-blur">
       <nav className="mx-auto flex min-h-16 max-w-7xl items-center justify-between gap-3 px-4 sm:px-6 lg:px-8">
-        <Link className="text-2xl font-black text-orange-600" to="/">
+        <Link className="text-2xl font-black text-[#FF4F2E]" to="/">
           FoodHub
         </Link>
 
         {isAuthenticated ? (
           <div className="flex items-center gap-2">
             <Link
-              className="inline-flex min-h-11 items-center rounded-full bg-orange-500 px-5 text-sm font-semibold text-white shadow-sm hover:bg-orange-600"
+              className="inline-flex min-h-11 items-center rounded-full bg-[#FF4F2E] px-5 text-sm font-semibold text-white shadow-sm hover:bg-[#E63E22]"
               to={getDashboardPath(user?.role)}
             >
               {dashboardLabels[user?.role] || 'Dashboard'}
             </Link>
             <button
-              className="hidden min-h-11 rounded-xl px-3 text-sm font-semibold text-slate-600 hover:bg-orange-50 sm:inline-flex sm:items-center"
+              className="hidden min-h-11 rounded-xl px-3 text-sm font-semibold text-zinc-600 hover:bg-stone-50 sm:inline-flex sm:items-center"
               onClick={logout}
               type="button"
             >
@@ -37,7 +37,7 @@ function PublicNavbar({ onOpenAuth }) {
           </div>
         ) : (
           <button
-            className="inline-flex min-h-11 items-center rounded-full bg-orange-500 px-5 text-sm font-semibold text-white shadow-sm hover:bg-orange-600"
+            className="inline-flex min-h-11 items-center rounded-full bg-[#FF4F2E] px-5 text-sm font-semibold text-white shadow-sm hover:bg-[#E63E22]"
             onClick={onOpenAuth}
             type="button"
           >

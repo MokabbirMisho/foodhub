@@ -32,7 +32,7 @@ const activeStatuses = [
 const statusClasses = {
   pending: 'bg-yellow-50 text-yellow-700',
   accepted: 'bg-blue-50 text-blue-700',
-  preparing: 'bg-orange-50 text-orange-700',
+  preparing: 'bg-stone-50 text-[#FF4F2E]',
   ready: 'bg-purple-50 text-purple-700',
   out_for_delivery: 'bg-indigo-50 text-indigo-700',
 };
@@ -66,29 +66,29 @@ function RestaurantCard({ restaurant }) {
           src={restaurant.coverImage || restaurant.logo}
         />
       ) : (
-        <div className="flex h-40 items-center justify-center bg-orange-100 font-semibold text-orange-700">
+        <div className="flex h-40 items-center justify-center bg-stone-100 font-semibold text-[#FF4F2E]">
           FoodHub Restaurant
         </div>
       )}
       <div className="p-5">
         <div className="flex items-start justify-between gap-3">
-          <h3 className="text-xl font-bold group-hover:text-orange-700">
+          <h3 className="text-xl font-bold group-hover:text-[#FF4F2E]">
             {restaurant.name}
           </h3>
           <span
             className={`rounded-full px-2.5 py-1 text-xs font-semibold ${
               restaurant.isOpen
                 ? 'bg-green-50 text-green-700'
-                : 'bg-slate-100 text-slate-600'
+                : 'bg-zinc-100 text-zinc-600'
             }`}
           >
             {restaurant.isOpen ? 'Open' : 'Closed'}
           </span>
         </div>
-        <p className="mt-2 line-clamp-1 text-sm text-slate-600">
+        <p className="mt-2 line-clamp-1 text-sm text-zinc-600">
           {restaurant.cuisineTypes?.join(', ') || 'Cuisine details coming soon'}
         </p>
-        <div className="mt-4 grid grid-cols-2 gap-2 text-sm text-slate-600">
+        <div className="mt-4 grid grid-cols-2 gap-2 text-sm text-zinc-600">
           <p>
             {restaurant.ratingCount
               ? `★ ${restaurant.ratingAverage}`
@@ -173,24 +173,24 @@ function CustomerDashboard() {
   };
 
   return (
-    <main className="min-h-screen bg-orange-50 text-slate-900">
-      <section className="bg-orange-100 px-5 py-10 sm:px-8">
+    <main className="min-h-screen bg-stone-50 text-zinc-900">
+      <section className="bg-stone-100 px-5 py-10 sm:px-8">
         <div className="mx-auto max-w-7xl">
-          <p className="text-sm font-semibold text-orange-700">
+          <p className="text-sm font-semibold text-[#FF4F2E]">
             {getGreeting()}, {profile?.name || user?.name || 'Food lover'}
           </p>
           <h1 className="mt-2 max-w-3xl text-4xl font-black sm:text-5xl">
             What would you like to eat today?
           </h1>
 
-          <div className="mt-5 flex flex-col gap-3 text-sm text-slate-700 sm:flex-row sm:items-center">
+          <div className="mt-5 flex flex-col gap-3 text-sm text-zinc-700 sm:flex-row sm:items-center">
             <p>
               {defaultAddress
                 ? `Delivering to: ${defaultAddress.street}, ${defaultAddress.city}`
                 : 'Add your delivery address to find better restaurants near you'}
             </p>
             <Link
-              className="w-fit font-semibold text-orange-700 underline decoration-orange-300 underline-offset-4"
+              className="w-fit font-semibold text-[#FF4F2E] underline decoration-[#FF4F2E]/40 underline-offset-4"
               state={accountAddressState}
               to="/customer/account"
             >
@@ -198,7 +198,7 @@ function CustomerDashboard() {
             </Link>
             {!defaultAddress && (
               <Link
-                className="w-fit rounded-md border border-orange-300 px-3 py-1.5 font-semibold text-orange-700 hover:bg-orange-50"
+                className="w-fit rounded-md border border-stone-300 px-3 py-1.5 font-semibold text-[#FF4F2E] hover:bg-stone-50"
                 state={{ section: 'addresses', addAddress: true }}
                 to="/customer/account"
               >
@@ -208,7 +208,7 @@ function CustomerDashboard() {
           </div>
 
           <form
-            className="mt-7 flex max-w-3xl overflow-hidden rounded-xl bg-white shadow-sm focus-within:ring-2 focus-within:ring-orange-400"
+            className="mt-7 flex max-w-3xl overflow-hidden rounded-xl bg-white shadow-sm focus-within:ring-2 focus-within:ring-[#FF4F2E]/30"
             onSubmit={handleSearch}
           >
             <input
@@ -218,7 +218,7 @@ function CustomerDashboard() {
               value={searchTerm}
             />
             <button
-              className="bg-orange-600 px-6 font-semibold text-white hover:bg-orange-700"
+              className="bg-[#FF4F2E] px-6 font-semibold text-white hover:bg-[#E63E22]"
               type="submit"
             >
               Search
@@ -233,7 +233,7 @@ function CustomerDashboard() {
           <div className="mt-4 flex gap-3 overflow-x-auto pb-2">
             {categories.map((category) => (
               <button
-                className="shrink-0 rounded-full border border-orange-200 bg-white px-5 py-2 text-sm font-semibold text-slate-700 hover:border-orange-500 hover:text-orange-700"
+                className="shrink-0 rounded-full border border-stone-200 bg-white px-5 py-2 text-sm font-semibold text-zinc-700 hover:border-[#FF4F2E] hover:text-[#FF4F2E]"
                 key={category}
                 onClick={() =>
                   navigate(
@@ -256,16 +256,16 @@ function CustomerDashboard() {
                 <span
                   className={`rounded-full px-3 py-1 text-xs font-semibold ${
                     statusClasses[activeOrder.status] ||
-                    'bg-slate-100 text-slate-700'
+                    'bg-zinc-100 text-zinc-700'
                   }`}
                 >
                   {activeOrder.status}
                 </span>
               </div>
-              <p className="mt-2 font-semibold text-slate-800">
+              <p className="mt-2 font-semibold text-zinc-800">
                 {activeOrder.restaurant?.name || 'Restaurant'}
               </p>
-              <p className="mt-1 text-sm text-slate-600">
+              <p className="mt-1 text-sm text-zinc-600">
                 Your order is {activeOrder.status.replaceAll('_', ' ')}.
               </p>
             </div>
@@ -277,7 +277,7 @@ function CustomerDashboard() {
                 Track order
               </Link>
               <Link
-                className="rounded-md border border-slate-300 px-4 py-2 font-semibold text-slate-700 hover:bg-slate-50"
+                className="rounded-md border border-zinc-300 px-4 py-2 font-semibold text-zinc-700 hover:bg-zinc-50"
                 to="/my-orders"
               >
                 View orders
@@ -286,17 +286,17 @@ function CustomerDashboard() {
           </section>
         )}
 
-        <section className="flex flex-col gap-5 rounded-xl bg-orange-600 p-7 text-white shadow-sm md:flex-row md:items-center md:justify-between">
+        <section className="flex flex-col gap-5 rounded-xl bg-[#FF4F2E] p-7 text-white shadow-sm md:flex-row md:items-center md:justify-between">
           <div>
             <h2 className="text-3xl font-black">
               Hungry? Your next favorite meal is waiting.
             </h2>
-            <p className="mt-2 text-orange-50">
+            <p className="mt-2 text-white/80">
               Discover local restaurants and order in minutes.
             </p>
           </div>
           <Link
-            className="w-fit rounded-md bg-white px-5 py-3 font-bold text-orange-700 hover:bg-orange-50"
+            className="w-fit rounded-md bg-white px-5 py-3 font-bold text-[#FF4F2E] hover:bg-stone-50"
             to="/restaurants"
           >
             Browse restaurants
@@ -306,12 +306,12 @@ function CustomerDashboard() {
         <section>
           <div className="flex items-end justify-between gap-4">
             <div>
-              <p className="text-sm font-semibold uppercase text-orange-600">
+              <p className="text-sm font-semibold uppercase text-[#FF4F2E]">
                 Discover
               </p>
               <h2 className="mt-1 text-3xl font-bold">Restaurants near you</h2>
             </div>
-            <Link className="font-semibold text-orange-700" to="/restaurants">
+            <Link className="font-semibold text-[#FF4F2E]" to="/restaurants">
               View all
             </Link>
           </div>
@@ -332,7 +332,7 @@ function CustomerDashboard() {
               ))}
             </div>
           ) : (
-            <p className="mt-5 rounded-xl bg-white p-6 text-slate-600 shadow-sm">
+            <p className="mt-5 rounded-xl bg-white p-6 text-zinc-600 shadow-sm">
               Restaurants are not available right now.
             </p>
           )}
@@ -347,12 +347,12 @@ function CustomerDashboard() {
                   <h3 className="text-xl font-bold">
                     {order.restaurant?.name || 'Restaurant'}
                   </h3>
-                  <p className="mt-2 text-sm text-slate-600">
+                  <p className="mt-2 text-sm text-zinc-600">
                     Total {formatCurrency(order.totalAmount)}
                   </p>
                   {order.restaurant?._id && (
                     <Link
-                      className="mt-5 inline-flex rounded-md bg-orange-600 px-4 py-2 font-semibold text-white hover:bg-orange-700"
+                      className="mt-5 inline-flex rounded-md bg-[#FF4F2E] px-4 py-2 font-semibold text-white hover:bg-[#E63E22]"
                       to={`/restaurants/${order.restaurant._id}`}
                     >
                       Order again
@@ -365,7 +365,7 @@ function CustomerDashboard() {
         )}
 
         {error && (
-          <p className="rounded-xl bg-white p-4 text-sm text-orange-700 shadow-sm">
+          <p className="rounded-xl bg-white p-4 text-sm text-[#FF4F2E] shadow-sm">
             {error}
           </p>
         )}

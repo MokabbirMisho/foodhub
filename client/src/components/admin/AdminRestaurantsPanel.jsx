@@ -56,12 +56,12 @@ function AdminRestaurantsPanel() {
       <section className="fh-card flex flex-col gap-4 p-6 sm:flex-row sm:items-end sm:justify-between">
         <div>
           <h2 className="text-2xl font-bold">Restaurants</h2>
-          <p className="mt-1 text-slate-600">
+          <p className="mt-1 text-zinc-600">
             Review restaurant profiles and manage approval.
           </p>
         </div>
         <label className="w-full sm:w-56">
-          <span className="text-sm font-medium text-slate-700">Status</span>
+          <span className="text-sm font-medium text-zinc-700">Status</span>
           <select
             className="fh-input mt-1"
             onChange={(event) => {
@@ -83,7 +83,7 @@ function AdminRestaurantsPanel() {
       {isLoading && <p className="fh-card p-6">Loading restaurants...</p>}
 
       {!isLoading && !error && restaurants.length === 0 && (
-        <p className="fh-card p-6 text-slate-600">No restaurants found.</p>
+        <p className="fh-card p-6 text-zinc-600">No restaurants found.</p>
       )}
 
       {!isLoading && restaurants.length > 0 && (
@@ -93,7 +93,7 @@ function AdminRestaurantsPanel() {
               <div className="flex items-start justify-between gap-4">
                 <div>
                   <h3 className="text-xl font-bold">{restaurant.name}</h3>
-                  <p className="mt-1 text-sm text-slate-600">
+                  <p className="mt-1 text-sm text-zinc-600">
                     {restaurant.owner?.name || 'Owner unavailable'} ·{' '}
                     {restaurant.owner?.email || 'Email unavailable'}
                   </p>
@@ -114,7 +114,7 @@ function AdminRestaurantsPanel() {
                       : 'Inactive'}
                 </span>
               </div>
-              <p className="mt-4 text-sm text-slate-700">
+              <p className="mt-4 text-sm text-zinc-700">
                 {[restaurant.address?.city, restaurant.address?.country]
                   .filter(Boolean)
                   .join(', ') || 'Address unavailable'}

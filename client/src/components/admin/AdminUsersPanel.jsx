@@ -13,7 +13,7 @@ const emptyFilters = {
 
 const roleClasses = {
   customer: 'bg-blue-50 text-blue-700',
-  restaurant_owner: 'bg-orange-50 text-orange-700',
+  restaurant_owner: 'bg-stone-50 text-[#FF4F2E]',
   rider: 'bg-indigo-50 text-indigo-700',
   admin: 'bg-purple-50 text-purple-700',
 };
@@ -26,34 +26,34 @@ const formatRole = (role) =>
 
 function UserDetails({ user }) {
   return (
-    <div className="mt-5 grid gap-4 rounded-lg bg-orange-50 p-5 text-sm md:grid-cols-2">
+    <div className="mt-5 grid gap-4 rounded-lg bg-stone-50 p-5 text-sm md:grid-cols-2">
       <div>
-        <p className="font-semibold text-slate-900">User ID</p>
-        <p className="mt-1 break-all text-slate-600">{user._id}</p>
+        <p className="font-semibold text-zinc-900">User ID</p>
+        <p className="mt-1 break-all text-zinc-600">{user._id}</p>
       </div>
       <div>
-        <p className="font-semibold text-slate-900">Phone</p>
-        <p className="mt-1 text-slate-600">{user.phone || 'Not provided'}</p>
+        <p className="font-semibold text-zinc-900">Phone</p>
+        <p className="mt-1 text-zinc-600">{user.phone || 'Not provided'}</p>
       </div>
       <div>
-        <p className="font-semibold text-slate-900">Authentication</p>
-        <p className="mt-1 capitalize text-slate-600">{user.authProvider}</p>
+        <p className="font-semibold text-zinc-900">Authentication</p>
+        <p className="mt-1 capitalize text-zinc-600">{user.authProvider}</p>
       </div>
       <div>
-        <p className="font-semibold text-slate-900">Status</p>
-        <p className="mt-1 text-slate-600">
+        <p className="font-semibold text-zinc-900">Status</p>
+        <p className="mt-1 text-zinc-600">
           {user.isBlocked ? 'Blocked' : 'Active'}
         </p>
       </div>
       <div>
-        <p className="font-semibold text-slate-900">Created</p>
-        <p className="mt-1 text-slate-600">
+        <p className="font-semibold text-zinc-900">Created</p>
+        <p className="mt-1 text-zinc-600">
           {new Date(user.createdAt).toLocaleString()}
         </p>
       </div>
       <div>
-        <p className="font-semibold text-slate-900">Last updated</p>
-        <p className="mt-1 text-slate-600">
+        <p className="font-semibold text-zinc-900">Last updated</p>
+        <p className="mt-1 text-zinc-600">
           {new Date(user.updatedAt).toLocaleString()}
         </p>
       </div>
@@ -197,14 +197,14 @@ function AdminUsersPanel({ currentUserId }) {
         onSubmit={handleApplyFilters}
       >
         <input
-          className="rounded-md border border-slate-300 px-3 py-2 outline-none focus:border-orange-500"
+          className="rounded-md border border-zinc-300 px-3 py-2 outline-none focus:border-[#FF4F2E]"
           name="search"
           onChange={handleFilterChange}
           placeholder="Search by name or email"
           value={filters.search}
         />
         <select
-          className="rounded-md border border-slate-300 px-3 py-2 outline-none focus:border-orange-500"
+          className="rounded-md border border-zinc-300 px-3 py-2 outline-none focus:border-[#FF4F2E]"
           name="role"
           onChange={handleFilterChange}
           value={filters.role}
@@ -216,7 +216,7 @@ function AdminUsersPanel({ currentUserId }) {
           <option value="admin">Admin</option>
         </select>
         <select
-          className="rounded-md border border-slate-300 px-3 py-2 outline-none focus:border-orange-500"
+          className="rounded-md border border-zinc-300 px-3 py-2 outline-none focus:border-[#FF4F2E]"
           name="status"
           onChange={handleFilterChange}
           value={filters.status}
@@ -232,7 +232,7 @@ function AdminUsersPanel({ currentUserId }) {
           Apply Filters
         </button>
         <button
-          className="rounded-md border border-slate-300 px-4 py-2 font-semibold text-slate-700 hover:bg-orange-50"
+          className="rounded-md border border-zinc-300 px-4 py-2 font-semibold text-zinc-700 hover:bg-stone-50"
           onClick={handleClearFilters}
           type="button"
         >
@@ -242,7 +242,7 @@ function AdminUsersPanel({ currentUserId }) {
 
       <div className="flex items-center justify-between">
         <h2 className="text-2xl font-bold">Users</h2>
-        <p className="text-sm text-slate-600">{total} total</p>
+        <p className="text-sm text-zinc-600">{total} total</p>
       </div>
 
       {error && (
@@ -254,12 +254,12 @@ function AdminUsersPanel({ currentUserId }) {
         </p>
       )}
       {isLoading && (
-        <p className="rounded-xl bg-white p-6 text-slate-700 shadow-sm">
+        <p className="rounded-xl bg-white p-6 text-zinc-700 shadow-sm">
           Loading users...
         </p>
       )}
       {!isLoading && !error && users.length === 0 && (
-        <p className="rounded-xl bg-white p-6 text-slate-700 shadow-sm">
+        <p className="rounded-xl bg-white p-6 text-zinc-700 shadow-sm">
           No users found.
         </p>
       )}
@@ -278,10 +278,10 @@ function AdminUsersPanel({ currentUserId }) {
                 <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
                   <div className="min-w-0">
                     <h3 className="truncate text-xl font-bold">{user.name}</h3>
-                    <p className="mt-1 break-all text-sm text-slate-600">
+                    <p className="mt-1 break-all text-sm text-zinc-600">
                       {user.email}
                     </p>
-                    <p className="mt-1 text-xs text-slate-400">
+                    <p className="mt-1 text-xs text-zinc-400">
                       Joined {new Date(user.createdAt).toLocaleDateString()}
                     </p>
                   </div>
@@ -289,7 +289,7 @@ function AdminUsersPanel({ currentUserId }) {
                   <div className="flex flex-wrap items-center gap-2">
                     <span
                       className={`rounded-full px-3 py-1 text-xs font-semibold ${
-                        roleClasses[user.role] || 'bg-slate-100 text-slate-700'
+                        roleClasses[user.role] || 'bg-zinc-100 text-zinc-700'
                       }`}
                     >
                       {formatRole(user.role)}
@@ -303,14 +303,14 @@ function AdminUsersPanel({ currentUserId }) {
                     >
                       {user.isBlocked ? 'Blocked' : 'Active'}
                     </span>
-                    <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold capitalize text-slate-700">
+                    <span className="rounded-full bg-zinc-100 px-3 py-1 text-xs font-semibold capitalize text-zinc-700">
                       {user.authProvider}
                     </span>
                   </div>
 
                   <div className="flex flex-wrap gap-2">
                     <button
-                      className="rounded-md border border-orange-200 px-3 py-2 text-sm font-semibold text-orange-700 hover:bg-orange-50"
+                      className="rounded-md border border-stone-200 px-3 py-2 text-sm font-semibold text-[#FF4F2E] hover:bg-stone-50"
                       onClick={() => handleViewDetails(user._id)}
                       type="button"
                     >
@@ -320,7 +320,7 @@ function AdminUsersPanel({ currentUserId }) {
                     </button>
 
                     {isCurrentAdmin ? (
-                      <span className="rounded-md bg-slate-100 px-3 py-2 text-sm font-semibold text-slate-500">
+                      <span className="rounded-md bg-zinc-100 px-3 py-2 text-sm font-semibold text-zinc-500">
                         Current account
                       </span>
                     ) : (
@@ -346,7 +346,7 @@ function AdminUsersPanel({ currentUserId }) {
 
                 {expandedUserId === user._id &&
                   (detailsLoadingId === user._id ? (
-                    <p className="mt-5 text-sm text-slate-600">
+                    <p className="mt-5 text-sm text-zinc-600">
                       Loading user details...
                     </p>
                   ) : (

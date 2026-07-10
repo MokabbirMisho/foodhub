@@ -11,7 +11,7 @@ const periods = [
 const statusClasses = {
   pending: 'bg-yellow-50 text-yellow-700',
   accepted: 'bg-blue-50 text-blue-700',
-  preparing: 'bg-orange-50 text-orange-700',
+  preparing: 'bg-stone-50 text-[#FF4F2E]',
   ready: 'bg-purple-50 text-purple-700',
   out_for_delivery: 'bg-indigo-50 text-indigo-700',
   delivered: 'bg-green-50 text-green-700',
@@ -33,8 +33,8 @@ const formatPaymentMethod = (method) =>
 function MetricCard({ label, value }) {
   return (
     <article className="fh-card p-5">
-      <p className="text-sm font-semibold text-slate-600">{label}</p>
-      <p className="mt-2 text-2xl font-black text-slate-900">{value}</p>
+      <p className="text-sm font-semibold text-zinc-600">{label}</p>
+      <p className="mt-2 text-2xl font-black text-zinc-900">{value}</p>
     </article>
   );
 }
@@ -82,7 +82,7 @@ function RestaurantAnalytics({ onViewOrders }) {
             ? 'Create your restaurant profile first.'
             : 'Overview could not be loaded'}
         </h2>
-        <p className="mt-2 text-slate-600">{error}</p>
+        <p className="mt-2 text-zinc-600">{error}</p>
         <button
           className="fh-btn-primary mt-5"
           onClick={() => setRequestKey((current) => current + 1)}
@@ -110,7 +110,7 @@ function RestaurantAnalytics({ onViewOrders }) {
       <section className="fh-card flex flex-col gap-4 p-6 md:flex-row md:items-center md:justify-between">
         <div>
           <h2 className="text-2xl font-bold">Overview</h2>
-          <p className="mt-2 text-slate-600">
+          <p className="mt-2 text-zinc-600">
             Track your restaurant performance and recent activity.
           </p>
         </div>
@@ -119,8 +119,8 @@ function RestaurantAnalytics({ onViewOrders }) {
             <button
               className={`rounded-full px-4 py-2 text-sm font-semibold ${
                 period === option.value
-                  ? 'bg-orange-600 text-white'
-                  : 'border border-orange-200 bg-white text-slate-700 hover:border-orange-500'
+                  ? 'bg-[#FF4F2E] text-white'
+                  : 'border border-stone-200 bg-white text-zinc-700 hover:border-[#FF4F2E]'
               }`}
               key={option.value}
               onClick={() => setPeriod(option.value)}
@@ -155,7 +155,7 @@ function RestaurantAnalytics({ onViewOrders }) {
       </section>
 
       {!hasData && (
-        <p className="fh-card p-6 text-center text-slate-600">
+        <p className="fh-card p-6 text-center text-zinc-600">
           No data for this period yet.
         </p>
       )}
@@ -163,7 +163,7 @@ function RestaurantAnalytics({ onViewOrders }) {
       <div className="grid gap-6 xl:grid-cols-2">
         <section className="fh-card p-6">
           <h3 className="text-xl font-bold">Revenue trend</h3>
-          <p className="mt-1 text-sm text-slate-600">
+          <p className="mt-1 text-sm text-zinc-600">
             Revenue is delivered orders; order count includes every status.
           </p>
           {analytics.revenueTrend.length ? (
@@ -172,13 +172,13 @@ function RestaurantAnalytics({ onViewOrders }) {
                 <div key={entry.label}>
                   <div className="flex justify-between gap-4 text-sm">
                     <span className="font-semibold">{entry.label}</span>
-                    <span className="text-slate-600">
+                    <span className="text-zinc-600">
                       {formatCurrency(entry.revenue)} · {entry.orders} orders
                     </span>
                   </div>
-                  <div className="mt-2 h-2 overflow-hidden rounded-full bg-orange-100">
+                  <div className="mt-2 h-2 overflow-hidden rounded-full bg-stone-100">
                     <div
-                      className="h-full rounded-full bg-orange-600"
+                      className="h-full rounded-full bg-[#FF4F2E]"
                       style={{
                         width: `${Math.max(
                           (entry.revenue / maxTrendRevenue) * 100,
@@ -191,7 +191,7 @@ function RestaurantAnalytics({ onViewOrders }) {
               ))}
             </div>
           ) : (
-            <p className="mt-5 text-slate-600">No revenue data yet.</p>
+            <p className="mt-5 text-zinc-600">No revenue data yet.</p>
           )}
         </section>
 
@@ -207,9 +207,9 @@ function RestaurantAnalytics({ onViewOrders }) {
                     </span>
                     <span className="font-bold">{count}</span>
                   </div>
-                  <div className="mt-2 h-2 overflow-hidden rounded-full bg-slate-100">
+                  <div className="mt-2 h-2 overflow-hidden rounded-full bg-zinc-100">
                     <div
-                      className="h-full rounded-full bg-slate-500"
+                      className="h-full rounded-full bg-zinc-500"
                       style={{ width: `${(count / maxStatusCount) * 100}%` }}
                     />
                   </div>
@@ -228,7 +228,7 @@ function RestaurantAnalytics({ onViewOrders }) {
           {analytics.topSellingItems.length ? (
             <div className="overflow-x-auto">
               <table className="w-full text-left text-sm">
-                <thead className="bg-orange-50 text-slate-600">
+                <thead className="bg-stone-50 text-zinc-600">
                   <tr>
                     <th className="px-5 py-3">#</th>
                     <th className="px-5 py-3">Item</th>
@@ -238,7 +238,7 @@ function RestaurantAnalytics({ onViewOrders }) {
                 </thead>
                 <tbody>
                   {analytics.topSellingItems.map((item, index) => (
-                    <tr className="border-t border-orange-100" key={item.name}>
+                    <tr className="border-t border-stone-200" key={item.name}>
                       <td className="px-5 py-3">{index + 1}</td>
                       <td className="px-5 py-3 font-semibold">{item.name}</td>
                       <td className="px-5 py-3">{item.quantity}</td>
@@ -249,7 +249,7 @@ function RestaurantAnalytics({ onViewOrders }) {
               </table>
             </div>
           ) : (
-            <p className="px-6 pb-6 text-slate-600">No sales data yet.</p>
+            <p className="px-6 pb-6 text-zinc-600">No sales data yet.</p>
           )}
         </section>
 
@@ -258,12 +258,12 @@ function RestaurantAnalytics({ onViewOrders }) {
           <div className="mt-5 grid gap-4 sm:grid-cols-2">
             {Object.entries(analytics.paymentMethodSummary).map(
               ([method, summary]) => (
-                <article className="rounded-lg bg-orange-50 p-5" key={method}>
+                <article className="rounded-lg bg-stone-50 p-5" key={method}>
                   <p className="font-semibold">{formatPaymentMethod(method)}</p>
                   <p className="mt-3 text-2xl font-black">
                     {formatCurrency(summary.amount)}
                   </p>
-                  <p className="mt-1 text-sm text-slate-600">
+                  <p className="mt-1 text-sm text-zinc-600">
                     {summary.count} orders
                   </p>
                 </article>
@@ -281,7 +281,7 @@ function RestaurantAnalytics({ onViewOrders }) {
           </button>
         </div>
         {analytics.recentOrders.length ? (
-          <div className="divide-y divide-orange-100">
+          <div className="divide-y divide-stone-200">
             {analytics.recentOrders.map((order) => (
               <article
                 className="grid gap-3 px-6 py-4 sm:grid-cols-[1fr_auto_auto] sm:items-center"
@@ -291,20 +291,20 @@ function RestaurantAnalytics({ onViewOrders }) {
                   <p className="font-semibold">
                     {order.customer?.name || 'Customer'}
                   </p>
-                  <p className="text-sm text-slate-600">
+                  <p className="text-sm text-zinc-600">
                     {new Date(order.createdAt).toLocaleString()}
                   </p>
                 </div>
                 <span
                   className={`w-fit rounded-full px-3 py-1 text-xs font-semibold ${
-                    statusClasses[order.status] || 'bg-slate-100 text-slate-700'
+                    statusClasses[order.status] || 'bg-zinc-100 text-zinc-700'
                   }`}
                 >
                   {order.status.replaceAll('_', ' ')}
                 </span>
                 <div className="sm:text-right">
                   <p className="font-bold">{formatCurrency(order.totalAmount)}</p>
-                  <p className="text-xs text-slate-600">
+                  <p className="text-xs text-zinc-600">
                     {formatPaymentMethod(order.paymentMethod)}
                   </p>
                 </div>
@@ -312,7 +312,7 @@ function RestaurantAnalytics({ onViewOrders }) {
             ))}
           </div>
         ) : (
-          <p className="px-6 pb-6 text-slate-600">No recent orders.</p>
+          <p className="px-6 pb-6 text-zinc-600">No recent orders.</p>
         )}
       </section>
     </div>

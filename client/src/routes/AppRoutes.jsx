@@ -103,7 +103,7 @@ function AppRoutes() {
               <RoleRoute allowedRoles={['customer']}>
                 <Suspense
                   fallback={
-                    <p className="min-h-screen bg-orange-50 p-6 text-slate-700">
+                    <p className="min-h-screen bg-stone-50 p-6 text-zinc-700">
                       Loading tracking map...
                     </p>
                   }
