@@ -10,6 +10,11 @@ export const getUserByIdForAdmin = async (userId) => {
   return response.data;
 };
 
+export const getAdminRiderDetails = async (riderId) => {
+  const response = await api.get(`/admin/users/riders/${riderId}/details`);
+  return response.data;
+};
+
 export const toggleUserBlockStatus = async (userId, isBlocked) => {
   const response = await api.patch(`/admin/users/${userId}/block`, {
     isBlocked,

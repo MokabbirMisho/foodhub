@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import {
+  getAdminRiderDetails,
   getAllUsersForAdmin,
   toggleUserBlockStatus,
 } from "../../services/adminUserService";
@@ -20,14 +21,51 @@ function MetricCard({ label, value }) {
   );
 }
 
+const formatCurrency = (value) => `€${Number(value || 0).toFixed(2)}`;
+const formatDateTime = (value) =>
+  value ? new Date(value).toLocaleString() : "Not available";
+const getOrderNumber = (order) =>
+  order.orderNumber || order._id?.slice(-6) || order.id?.slice(-6) || "Order";
+const getShortAddress = (order) =>
+  [
+    order.deliveryAddress?.city,
+    order.deliveryAddress?.postalCode,
+  ]
+    .filter(Boolean)
+    .join(", ") || "Address not provided";
+const getDeliveryStatus = (rider, activeDeliveries = 0) => {
+  if (rider?.isBlocked) {
+    return "Blocked";
+  }
+
+  return activeDeliveries > 0 ? "On Delivery" : "Available";
+};
+
+function DetailItem({ label, value }) {
+  return (
+    <div className="rounded-2xl border border-stone-200 bg-white p-4">
+      <p className="text-xs font-semibold uppercase tracking-wide text-zinc-500">
+        {label}
+      </p>
+      <p className="mt-2 break-words text-sm font-semibold text-zinc-900">
+        {value || "Not provided"}
+      </p>
+    </div>
+  );
+}
+
 function AdminRidersPanel() {
   const [riders, setRiders] = useState([]);
   const [total, setTotal] = useState(0);
   const [filters, setFilters] = useState(emptyFilters);
   const [currentPage, setCurrentPage] = useState(1);
+  const [selectedRiderId, setSelectedRiderId] = useState(null);
+  const [riderDetails, setRiderDetails] = useState(null);
   const [actionUserId, setActionUserId] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [isDetailsLoading, setIsDetailsLoading] = useState(false);
   const [error, setError] = useState("");
+  const [detailsError, setDetailsError] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
 
   const buildParams = (nextFilters) => {
@@ -109,12 +147,39 @@ function AdminRidersPanel() {
           item._id === rider._id ? updatedRider : item,
         ),
       );
+      setRiderDetails((current) =>
+        current?.rider?._id === rider._id
+          ? { ...current, rider: updatedRider }
+          : current,
+      );
       setSuccessMessage(response.message);
     } catch (requestError) {
       setError(requestError.message);
     } finally {
       setActionUserId(null);
     }
+  };
+
+  const openRiderDetails = async (riderId) => {
+    try {
+      setDetailsError("");
+      setSuccessMessage("");
+      setSelectedRiderId(riderId);
+      setIsDetailsLoading(true);
+      const response = await getAdminRiderDetails(riderId);
+      setRiderDetails(response.data);
+    } catch (requestError) {
+      setDetailsError(requestError.message);
+      setRiderDetails(null);
+    } finally {
+      setIsDetailsLoading(false);
+    }
+  };
+
+  const closeRiderDetails = () => {
+    setSelectedRiderId(null);
+    setRiderDetails(null);
+    setDetailsError("");
   };
 
   const totalRiders = riders.length;
@@ -131,6 +196,208 @@ function AdminRidersPanel() {
       setCurrentPage(totalPages);
     }
   }, [currentPage, totalPages]);
+
+  const renderOrderSummary = (order) => (
+    <article
+      className="rounded-2xl border border-stone-200 bg-white p-4"
+      key={order._id}
+    >
+      <div className="flex flex-col gap-2 md:flex-row md:items-start md:justify-between">
+        <div>
+          <p className="font-semibold text-zinc-900">
+            Order #{getOrderNumber(order)}
+          </p>
+          <p className="mt-1 text-sm text-zinc-600">
+            {order.restaurant?.name || "Restaurant unavailable"} ·{" "}
+            {order.customer?.name || "Customer unavailable"}
+          </p>
+          <p className="mt-1 text-xs text-zinc-500">{getShortAddress(order)}</p>
+          <p className="mt-1 text-xs text-zinc-500">
+            {formatDateTime(order.createdAt)}
+          </p>
+        </div>
+        <div className="flex flex-wrap gap-2">
+          <span className="rounded-full bg-zinc-100 px-3 py-1 text-xs font-semibold text-zinc-700">
+            {order.status}
+          </span>
+          <span className="rounded-full bg-green-50 px-3 py-1 text-xs font-semibold text-green-700">
+            {formatCurrency(order.totalAmount)}
+          </span>
+        </div>
+      </div>
+    </article>
+  );
+
+  const renderDetails = () => {
+    if (isDetailsLoading) {
+      return <p className="fh-card p-6 text-zinc-700">Loading rider details...</p>;
+    }
+
+    if (detailsError || !riderDetails) {
+      return (
+        <section className="fh-card p-6">
+          <button
+            className="rounded-full border border-stone-200 bg-white px-4 py-2 text-sm font-semibold text-zinc-700 hover:bg-stone-50"
+            onClick={closeRiderDetails}
+            type="button"
+          >
+            ← Back to Riders
+          </button>
+          <p className="mt-4 text-red-700">
+            {detailsError || "Rider details could not be loaded."}
+          </p>
+        </section>
+      );
+    }
+
+    const { activeOrders, recentOrders, rider, summary } = riderDetails;
+    const deliveryStatus = getDeliveryStatus(rider, summary.activeDeliveries);
+
+    return (
+      <div className="space-y-6">
+        <section className="fh-card p-6">
+          <div className="mb-5">
+            <button
+              className="rounded-full border border-stone-200 bg-white px-4 py-2 text-sm font-semibold text-zinc-700 hover:bg-stone-50"
+              onClick={closeRiderDetails}
+              type="button"
+            >
+              ← Back to Riders
+            </button>
+          </div>
+
+          <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+            <div>
+              <h2 className="text-3xl font-black text-zinc-900">
+                {rider.name}
+              </h2>
+              <p className="mt-1 text-sm text-zinc-600">{rider.email}</p>
+              <div className="mt-3 flex flex-wrap gap-2">
+                <span
+                  className={`rounded-full px-3 py-1 text-xs font-semibold ${
+                    rider.isBlocked
+                      ? "bg-red-50 text-red-700"
+                      : "bg-green-50 text-green-700"
+                  }`}
+                >
+                  {rider.isBlocked ? "Blocked" : "Active"}
+                </span>
+                <span className="rounded-full bg-indigo-50 px-3 py-1 text-xs font-semibold text-indigo-700">
+                  {deliveryStatus}
+                </span>
+              </div>
+            </div>
+
+            <button
+              className={`rounded-xl px-4 py-2 text-sm font-semibold ${
+                rider.isBlocked
+                  ? "border border-green-200 text-green-700 hover:bg-green-50"
+                  : "border border-red-200 text-red-700 hover:bg-red-50"
+              }`}
+              disabled={actionUserId === rider._id}
+              onClick={() => handleToggleBlock(rider)}
+              type="button"
+            >
+              {actionUserId === rider._id
+                ? "Updating..."
+                : rider.isBlocked
+                  ? "Unblock Rider"
+                  : "Block Rider"}
+            </button>
+          </div>
+        </section>
+
+        {successMessage && <p className="fh-alert-success">{successMessage}</p>}
+
+        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-6">
+          <MetricCard label="Total Assigned" value={summary.totalDeliveries} />
+          <MetricCard label="Completed" value={summary.completedDeliveries} />
+          <MetricCard label="Active" value={summary.activeDeliveries} />
+          <MetricCard label="Cancelled" value={summary.cancelledDeliveries} />
+          <MetricCard
+            label="Delivered Value"
+            value={formatCurrency(summary.totalDeliveredValue)}
+          />
+          <MetricCard
+            label="Average Value"
+            value={formatCurrency(summary.averageDeliveryValue)}
+          />
+        </div>
+
+        <div className="grid gap-6 xl:grid-cols-2">
+          <section className="fh-card p-6">
+            <h3 className="text-xl font-bold text-zinc-900">Account Details</h3>
+            <div className="mt-4 grid gap-4 md:grid-cols-2">
+              <DetailItem label="Name" value={rider.name} />
+              <DetailItem label="Email" value={rider.email} />
+              <DetailItem label="Phone" value={rider.phone} />
+              <DetailItem label="Role" value="Rider" />
+              <DetailItem
+                label="Account status"
+                value={rider.isBlocked ? "Blocked" : "Active"}
+              />
+              <DetailItem label="Joined" value={formatDateTime(rider.createdAt)} />
+              <DetailItem
+                label="Last updated"
+                value={formatDateTime(rider.updatedAt)}
+              />
+            </div>
+          </section>
+
+          <section className="fh-card p-6">
+            <h3 className="text-xl font-bold text-zinc-900">
+              Delivery Status
+            </h3>
+            <div className="mt-4 grid gap-4 md:grid-cols-2">
+              <DetailItem label="Current status" value={deliveryStatus} />
+              <DetailItem
+                label="Active deliveries"
+                value={summary.activeDeliveries}
+              />
+              <DetailItem
+                label="Completed deliveries"
+                value={summary.completedDeliveries}
+              />
+              <DetailItem
+                label="Cancelled deliveries"
+                value={summary.cancelledDeliveries}
+              />
+              <DetailItem
+                label="Last delivery"
+                value={formatDateTime(summary.lastDeliveryAt)}
+              />
+            </div>
+          </section>
+        </div>
+
+        <section className="fh-card p-6">
+          <h3 className="text-xl font-bold text-zinc-900">Active Delivery</h3>
+          {activeOrders.length === 0 ? (
+            <p className="mt-4 text-zinc-600">No active delivery right now.</p>
+          ) : (
+            <div className="mt-4 space-y-3">
+              {activeOrders.map(renderOrderSummary)}
+            </div>
+          )}
+        </section>
+
+        <section className="fh-card p-6">
+          <h3 className="text-xl font-bold text-zinc-900">Recent Deliveries</h3>
+          {recentOrders.length === 0 ? (
+            <p className="mt-4 text-zinc-600">No delivery history found.</p>
+          ) : (
+            <div className="mt-4 space-y-3">
+              {recentOrders.map(renderOrderSummary)}
+            </div>
+          )}
+        </section>
+      </div>
+    );
+  };
+
+  if (selectedRiderId) {
+    return renderDetails();
+  }
 
   return (
     <section className="space-y-6">
@@ -198,7 +465,19 @@ function AdminRidersPanel() {
       {!isLoading && riders.length > 0 && (
         <div className="space-y-4">
           {currentRiders.map((rider) => (
-            <article className="fh-card p-5" key={rider._id}>
+            <article
+              className="fh-card cursor-pointer p-5 transition hover:shadow-md"
+              key={rider._id}
+              onClick={() => openRiderDetails(rider._id)}
+              role="button"
+              tabIndex={0}
+              onKeyDown={(event) => {
+                if (event.key === "Enter" || event.key === " ") {
+                  event.preventDefault();
+                  openRiderDetails(rider._id);
+                }
+              }}
+            >
               <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
                 <div className="min-w-0">
                   <h3 className="truncate text-xl font-bold">{rider.name}</h3>
@@ -209,7 +488,8 @@ function AdminRidersPanel() {
                     {rider.phone || "Phone not provided"}
                   </p>
                   <p className="mt-1 text-xs text-zinc-400">
-                    Joined {new Date(rider.createdAt).toLocaleDateString()}
+                    Joined {new Date(rider.createdAt).toLocaleDateString()} ·
+                    click rider to view details
                   </p>
                 </div>
 
@@ -235,7 +515,10 @@ function AdminRidersPanel() {
                       : "border border-red-200 text-red-700 hover:bg-red-50"
                   }`}
                   disabled={actionUserId === rider._id}
-                  onClick={() => handleToggleBlock(rider)}
+                  onClick={(event) => {
+                    event.stopPropagation();
+                    handleToggleBlock(rider);
+                  }}
                   type="button"
                 >
                   {actionUserId === rider._id
