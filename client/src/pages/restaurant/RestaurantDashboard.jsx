@@ -156,14 +156,14 @@ function FoodItemCard({ foodItem, onDelete, onEdit, onToggleAvailability }) {
 
       <div className="mt-5 flex flex-wrap gap-2">
         <button
-          className="rounded-md bg-[#FF4F2E] px-4 py-2 text-sm font-semibold text-white hover:bg-[#E63E22]"
+          className="rounded-xl bg-[#FF4F2E] px-4 py-2 text-sm font-semibold text-white hover:bg-[#E63E22]"
           onClick={() => onEdit(foodItem)}
           type="button"
         >
           Edit
         </button>
         <button
-          className="rounded-md border border-zinc-300 px-4 py-2 text-sm font-semibold text-zinc-700 hover:bg-stone-50"
+          className="rounded-md border border-stone-300 px-4 py-2 text-sm font-semibold text-zinc-700 hover:bg-stone-50"
           onClick={() => onToggleAvailability(foodItem._id)}
           type="button"
         >
@@ -242,7 +242,7 @@ function OrderCard({ onStatusChange, order }) {
       </div>
 
       {order.orderNote && (
-        <p className="mt-4 rounded-lg bg-zinc-50 p-4 text-sm text-zinc-700">
+        <p className="mt-4 rounded-lg bg-stone-50 p-4 text-sm text-zinc-700">
           Note: {order.orderNote}
         </p>
       )}
@@ -278,7 +278,7 @@ function OrderCard({ onStatusChange, order }) {
         <label className="block max-w-xs">
           <span className="text-sm font-medium text-zinc-700">Update status</span>
           <select
-            className="mt-1 w-full rounded-md border border-zinc-300 px-3 py-2 outline-none focus:border-[#FF4F2E]"
+            className="mt-1 w-full rounded-xl border border-stone-300 px-3 py-2 outline-none focus:border-[#FF4F2E] focus:ring-4 focus:ring-[#FF4F2E]/20"
             onChange={(event) => onStatusChange(order._id, event.target.value)}
             value=""
           >
@@ -566,7 +566,7 @@ function RestaurantDashboard() {
         </div>
 
         <button
-          className="rounded-md bg-[#FF4F2E] px-4 py-2 font-semibold text-white hover:bg-[#E63E22]"
+          className="rounded-xl bg-[#FF4F2E] px-4 py-2 font-semibold text-white hover:bg-[#E63E22]"
           onClick={() => setIsEditing(true)}
           type="button"
         >
@@ -637,7 +637,7 @@ function RestaurantDashboard() {
               </p>
             </div>
             <button
-              className="rounded-md border border-zinc-300 px-4 py-2 font-semibold text-zinc-700 hover:bg-stone-50"
+              className="rounded-xl border border-stone-200 px-4 py-2 font-semibold text-zinc-700 hover:bg-stone-50"
               onClick={() => setIsEditing(false)}
               type="button"
             >
@@ -683,7 +683,7 @@ function RestaurantDashboard() {
             </div>
             {!isAddingFood && !editingFoodItem && (
               <button
-                className="rounded-md bg-[#FF4F2E] px-4 py-2 font-semibold text-white hover:bg-[#E63E22]"
+                className="rounded-xl bg-[#FF4F2E] px-4 py-2 font-semibold text-white hover:bg-[#E63E22]"
                 onClick={() => setIsAddingFood(true)}
                 type="button"
               >
@@ -779,7 +779,7 @@ function RestaurantDashboard() {
                 Filter by status
               </span>
               <select
-                className="mt-1 w-full rounded-md border border-zinc-300 px-3 py-2 outline-none focus:border-[#FF4F2E]"
+                className="mt-1 w-full rounded-xl border border-stone-300 px-3 py-2 outline-none focus:border-[#FF4F2E] focus:ring-4 focus:ring-[#FF4F2E]/20"
                 onChange={(event) => setOrderStatusFilter(event.target.value)}
                 value={orderStatusFilter}
               >
@@ -865,17 +865,17 @@ function RestaurantDashboard() {
 
   if (isLoading) {
     return (
-      <main className="min-h-screen bg-stone-50 px-6 py-12 text-zinc-900">
+      <main className="min-h-screen bg-[#F8F7F4] px-6 py-12 text-zinc-900">
         <p className="mx-auto max-w-6xl text-zinc-700">Loading restaurant...</p>
       </main>
     );
   }
 
   return (
-    <main className="min-h-screen bg-foodhub-cream text-zinc-900">
+    <main className="min-h-screen bg-[#F8F7F4] text-zinc-900">
       <div className="mx-auto flex max-w-7xl flex-col gap-6 px-4 py-6 lg:flex-row">
         <aside className="fh-card p-4 lg:sticky lg:top-6 lg:h-[calc(100vh-3rem)] lg:w-64">
-          <div className="border-b border-zinc-200 pb-4">
+          <div className="border-b border-stone-200 pb-4">
             <p className="text-sm font-semibold uppercase tracking-wide text-[#FF4F2E]">
               FoodHub
             </p>

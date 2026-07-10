@@ -286,7 +286,7 @@ function AdminDashboard() {
   };
 
   return (
-    <main className="min-h-screen bg-foodhub-cream text-zinc-900">
+    <main className="min-h-screen bg-[#F8F7F4] text-zinc-900">
       <header className="sticky top-0 z-30 flex items-center justify-between border-b border-stone-200 bg-white px-4 py-3 shadow-sm lg:hidden">
         <div>
           <p className="text-lg font-black text-[#FF4F2E]">FoodHub Admin</p>
@@ -361,7 +361,7 @@ function AdminDashboard() {
             </p>
             <p className="text-xs text-zinc-500">Administrator</p>
             <button
-              className="mt-4 w-full rounded-md border border-zinc-200 px-4 py-2 text-sm font-semibold text-zinc-700 hover:bg-zinc-50"
+              className="mt-4 w-full rounded-xl border border-stone-200 px-4 py-2 text-sm font-semibold text-zinc-700 hover:bg-stone-50"
               onClick={handleLogout}
               type="button"
             >
@@ -411,7 +411,7 @@ function AdminDashboard() {
               onSubmit={handleApplyFilters}
             >
               <select
-                className="rounded-md border border-zinc-300 px-3 py-2 outline-none focus:border-[#FF4F2E]"
+                className="rounded-xl border border-stone-300 px-3 py-2 outline-none focus:border-[#FF4F2E] focus:ring-4 focus:ring-[#FF4F2E]/20"
                 name="status"
                 onChange={handleFilterChange}
                 value={filters.status}
@@ -423,14 +423,14 @@ function AdminDashboard() {
                 ))}
               </select>
               <input
-                className="rounded-md border border-zinc-300 px-3 py-2 outline-none focus:border-[#FF4F2E]"
+                className="rounded-xl border border-stone-300 px-3 py-2 outline-none focus:border-[#FF4F2E] focus:ring-4 focus:ring-[#FF4F2E]/20"
                 name="restaurantId"
                 onChange={handleFilterChange}
                 placeholder="Filter by restaurant ID"
                 value={filters.restaurantId}
               />
               <input
-                className="rounded-md border border-zinc-300 px-3 py-2 outline-none focus:border-[#FF4F2E]"
+                className="rounded-xl border border-stone-300 px-3 py-2 outline-none focus:border-[#FF4F2E] focus:ring-4 focus:ring-[#FF4F2E]/20"
                 name="customerId"
                 onChange={handleFilterChange}
                 placeholder="Filter by customer ID"
@@ -443,7 +443,7 @@ function AdminDashboard() {
                 Apply Filters
               </button>
               <button
-                className="rounded-md border border-zinc-300 px-4 py-2 font-semibold text-zinc-700 hover:bg-stone-50"
+                className="rounded-xl border border-stone-200 px-4 py-2 font-semibold text-zinc-700 hover:bg-stone-50"
                 onClick={handleClearFilters}
                 type="button"
               >

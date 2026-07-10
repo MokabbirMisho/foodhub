@@ -197,14 +197,14 @@ function AdminUsersPanel({ currentUserId }) {
         onSubmit={handleApplyFilters}
       >
         <input
-          className="rounded-md border border-zinc-300 px-3 py-2 outline-none focus:border-[#FF4F2E]"
+          className="rounded-xl border border-stone-300 px-3 py-2 outline-none focus:border-[#FF4F2E] focus:ring-4 focus:ring-[#FF4F2E]/20"
           name="search"
           onChange={handleFilterChange}
           placeholder="Search by name or email"
           value={filters.search}
         />
         <select
-          className="rounded-md border border-zinc-300 px-3 py-2 outline-none focus:border-[#FF4F2E]"
+          className="rounded-xl border border-stone-300 px-3 py-2 outline-none focus:border-[#FF4F2E] focus:ring-4 focus:ring-[#FF4F2E]/20"
           name="role"
           onChange={handleFilterChange}
           value={filters.role}
@@ -216,7 +216,7 @@ function AdminUsersPanel({ currentUserId }) {
           <option value="admin">Admin</option>
         </select>
         <select
-          className="rounded-md border border-zinc-300 px-3 py-2 outline-none focus:border-[#FF4F2E]"
+          className="rounded-xl border border-stone-300 px-3 py-2 outline-none focus:border-[#FF4F2E] focus:ring-4 focus:ring-[#FF4F2E]/20"
           name="status"
           onChange={handleFilterChange}
           value={filters.status}
@@ -232,7 +232,7 @@ function AdminUsersPanel({ currentUserId }) {
           Apply Filters
         </button>
         <button
-          className="rounded-md border border-zinc-300 px-4 py-2 font-semibold text-zinc-700 hover:bg-stone-50"
+          className="rounded-xl border border-stone-200 px-4 py-2 font-semibold text-zinc-700 hover:bg-stone-50"
           onClick={handleClearFilters}
           type="button"
         >

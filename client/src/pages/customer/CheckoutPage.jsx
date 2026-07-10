@@ -348,7 +348,7 @@ function CheckoutPage() {
 
   if (cartItems.length === 0) {
     return (
-      <main className="min-h-screen bg-stone-50 px-6 py-10 text-zinc-900">
+      <main className="min-h-screen bg-[#F8F7F4] px-6 py-10 text-zinc-900">
         <section className="mx-auto max-w-3xl">
           <div className="rounded-xl bg-white p-6 shadow-sm">
             <div className="mb-4">
@@ -356,7 +356,7 @@ function CheckoutPage() {
             </div>
             <h1 className="text-3xl font-bold">Your cart is empty.</h1>
             <Link
-              className="mt-5 inline-block rounded-md bg-[#FF4F2E] px-4 py-2 font-semibold text-white hover:bg-[#E63E22]"
+              className="mt-5 inline-block rounded-xl bg-[#FF4F2E] px-4 py-2 font-semibold text-white hover:bg-[#E63E22]"
               to="/restaurants"
             >
               Browse Restaurants
@@ -369,7 +369,7 @@ function CheckoutPage() {
 
   if (!isAuthenticated) {
     return (
-      <main className="min-h-screen bg-stone-50 px-6 py-10 text-zinc-900">
+      <main className="min-h-screen bg-[#F8F7F4] px-6 py-10 text-zinc-900">
         <section className="mx-auto max-w-3xl">
           <div className="rounded-xl bg-white p-6 shadow-sm">
             <div className="mb-4">
@@ -382,7 +382,7 @@ function CheckoutPage() {
               Your cart is saved. Sign in to continue checkout.
             </p>
             <button
-              className="mt-5 inline-block rounded-md bg-[#FF4F2E] px-4 py-2 font-semibold text-white hover:bg-[#E63E22]"
+              className="mt-5 inline-block rounded-xl bg-[#FF4F2E] px-4 py-2 font-semibold text-white hover:bg-[#E63E22]"
               onClick={() => openLogin({ redirectTo: '/checkout' })}
               type="button"
             >
@@ -396,7 +396,7 @@ function CheckoutPage() {
 
   if (user?.role !== 'customer') {
     return (
-      <main className="min-h-screen bg-stone-50 px-6 py-10 text-zinc-900">
+      <main className="min-h-screen bg-[#F8F7F4] px-6 py-10 text-zinc-900">
         <section className="mx-auto max-w-3xl">
           <div className="rounded-xl bg-white p-6 shadow-sm">
             <div className="mb-4">
@@ -406,7 +406,7 @@ function CheckoutPage() {
               Only customers can place orders.
             </h1>
             <Link
-              className="mt-5 inline-block rounded-md bg-[#FF4F2E] px-4 py-2 font-semibold text-white hover:bg-[#E63E22]"
+              className="mt-5 inline-block rounded-xl bg-[#FF4F2E] px-4 py-2 font-semibold text-white hover:bg-[#E63E22]"
               to="/restaurants"
             >
               Browse Restaurants
@@ -591,7 +591,7 @@ function CheckoutPage() {
               Step 2 · Payment method
             </legend>
             <div className="mt-2 grid gap-3 sm:grid-cols-2">
-              <label className="flex cursor-pointer items-start gap-3 rounded-lg border border-zinc-200 p-4">
+              <label className="flex cursor-pointer items-start gap-3 rounded-lg border border-stone-200 p-4">
                 <input
                   checked={paymentMethod === 'cash_on_delivery'}
                   className="mt-1 accent-[#FF4F2E]"
@@ -607,7 +607,7 @@ function CheckoutPage() {
                 </span>
               </label>
 
-              <label className="flex cursor-pointer items-start gap-3 rounded-lg border border-zinc-200 p-4">
+              <label className="flex cursor-pointer items-start gap-3 rounded-lg border border-stone-200 p-4">
                 <input
                   checked={paymentMethod === 'demo_online'}
                   className="mt-1 accent-[#FF4F2E]"
@@ -736,7 +736,7 @@ function CheckoutPage() {
               <span>Delivery fee</span>
               <span>{formatCurrency(getDeliveryFee())}</span>
             </div>
-            <div className="border-t border-zinc-200 pt-3">
+            <div className="border-t border-stone-200 pt-3">
               <div className="flex justify-between text-lg font-bold text-zinc-900">
                 <span>Total</span>
                 <span>{formatCurrency(getTotal())}</span>

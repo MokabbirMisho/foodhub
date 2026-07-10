@@ -96,7 +96,7 @@ function CartPage() {
                     <div className="mt-4 flex flex-wrap items-center gap-2">
                       <button
                         aria-label={`Decrease ${item.name} quantity`}
-                        className="h-10 w-10 rounded-lg border border-zinc-300 font-bold hover:border-stone-300 hover:bg-stone-50"
+                        className="h-10 w-10 rounded-lg border border-stone-300 font-bold hover:border-stone-300 hover:bg-stone-50"
                         onClick={() => decreaseQuantity(item._id)}
                         type="button"
                       >
@@ -107,7 +107,7 @@ function CartPage() {
                       </span>
                       <button
                         aria-label={`Increase ${item.name} quantity`}
-                        className="h-10 w-10 rounded-lg border border-zinc-300 font-bold hover:border-stone-300 hover:bg-stone-50"
+                        className="h-10 w-10 rounded-lg border border-stone-300 font-bold hover:border-stone-300 hover:bg-stone-50"
                         onClick={() => increaseQuantity(item._id)}
                         type="button"
                       >
@@ -137,7 +137,7 @@ function CartPage() {
                   <span>Delivery fee</span>
                   <span>{formatCurrency(getDeliveryFee())}</span>
                 </div>
-                <div className="border-t border-zinc-200 pt-3">
+                <div className="border-t border-stone-200 pt-3">
                   <div className="flex justify-between text-lg font-bold text-zinc-900">
                     <span>Total</span>
                     <span>{formatCurrency(getTotal())}</span>

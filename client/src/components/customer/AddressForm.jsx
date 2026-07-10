@@ -243,7 +243,7 @@ function AddressForm({ initialData, onCancel, onSubmit }) {
         </button>
         {onCancel && (
           <button
-            className="rounded-md border border-zinc-300 px-4 py-2 font-semibold text-zinc-700 hover:bg-zinc-50"
+            className="rounded-xl border border-stone-200 px-4 py-2 font-semibold text-zinc-700 hover:bg-stone-50"
             onClick={onCancel}
             type="button"
           >

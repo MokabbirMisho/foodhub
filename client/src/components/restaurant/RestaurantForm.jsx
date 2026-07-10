@@ -191,7 +191,7 @@ function RestaurantForm({ mode = 'create', onSubmit, restaurant }) {
         <label className="block md:col-span-2">
           <span className="text-sm font-medium text-zinc-700">Restaurant name</span>
           <input
-            className="mt-1 w-full rounded-md border border-zinc-300 px-3 py-2 outline-none focus:border-[#FF4F2E]"
+            className="mt-1 w-full rounded-xl border border-stone-300 px-3 py-2 outline-none focus:border-[#FF4F2E] focus:ring-4 focus:ring-[#FF4F2E]/20"
             name="name"
             onChange={handleChange}
             required
@@ -203,7 +203,7 @@ function RestaurantForm({ mode = 'create', onSubmit, restaurant }) {
         <label className="block md:col-span-2">
           <span className="text-sm font-medium text-zinc-700">Description</span>
           <textarea
-            className="mt-1 min-h-24 w-full rounded-md border border-zinc-300 px-3 py-2 outline-none focus:border-[#FF4F2E]"
+            className="mt-1 min-h-24 w-full rounded-xl border border-stone-300 px-3 py-2 outline-none focus:border-[#FF4F2E] focus:ring-4 focus:ring-[#FF4F2E]/20"
             name="description"
             onChange={handleChange}
             value={formData.description}
@@ -213,7 +213,7 @@ function RestaurantForm({ mode = 'create', onSubmit, restaurant }) {
         <label className="block">
           <span className="text-sm font-medium text-zinc-700">Phone</span>
           <input
-            className="mt-1 w-full rounded-md border border-zinc-300 px-3 py-2 outline-none focus:border-[#FF4F2E]"
+            className="mt-1 w-full rounded-xl border border-stone-300 px-3 py-2 outline-none focus:border-[#FF4F2E] focus:ring-4 focus:ring-[#FF4F2E]/20"
             name="phone"
             onChange={handleChange}
             type="tel"
@@ -224,7 +224,7 @@ function RestaurantForm({ mode = 'create', onSubmit, restaurant }) {
         <label className="block">
           <span className="text-sm font-medium text-zinc-700">Email</span>
           <input
-            className="mt-1 w-full rounded-md border border-zinc-300 px-3 py-2 outline-none focus:border-[#FF4F2E]"
+            className="mt-1 w-full rounded-xl border border-stone-300 px-3 py-2 outline-none focus:border-[#FF4F2E] focus:ring-4 focus:ring-[#FF4F2E]/20"
             name="email"
             onChange={handleChange}
             type="email"
@@ -235,7 +235,7 @@ function RestaurantForm({ mode = 'create', onSubmit, restaurant }) {
         <label className="block md:col-span-2">
           <span className="text-sm font-medium text-zinc-700">Street</span>
           <input
-            className="mt-1 w-full rounded-md border border-zinc-300 px-3 py-2 outline-none focus:border-[#FF4F2E]"
+            className="mt-1 w-full rounded-xl border border-stone-300 px-3 py-2 outline-none focus:border-[#FF4F2E] focus:ring-4 focus:ring-[#FF4F2E]/20"
             name="street"
             onChange={handleChange}
             value={formData.street}
@@ -245,7 +245,7 @@ function RestaurantForm({ mode = 'create', onSubmit, restaurant }) {
         <label className="block">
           <span className="text-sm font-medium text-zinc-700">City</span>
           <input
-            className="mt-1 w-full rounded-md border border-zinc-300 px-3 py-2 outline-none focus:border-[#FF4F2E]"
+            className="mt-1 w-full rounded-xl border border-stone-300 px-3 py-2 outline-none focus:border-[#FF4F2E] focus:ring-4 focus:ring-[#FF4F2E]/20"
             name="city"
             onChange={handleChange}
             value={formData.city}
@@ -255,7 +255,7 @@ function RestaurantForm({ mode = 'create', onSubmit, restaurant }) {
         <label className="block">
           <span className="text-sm font-medium text-zinc-700">Postal code</span>
           <input
-            className="mt-1 w-full rounded-md border border-zinc-300 px-3 py-2 outline-none focus:border-[#FF4F2E]"
+            className="mt-1 w-full rounded-xl border border-stone-300 px-3 py-2 outline-none focus:border-[#FF4F2E] focus:ring-4 focus:ring-[#FF4F2E]/20"
             name="postalCode"
             onChange={handleChange}
             value={formData.postalCode}
@@ -265,7 +265,7 @@ function RestaurantForm({ mode = 'create', onSubmit, restaurant }) {
         <label className="block">
           <span className="text-sm font-medium text-zinc-700">Country</span>
           <input
-            className="mt-1 w-full rounded-md border border-zinc-300 px-3 py-2 outline-none focus:border-[#FF4F2E]"
+            className="mt-1 w-full rounded-xl border border-stone-300 px-3 py-2 outline-none focus:border-[#FF4F2E] focus:ring-4 focus:ring-[#FF4F2E]/20"
             name="country"
             onChange={handleChange}
             value={formData.country}
@@ -275,7 +275,7 @@ function RestaurantForm({ mode = 'create', onSubmit, restaurant }) {
         <label className="block">
           <span className="text-sm font-medium text-zinc-700">Cuisine types</span>
           <input
-            className="mt-1 w-full rounded-md border border-zinc-300 px-3 py-2 outline-none focus:border-[#FF4F2E]"
+            className="mt-1 w-full rounded-xl border border-stone-300 px-3 py-2 outline-none focus:border-[#FF4F2E] focus:ring-4 focus:ring-[#FF4F2E]/20"
             name="cuisineTypes"
             onChange={handleChange}
             placeholder="Italian, Pizza, Vegan"
@@ -305,7 +305,7 @@ function RestaurantForm({ mode = 'create', onSubmit, restaurant }) {
                 type="file"
               />
               <button
-                className="rounded-md bg-[#FF4F2E] px-4 py-2 text-sm font-semibold text-white hover:bg-[#E63E22] disabled:cursor-not-allowed disabled:bg-stone-300"
+                className="rounded-xl bg-[#FF4F2E] px-4 py-2 text-sm font-semibold text-white hover:bg-[#E63E22] disabled:cursor-not-allowed disabled:bg-stone-300"
                 disabled={isLogoUploading}
                 onClick={handleUploadLogo}
                 type="button"
@@ -315,7 +315,7 @@ function RestaurantForm({ mode = 'create', onSubmit, restaurant }) {
             </div>
           </div>
           <input
-            className="mt-3 w-full rounded-md border border-zinc-300 px-3 py-2 outline-none focus:border-[#FF4F2E]"
+            className="mt-3 w-full rounded-xl border border-stone-300 px-3 py-2 outline-none focus:border-[#FF4F2E] focus:ring-4 focus:ring-[#FF4F2E]/20"
             name="logo"
             onChange={handleChange}
             placeholder="Logo URL"
@@ -346,7 +346,7 @@ function RestaurantForm({ mode = 'create', onSubmit, restaurant }) {
               type="file"
             />
             <button
-              className="rounded-md bg-[#FF4F2E] px-4 py-2 text-sm font-semibold text-white hover:bg-[#E63E22] disabled:cursor-not-allowed disabled:bg-stone-300"
+              className="rounded-xl bg-[#FF4F2E] px-4 py-2 text-sm font-semibold text-white hover:bg-[#E63E22] disabled:cursor-not-allowed disabled:bg-stone-300"
               disabled={isCoverUploading}
               onClick={handleUploadCover}
               type="button"
@@ -355,7 +355,7 @@ function RestaurantForm({ mode = 'create', onSubmit, restaurant }) {
             </button>
           </div>
           <input
-            className="mt-3 w-full rounded-md border border-zinc-300 px-3 py-2 outline-none focus:border-[#FF4F2E]"
+            className="mt-3 w-full rounded-xl border border-stone-300 px-3 py-2 outline-none focus:border-[#FF4F2E] focus:ring-4 focus:ring-[#FF4F2E]/20"
             name="coverImage"
             onChange={handleChange}
             placeholder="Cover image URL"
@@ -368,7 +368,7 @@ function RestaurantForm({ mode = 'create', onSubmit, restaurant }) {
             Minimum order amount
           </span>
           <input
-            className="mt-1 w-full rounded-md border border-zinc-300 px-3 py-2 outline-none focus:border-[#FF4F2E]"
+            className="mt-1 w-full rounded-xl border border-stone-300 px-3 py-2 outline-none focus:border-[#FF4F2E] focus:ring-4 focus:ring-[#FF4F2E]/20"
             min="0"
             name="minimumOrderAmount"
             onChange={handleChange}
@@ -381,7 +381,7 @@ function RestaurantForm({ mode = 'create', onSubmit, restaurant }) {
         <label className="block">
           <span className="text-sm font-medium text-zinc-700">Delivery fee</span>
           <input
-            className="mt-1 w-full rounded-md border border-zinc-300 px-3 py-2 outline-none focus:border-[#FF4F2E]"
+            className="mt-1 w-full rounded-xl border border-stone-300 px-3 py-2 outline-none focus:border-[#FF4F2E] focus:ring-4 focus:ring-[#FF4F2E]/20"
             min="0"
             name="deliveryFee"
             onChange={handleChange}
@@ -396,7 +396,7 @@ function RestaurantForm({ mode = 'create', onSubmit, restaurant }) {
             Estimated delivery time
           </span>
           <input
-            className="mt-1 w-full rounded-md border border-zinc-300 px-3 py-2 outline-none focus:border-[#FF4F2E]"
+            className="mt-1 w-full rounded-xl border border-stone-300 px-3 py-2 outline-none focus:border-[#FF4F2E] focus:ring-4 focus:ring-[#FF4F2E]/20"
             name="estimatedDeliveryTime"
             onChange={handleChange}
             placeholder="30-45 min"
@@ -406,7 +406,7 @@ function RestaurantForm({ mode = 'create', onSubmit, restaurant }) {
       </div>
 
       <button
-        className="rounded-md bg-[#FF4F2E] px-5 py-3 font-semibold text-white hover:bg-[#E63E22] disabled:cursor-not-allowed disabled:bg-stone-300"
+        className="rounded-xl bg-[#FF4F2E] px-5 py-3 font-semibold text-white hover:bg-[#E63E22] disabled:cursor-not-allowed disabled:bg-stone-300"
         disabled={isSubmitting}
         type="submit"
       >

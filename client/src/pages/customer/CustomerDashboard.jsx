@@ -173,7 +173,7 @@ function CustomerDashboard() {
   };
 
   return (
-    <main className="min-h-screen bg-stone-50 text-zinc-900">
+    <main className="min-h-screen bg-[#F8F7F4] text-zinc-900">
       <section className="bg-stone-100 px-5 py-10 sm:px-8">
         <div className="mx-auto max-w-7xl">
           <p className="text-sm font-semibold text-[#FF4F2E]">
@@ -277,7 +277,7 @@ function CustomerDashboard() {
                 Track order
               </Link>
               <Link
-                className="rounded-md border border-zinc-300 px-4 py-2 font-semibold text-zinc-700 hover:bg-zinc-50"
+                className="rounded-xl border border-stone-200 px-4 py-2 font-semibold text-zinc-700 hover:bg-stone-50"
                 to="/my-orders"
               >
                 View orders
@@ -352,7 +352,7 @@ function CustomerDashboard() {
                   </p>
                   {order.restaurant?._id && (
                     <Link
-                      className="mt-5 inline-flex rounded-md bg-[#FF4F2E] px-4 py-2 font-semibold text-white hover:bg-[#E63E22]"
+                      className="mt-5 inline-flex rounded-xl bg-[#FF4F2E] px-4 py-2 font-semibold text-white hover:bg-[#E63E22]"
                       to={`/restaurants/${order.restaurant._id}`}
                     >
                       Order again

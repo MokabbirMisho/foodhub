@@ -209,7 +209,7 @@ function RestaurantAnalytics({ onViewOrders }) {
                   </div>
                   <div className="mt-2 h-2 overflow-hidden rounded-full bg-zinc-100">
                     <div
-                      className="h-full rounded-full bg-zinc-500"
+                      className="h-full rounded-full bg-stone-500"
                       style={{ width: `${(count / maxStatusCount) * 100}%` }}
                     />
                   </div>

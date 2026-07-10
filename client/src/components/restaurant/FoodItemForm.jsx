@@ -163,7 +163,7 @@ function FoodItemForm({ foodItem, mode = 'create', onSubmit, onCancel }) {
         <label className="block">
           <span className="text-sm font-medium text-zinc-700">Name</span>
           <input
-            className="mt-1 w-full rounded-md border border-zinc-300 px-3 py-2 outline-none focus:border-[#FF4F2E]"
+            className="mt-1 w-full rounded-xl border border-stone-300 px-3 py-2 outline-none focus:border-[#FF4F2E] focus:ring-4 focus:ring-[#FF4F2E]/20"
             name="name"
             onChange={handleChange}
             required
@@ -174,7 +174,7 @@ function FoodItemForm({ foodItem, mode = 'create', onSubmit, onCancel }) {
         <label className="block">
           <span className="text-sm font-medium text-zinc-700">Category</span>
           <input
-            className="mt-1 w-full rounded-md border border-zinc-300 px-3 py-2 outline-none focus:border-[#FF4F2E]"
+            className="mt-1 w-full rounded-xl border border-stone-300 px-3 py-2 outline-none focus:border-[#FF4F2E] focus:ring-4 focus:ring-[#FF4F2E]/20"
             name="category"
             onChange={handleChange}
             required
@@ -185,7 +185,7 @@ function FoodItemForm({ foodItem, mode = 'create', onSubmit, onCancel }) {
         <label className="block md:col-span-2">
           <span className="text-sm font-medium text-zinc-700">Description</span>
           <textarea
-            className="mt-1 min-h-24 w-full rounded-md border border-zinc-300 px-3 py-2 outline-none focus:border-[#FF4F2E]"
+            className="mt-1 min-h-24 w-full rounded-xl border border-stone-300 px-3 py-2 outline-none focus:border-[#FF4F2E] focus:ring-4 focus:ring-[#FF4F2E]/20"
             name="description"
             onChange={handleChange}
             value={formData.description}
@@ -195,7 +195,7 @@ function FoodItemForm({ foodItem, mode = 'create', onSubmit, onCancel }) {
         <label className="block">
           <span className="text-sm font-medium text-zinc-700">Price</span>
           <input
-            className="mt-1 w-full rounded-md border border-zinc-300 px-3 py-2 outline-none focus:border-[#FF4F2E]"
+            className="mt-1 w-full rounded-xl border border-stone-300 px-3 py-2 outline-none focus:border-[#FF4F2E] focus:ring-4 focus:ring-[#FF4F2E]/20"
             min="0"
             name="price"
             onChange={handleChange}
@@ -209,7 +209,7 @@ function FoodItemForm({ foodItem, mode = 'create', onSubmit, onCancel }) {
         <label className="block">
           <span className="text-sm font-medium text-zinc-700">Discount price</span>
           <input
-            className="mt-1 w-full rounded-md border border-zinc-300 px-3 py-2 outline-none focus:border-[#FF4F2E]"
+            className="mt-1 w-full rounded-xl border border-stone-300 px-3 py-2 outline-none focus:border-[#FF4F2E] focus:ring-4 focus:ring-[#FF4F2E]/20"
             min="0"
             name="discountPrice"
             onChange={handleChange}
@@ -224,7 +224,7 @@ function FoodItemForm({ foodItem, mode = 'create', onSubmit, onCancel }) {
             Preparation time
           </span>
           <input
-            className="mt-1 w-full rounded-md border border-zinc-300 px-3 py-2 outline-none focus:border-[#FF4F2E]"
+            className="mt-1 w-full rounded-xl border border-stone-300 px-3 py-2 outline-none focus:border-[#FF4F2E] focus:ring-4 focus:ring-[#FF4F2E]/20"
             min="0"
             name="preparationTime"
             onChange={handleChange}
@@ -254,7 +254,7 @@ function FoodItemForm({ foodItem, mode = 'create', onSubmit, onCancel }) {
               type="file"
             />
             <button
-              className="rounded-md bg-[#FF4F2E] px-4 py-2 text-sm font-semibold text-white hover:bg-[#E63E22] disabled:cursor-not-allowed disabled:bg-stone-300"
+              className="rounded-xl bg-[#FF4F2E] px-4 py-2 text-sm font-semibold text-white hover:bg-[#E63E22] disabled:cursor-not-allowed disabled:bg-stone-300"
               disabled={isImageUploading}
               onClick={handleUploadImage}
               type="button"
@@ -263,7 +263,7 @@ function FoodItemForm({ foodItem, mode = 'create', onSubmit, onCancel }) {
             </button>
           </div>
           <input
-            className="mt-3 w-full rounded-md border border-zinc-300 px-3 py-2 outline-none focus:border-[#FF4F2E]"
+            className="mt-3 w-full rounded-xl border border-stone-300 px-3 py-2 outline-none focus:border-[#FF4F2E] focus:ring-4 focus:ring-[#FF4F2E]/20"
             name="image"
             onChange={handleChange}
             placeholder="Image URL"
@@ -274,7 +274,7 @@ function FoodItemForm({ foodItem, mode = 'create', onSubmit, onCancel }) {
         <label className="block md:col-span-2">
           <span className="text-sm font-medium text-zinc-700">Tags</span>
           <input
-            className="mt-1 w-full rounded-md border border-zinc-300 px-3 py-2 outline-none focus:border-[#FF4F2E]"
+            className="mt-1 w-full rounded-xl border border-stone-300 px-3 py-2 outline-none focus:border-[#FF4F2E] focus:ring-4 focus:ring-[#FF4F2E]/20"
             name="tags"
             onChange={handleChange}
             placeholder="spicy, popular, lunch"
@@ -296,7 +296,7 @@ function FoodItemForm({ foodItem, mode = 'create', onSubmit, onCancel }) {
 
       <div className="flex flex-wrap gap-3">
         <button
-          className="rounded-md bg-[#FF4F2E] px-5 py-3 font-semibold text-white hover:bg-[#E63E22] disabled:cursor-not-allowed disabled:bg-stone-300"
+          className="rounded-xl bg-[#FF4F2E] px-5 py-3 font-semibold text-white hover:bg-[#E63E22] disabled:cursor-not-allowed disabled:bg-stone-300"
           disabled={isSubmitting}
           type="submit"
         >
@@ -311,7 +311,7 @@ function FoodItemForm({ foodItem, mode = 'create', onSubmit, onCancel }) {
 
         {onCancel && (
           <button
-            className="rounded-md border border-zinc-300 px-5 py-3 font-semibold text-zinc-700 hover:bg-stone-50"
+            className="rounded-xl border border-stone-200 px-5 py-3 font-semibold text-zinc-700 hover:bg-stone-50"
             onClick={onCancel}
             type="button"
           >

@@ -209,7 +209,7 @@ function CustomerAccountPage() {
 
   if (isLoading) {
     return (
-      <main className="min-h-screen bg-stone-50 p-6 text-zinc-700">
+      <main className="min-h-screen bg-[#F8F7F4] p-6 text-zinc-700">
         Loading customer profile...
       </main>
     );
@@ -312,7 +312,7 @@ function CustomerAccountPage() {
               <label>
                 <span className="text-sm font-medium text-zinc-700">Name</span>
                 <input
-                  className="mt-1 w-full rounded-md border border-zinc-300 px-3 py-2 outline-none focus:border-[#FF4F2E]"
+                  className="mt-1 w-full rounded-xl border border-stone-300 px-3 py-2 outline-none focus:border-[#FF4F2E] focus:ring-4 focus:ring-[#FF4F2E]/20"
                   name="name"
                   onChange={handleProfileChange}
                   required
@@ -322,7 +322,7 @@ function CustomerAccountPage() {
               <label>
                 <span className="text-sm font-medium text-zinc-700">Phone</span>
                 <input
-                  className="mt-1 w-full rounded-md border border-zinc-300 px-3 py-2 outline-none focus:border-[#FF4F2E]"
+                  className="mt-1 w-full rounded-xl border border-stone-300 px-3 py-2 outline-none focus:border-[#FF4F2E] focus:ring-4 focus:ring-[#FF4F2E]/20"
                   name="phone"
                   onChange={handleProfileChange}
                   value={profileForm.phone}
@@ -333,7 +333,7 @@ function CustomerAccountPage() {
                   Avatar URL
                 </span>
                 <input
-                  className="mt-1 w-full rounded-md border border-zinc-300 px-3 py-2 outline-none focus:border-[#FF4F2E]"
+                  className="mt-1 w-full rounded-xl border border-stone-300 px-3 py-2 outline-none focus:border-[#FF4F2E] focus:ring-4 focus:ring-[#FF4F2E]/20"
                   name="avatar"
                   onChange={handleProfileChange}
                   value={profileForm.avatar}
@@ -342,7 +342,7 @@ function CustomerAccountPage() {
               <label>
                 <span className="text-sm font-medium text-zinc-700">Email</span>
                 <input
-                  className="mt-1 w-full rounded-md border border-zinc-200 bg-zinc-50 px-3 py-2 text-zinc-500"
+                  className="mt-1 w-full rounded-xl border border-stone-200 bg-stone-50 px-3 py-2 text-zinc-500"
                   readOnly
                   value={profile?.email || ''}
                 />
@@ -350,7 +350,7 @@ function CustomerAccountPage() {
               <label>
                 <span className="text-sm font-medium text-zinc-700">Role</span>
                 <input
-                  className="mt-1 w-full rounded-md border border-zinc-200 bg-zinc-50 px-3 py-2 text-zinc-500"
+                  className="mt-1 w-full rounded-xl border border-stone-200 bg-stone-50 px-3 py-2 text-zinc-500"
                   readOnly
                   value={profile?.role || ''}
                 />
@@ -397,7 +397,7 @@ function CustomerAccountPage() {
                           ? 'current-password'
                           : 'new-password'
                       }
-                      className="mt-1 w-full rounded-md border border-zinc-300 px-3 py-2 outline-none focus:border-[#FF4F2E]"
+                      className="mt-1 w-full rounded-xl border border-stone-300 px-3 py-2 outline-none focus:border-[#FF4F2E] focus:ring-4 focus:ring-[#FF4F2E]/20"
                       minLength={name === 'currentPassword' ? undefined : 6}
                       name={name}
                       onChange={handlePasswordChange}
@@ -409,7 +409,7 @@ function CustomerAccountPage() {
                 ))}
 
                 <button
-                  className="rounded-md bg-[#FF4F2E] px-5 py-2 font-semibold text-white hover:bg-[#E63E22] disabled:bg-stone-300"
+                  className="rounded-xl bg-[#FF4F2E] px-5 py-2 font-semibold text-white hover:bg-[#E63E22] disabled:bg-stone-300"
                   disabled={isSavingPassword}
                   type="submit"
                 >

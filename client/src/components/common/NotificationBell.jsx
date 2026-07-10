@@ -123,7 +123,7 @@ function NotificationBell() {
 
           {notifications.length > 0 && (
             <button
-              className="w-full p-3 text-sm font-semibold text-zinc-600 hover:bg-zinc-50"
+              className="w-full p-3 text-sm font-semibold text-zinc-600 hover:bg-stone-50"
               onClick={clearNotifications}
               type="button"
             >

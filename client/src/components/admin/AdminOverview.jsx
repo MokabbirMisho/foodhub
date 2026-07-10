@@ -203,7 +203,7 @@ function AdminOverview({ onSelectTab }) {
                 </div>
                 <div className="mt-1 h-2 rounded-full bg-zinc-100">
                   <div
-                    className="h-full rounded-full bg-zinc-500"
+                    className="h-full rounded-full bg-stone-500"
                     style={{ width: `${(count / maxStatus) * 100}%` }}
                   />
                 </div>

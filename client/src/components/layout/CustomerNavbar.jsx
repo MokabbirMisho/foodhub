@@ -166,7 +166,7 @@ function CustomerNavbar() {
             </div>
           ) : (
             <button
-              className="rounded-md bg-[#FF4F2E] px-3 py-2 text-sm font-semibold text-white hover:bg-[#E63E22]"
+              className="rounded-xl bg-[#FF4F2E] px-3 py-2 text-sm font-semibold text-white hover:bg-[#E63E22]"
               onClick={openLogin}
               type="button"
             >

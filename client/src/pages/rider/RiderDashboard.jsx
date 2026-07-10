@@ -121,7 +121,7 @@ function AvailableDeliveryCard({ onAccept, order }) {
       </div>
 
       {order.orderNote && (
-        <p className="mt-4 rounded-lg bg-zinc-50 p-4 text-sm text-zinc-700">
+        <p className="mt-4 rounded-lg bg-stone-50 p-4 text-sm text-zinc-700">
           Note: {order.orderNote}
         </p>
       )}
@@ -153,7 +153,7 @@ function AvailableDeliveryCard({ onAccept, order }) {
       </p>
 
       <button
-        className="mt-5 rounded-md bg-[#FF4F2E] px-4 py-2 font-semibold text-white hover:bg-[#E63E22]"
+        className="mt-5 rounded-xl bg-[#FF4F2E] px-4 py-2 font-semibold text-white hover:bg-[#E63E22]"
         onClick={() => onAccept(order._id)}
         type="button"
       >
@@ -224,7 +224,7 @@ function MyDeliveryCard({
       </div>
 
       {order.orderNote && (
-        <p className="mt-4 rounded-lg bg-zinc-50 p-4 text-sm text-zinc-700">
+        <p className="mt-4 rounded-lg bg-stone-50 p-4 text-sm text-zinc-700">
           Note: {order.orderNote}
         </p>
       )}
@@ -280,7 +280,7 @@ function MyDeliveryCard({
       {order.status === 'out_for_delivery' && (
         <div className="mt-5 flex flex-wrap gap-3">
           <button
-            className="rounded-md bg-[#FF4F2E] px-4 py-2 font-semibold text-white hover:bg-[#E63E22] disabled:cursor-not-allowed disabled:bg-stone-300"
+            className="rounded-xl bg-[#FF4F2E] px-4 py-2 font-semibold text-white hover:bg-[#E63E22] disabled:cursor-not-allowed disabled:bg-stone-300"
             disabled={isUpdatingLocation}
             onClick={() => onUpdateLocation(order._id)}
             type="button"
@@ -597,7 +597,7 @@ function RiderDashboard() {
                   Filter by status
                 </span>
                 <select
-                  className="mt-1 w-full rounded-md border border-zinc-300 px-3 py-2 outline-none focus:border-[#FF4F2E]"
+                  className="mt-1 w-full rounded-xl border border-stone-300 px-3 py-2 outline-none focus:border-[#FF4F2E] focus:ring-4 focus:ring-[#FF4F2E]/20"
                   onChange={handleFilterChange}
                   value={deliveryStatusFilter}
                 >
