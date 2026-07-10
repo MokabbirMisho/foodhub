@@ -7,6 +7,7 @@ import {
   loginUser,
   logout as logoutUser,
   registerUser,
+  updateMyAccount,
 } from '../services/authService';
 
 const getStoredUser = () => {
@@ -120,6 +121,11 @@ export function AuthProvider({ children }) {
     return saveAuthData(response);
   };
 
+  const updateAccount = useCallback(async (formData) => {
+    const response = await updateMyAccount(formData);
+    return updateCurrentUser(response.data.user);
+  }, [updateCurrentUser]);
+
   const value = useMemo(
     () => ({
       user,
@@ -132,9 +138,10 @@ export function AuthProvider({ children }) {
       signInWithGoogle,
       logout,
       loadCurrentUser,
+      updateAccount,
       updateCurrentUser,
     }),
-    [user, token, isLoading, logout, loadCurrentUser, updateCurrentUser],
+    [user, token, isLoading, logout, loadCurrentUser, updateAccount, updateCurrentUser],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

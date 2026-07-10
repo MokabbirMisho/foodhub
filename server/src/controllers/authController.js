@@ -17,6 +17,8 @@ const createUserData = (user) => ({
   updatedAt: user.updatedAt,
 });
 
+const passwordMinimumLength = 6;
+
 const sendAuthResponse = (res, statusCode, user) => {
   res.status(statusCode).json({
     success: true,
@@ -424,6 +426,91 @@ export const getMe = async (req, res) => {
       data: {
         user: createUserData(req.user),
       },
+    });
+  } catch (error) {
+    handleAuthError(res, error);
+  }
+};
+
+export const updateMyAccount = async (req, res) => {
+  try {
+    const updates = {};
+
+    if (Object.prototype.hasOwnProperty.call(req.body, 'name')) {
+      updates.name = req.body.name;
+    }
+
+    if (Object.prototype.hasOwnProperty.call(req.body, 'phone')) {
+      updates.phone = req.body.phone;
+    }
+
+    if (!updates.name?.trim()) {
+      return sendErrorResponse(res, 400, 'Name is required');
+    }
+
+    const user = await User.findByIdAndUpdate(req.user._id, updates, {
+      new: true,
+      runValidators: true,
+    });
+
+    res.json({
+      success: true,
+      message: 'Account updated successfully',
+      data: {
+        user: createUserData(user),
+      },
+    });
+  } catch (error) {
+    handleAuthError(res, error);
+  }
+};
+
+export const changeMyPassword = async (req, res) => {
+  try {
+    const { confirmPassword, currentPassword, newPassword } = req.body;
+
+    if (!currentPassword || !newPassword || !confirmPassword) {
+      return sendErrorResponse(res, 400, 'All password fields are required');
+    }
+
+    if (newPassword !== confirmPassword) {
+      return sendErrorResponse(res, 400, 'New passwords do not match');
+    }
+
+    if (newPassword.length < passwordMinimumLength) {
+      return sendErrorResponse(
+        res,
+        400,
+        `New password must be at least ${passwordMinimumLength} characters`,
+      );
+    }
+
+    // Password is hidden by default, so select it only for this secure check.
+    const user = await User.findById(req.user._id).select('+password');
+
+    if (user.authProvider === 'google' && !user.password) {
+      return sendErrorResponse(
+        res,
+        400,
+        'Password change is not available for Google sign-in accounts.',
+      );
+    }
+
+    const isCurrentPasswordCorrect =
+      await user.comparePassword(currentPassword);
+
+    if (!isCurrentPasswordCorrect) {
+      return sendErrorResponse(res, 400, 'Current password is incorrect');
+    }
+
+    // The User model hashes this value in its save middleware.
+    user.password = newPassword;
+    await user.save();
+
+    res.json({
+      success: true,
+      message: 'Password changed successfully',
+      data: null,
     });
   } catch (error) {
     handleAuthError(res, error);

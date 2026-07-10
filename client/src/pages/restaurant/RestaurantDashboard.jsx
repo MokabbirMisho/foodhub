@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import NotificationBell from '../../components/common/NotificationBell';
 import FoodItemForm from '../../components/restaurant/FoodItemForm';
 import OwnerReviews from '../../components/restaurant/OwnerReviews';
+import OwnerSettings from '../../components/restaurant/OwnerSettings';
 import RestaurantAnalytics from '../../components/restaurant/RestaurantAnalytics';
 import RestaurantAvailabilityForm from '../../components/restaurant/RestaurantAvailabilityForm';
 import RestaurantForm from '../../components/restaurant/RestaurantForm';
@@ -871,7 +872,12 @@ function RestaurantDashboard() {
     }
 
     if (activeTab === 'settings') {
-      return <PlaceholderCard message="Restaurant settings will be added later." />;
+      return (
+        <OwnerSettings
+          onRestaurantUpdated={setRestaurant}
+          restaurant={restaurant}
+        />
+      );
     }
 
     return renderDashboardTab();

@@ -89,9 +89,32 @@ const restaurantSchema = new mongoose.Schema(
       type: Number,
       default: 0,
     },
+    acceptsOnlineOrders: {
+      type: Boolean,
+      default: true,
+    },
+    autoAcceptOrders: {
+      type: Boolean,
+      default: false,
+    },
+    defaultPreparationTime: {
+      type: Number,
+      enum: [20, 30, 45],
+      default: 30,
+    },
     estimatedDeliveryTime: {
       type: String,
       trim: true,
+    },
+    ownerPreferenceLanguage: {
+      type: String,
+      enum: ['en', 'de'],
+      default: 'en',
+    },
+    ownerTimeFormat: {
+      type: String,
+      enum: ['12h', '24h'],
+      default: '24h',
     },
     openingHours: {
       monday: createDaySchedule('10:00', '22:00'),
@@ -114,6 +137,15 @@ const restaurantSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    isTemporarilyPaused: {
+      type: Boolean,
+      default: false,
+    },
+    temporaryPauseReason: {
+      type: String,
+      trim: true,
+      default: '',
+    },
     temporaryClosedReason: {
       type: String,
       trim: true,
@@ -127,6 +159,23 @@ const restaurantSchema = new mongoose.Schema(
     isActive: {
       type: Boolean,
       default: true,
+    },
+    deactivationRequest: {
+      requested: {
+        type: Boolean,
+        default: false,
+      },
+      reason: {
+        type: String,
+        trim: true,
+        default: '',
+      },
+      requestedAt: Date,
+      status: {
+        type: String,
+        enum: ['none', 'pending', 'approved', 'rejected'],
+        default: 'none',
+      },
     },
   },
   {

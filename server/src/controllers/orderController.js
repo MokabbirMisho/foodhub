@@ -142,7 +142,7 @@ export const createOrder = async (req, res) => {
       return sendErrorResponse(
         res,
         400,
-        availability.reason || 'Restaurant is currently closed',
+        availability.reason || 'This restaurant is not accepting online orders right now.',
       );
     }
 

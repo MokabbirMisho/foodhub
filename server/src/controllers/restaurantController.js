@@ -113,6 +113,17 @@ export const updateMyRestaurant = async (req, res) => {
     delete updates.openingHours;
     delete updates.availabilityNote;
 
+    if (updates.deactivationRequest) {
+      const reason = updates.deactivationRequest.reason || '';
+
+      updates.deactivationRequest = {
+        requested: true,
+        reason,
+        requestedAt: new Date(),
+        status: 'pending',
+      };
+    }
+
     const restaurant = await Restaurant.findOneAndUpdate(
       { owner: req.user._id },
       updates,

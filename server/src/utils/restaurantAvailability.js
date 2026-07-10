@@ -71,6 +71,24 @@ export const getRestaurantAvailability = (restaurant) => {
     };
   }
 
+  if (restaurant.acceptsOnlineOrders === false) {
+    return {
+      isAvailableNow: false,
+      reason: 'This restaurant is not accepting online orders right now.',
+      todayHours,
+    };
+  }
+
+  if (restaurant.isTemporarilyPaused) {
+    return {
+      isAvailableNow: false,
+      reason:
+        restaurant.temporaryPauseReason ||
+        'This restaurant is not accepting online orders right now.',
+      todayHours,
+    };
+  }
+
   if (restaurant.isTemporarilyClosed || restaurant.isOpen === false) {
     return {
       isAvailableNow: false,

@@ -15,6 +15,16 @@ export const getMe = async () => {
   return response.data;
 };
 
+export const updateMyAccount = async (data) => {
+  const response = await api.patch('/auth/me', data);
+  return response.data;
+};
+
+export const changeMyPassword = async (data) => {
+  const response = await api.patch('/auth/change-password', data);
+  return response.data;
+};
+
 export const googleLogin = async (credential) => {
   const response = await api.post('/auth/google', { credential });
   return response.data;
